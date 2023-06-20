@@ -1,0 +1,32 @@
+{
+  "PLUGINS": {
+    "TUTORIAL": {
+      "TITLE": "Mafunzo",
+      "PAGES": {
+        "EDIT": "Mafunzo > Hariri",
+        "LIST": "Mafunzo",
+        "ADD": "Mafunzo > Ongeza"
+      },
+      "LIST_PAGE": {
+        "TITLE": "Mafunzo",
+        "ADD_TUTORIAL": "Ongeza Mafunzo",
+        "SEARCH_PLACEHOLDER": "Tafuta Mafunzo",
+        "VIEW_DETAILS": "Tazama Maelezo",
+        "NO_TUTORIALS": "Hakuna Mafunzo yaliyopatikana"
+      },
+      "DETAILS": {
+        "TITLE": "Kichwa",
+        "TITLE_REQUIRED": "Kichwa kinahitajika",
+        "DESCRIPTION": "Maelezo",
+        "DESCRIPTION_REQUIRED": "Ufafanuzi unahitajika",
+        "PUBLISHED": "Imechapishwa",
+        "EDIT": "Hariri"
+      },
+      "TITLES": {
+        "NEW_TUTORIAL": "Mafunzo Mapya",
+        "TUTORIAL_DETAILS": "Maelezo ya mafunzo",
+        "TUTORIALS": "Mafunzo"
+      }
+    }
+  }
+}

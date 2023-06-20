@@ -1,0 +1,32 @@
+{
+  "PLUGINS": {
+    "TUTORIAL": {
+      "TITLE": "Koyawa",
+      "PAGES": {
+        "EDIT": "Koyawa > Gyara",
+        "LIST": "Koyawa",
+        "ADD": "Koyawa > Ƙara"
+      },
+      "LIST_PAGE": {
+        "TITLE": "Koyawa",
+        "ADD_TUTORIAL": "Ƙara Koyarwa",
+        "SEARCH_PLACEHOLDER": "Neman Koyarwa",
+        "VIEW_DETAILS": "Duba cikakkun bayanai",
+        "NO_TUTORIALS": "Ba a sami koyawa ba"
+      },
+      "DETAILS": {
+        "TITLE": "Take",
+        "TITLE_REQUIRED": "Ana buƙatar taken",
+        "DESCRIPTION": "Bayani",
+        "DESCRIPTION_REQUIRED": "Ana buƙatar bayanin",
+        "PUBLISHED": "Buga",
+        "EDIT": "Gyara"
+      },
+      "TITLES": {
+        "NEW_TUTORIAL": "Sabon Koyarwa",
+        "TUTORIAL_DETAILS": "Cikakken bayani",
+        "TUTORIALS": "Koyawa"
+      }
+    }
+  }
+}

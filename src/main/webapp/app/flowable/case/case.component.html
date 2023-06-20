@@ -1,0 +1,191 @@
+<div class="bg-gray-100 w-full mx-auto p-1 ml-2 mr-2">
+    <div class="relative bg-card h-72 border-t-gray-400 border-4 shadow-xl">
+        <div class="pl-8">
+            <div class="h-8 bg-gray-400 rounded-b-lg w-26 items-center pt-1">
+                <div class="flex items-center justify-center">
+                    <mat-icon svgIcon="feather:briefcase"
+                              class="icon-size-5 ml-auto white-icon"></mat-icon>
+                    <div class="ml-1.5 leading-5 mr-auto text-white">
+                        {{'Case' | transloco}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 pt-2">
+            <div class="pl-8 pt-4">
+                <div class="text-4xl tracking-tight leading-none">
+                    {{caseInstance?.name}}
+                </div>
+                <div class="pt-6">
+                    <div>
+                        <a
+                            class="inline-flex items-center leading-6 text-primary hover:underline"
+                            [routerLink]="['..']">
+                    <span class="inline-flex items-center">
+                        <mat-icon svgIcon="feather:git-pull-request" class="icon-size-5 text-current"></mat-icon>
+                        <span class="ml-1.5 font-medium leading-5">Parent process</span>
+                    </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="justify-items-end">
+                <div class="w-80 ml-auto grid grid-cols-1 gap-y-1.5">
+                    <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
+                        <mat-icon svgIcon="heroicons_solid:calendar"></mat-icon>
+                        <div class="ml-1.5 leading-5 mr-auto">
+                            {{'Started:' | transloco}}
+                        </div>
+                        <div class="ml-1.5 leading-5 mr-auto">
+                            2 seconds ago
+                        </div>
+                    </div>
+                    <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
+                        <mat-icon svgIcon="heroicons_solid:user"></mat-icon>
+                        <div class="ml-1.5 leading-5 mr-auto">
+                            {{'Started by:' | transloco}}
+                        </div>
+                        <div class="ml-1.5 leading-5 mr-auto">
+                            {{caseInstance?.startedBy?.fullName}}
+                        </div>
+                    </div>
+                    <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
+                        <mat-icon svgIcon="heroicons_solid:user"></mat-icon>
+                        <div class="ml-1.5 leading-5 mr-auto">
+                            {{'Assignee:' | transloco}}
+                        </div>
+                        <div class="ml-1.5 leading-5 mr-auto">
+                            2 seconds ago
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-full">
+            <mat-stepper labelPosition="end" #stepper>
+                <mat-step>
+                    <ng-template matStepLabel>Stage 1</ng-template>
+                </mat-step>
+                <mat-step>
+                    <ng-template matStepLabel>Stage 2</ng-template>
+                </mat-step>
+                <mat-step>
+                    <ng-template matStepLabel>Done</ng-template>
+                </mat-step>
+            </mat-stepper>
+        </div>
+        <div class="absolute inset-x-0 bottom-0 ">
+            <div class="bg-gray-200 h-16 w-full">
+                <div class="pt-3 grid justify-items-end">
+                    <div class="flex space-x-1.5">
+                        <button mat-raised-button>Terminate</button>
+                        <button mat-raised-button>Outcome 1</button>
+                        <button mat-raised-button>Outcome 2</button>
+                        <div>
+                            <button (click)="$event.stopPropagation()"
+                                    mat-icon-button
+                                    class="mr-2"
+                                    type="button">
+                                <mat-icon svgIcon="more_vert"></mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-8 bg-card shadow-xl">
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="assignment"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    {{'FLOWABLE.CASE.OPEN_TASKS' | transloco}}
+                </ng-template>
+                <ng-container *ngFor="let task of openTasks">
+                    <div class="grid grid-cols-12 border-gray-300 border-b p-2 hover:bg-gray-100" (click)="taskSelected(task)">
+                        <div class="flex items-center justify-center">
+                            <mat-icon svgIcon="heroicons_outline:clipboard" class="icon-size-7"></mat-icon>
+                        </div>
+                        <div class="flex flex-col col-span-5">
+                            <div class="pl-2.5 font-medium">
+                                {{task.name}}
+                            </div>
+                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
+                                <mat-icon svgIcon="heroicons_outline:user" class="icon-size-4"></mat-icon>
+                                <div class="ml-1.5 leading-5 mr-auto pl-1.5">
+                                    {{task?.owner}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col pl-2 col-span-3">
+                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
+                                <mat-icon svgIcon="heroicons_outline:calendar-days" class="icon-size-4"></mat-icon>
+                                <div class="ml-1.5 leading-5 mr-auto">
+                                    {{'Started ' | transloco}}
+                                </div>
+                                <div class="ml-1.5 leading-5 mr-auto pl-1.5">
+                                    {{task?.created}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col pl-2 col-span-3">
+                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
+                                <mat-icon svgIcon="heroicons_outline:bell" class="icon-size-4"></mat-icon>
+                                <div class="ml-1.5 leading-5 mr-auto" *ngIf="!task.dueDate">
+                                    {{'No due date' | transloco}}
+                                </div>
+                                <div class="ml-1.5 leading-5 mr-auto pl-1.5" *ngIf="task.dueDate">
+                                    {{task?.dueDate}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="assignment"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    {{'FLOWABLE.CASE.WORK_FORM' | transloco}}
+                </ng-template>
+                <mat-formio [form]="form" [renderOptions]="{readonly: true}"></mat-formio>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="heroicons_solid:user"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    People
+                </ng-template>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="format_list_bulleted"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    Subtasks
+                </ng-template>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="heroicons_outline:document"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    Documents
+                </ng-template>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="heroicons_outline:shield-check"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    Audit trail
+                </ng-template>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="history"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    History
+                </ng-template>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

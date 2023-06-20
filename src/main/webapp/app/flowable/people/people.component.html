@@ -1,0 +1,17 @@
+<div class="w-full">
+    <mat-chip-grid #chipList [attr.aria-label]="instance.component.label">
+        <mat-chip-option *ngFor="let tag of tags; index as i;"
+                         [selectable]="true"
+        >
+            {{tag}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip-option>
+
+        <input [formControl]="control"
+               [matChipInputFor]="chipList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [matChipInputAddOnBlur]="true"
+               (matChipInputTokenEnd)="add($event)"
+        >
+    </mat-chip-grid>
+</div>

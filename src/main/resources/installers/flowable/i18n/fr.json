@@ -1,0 +1,32 @@
+{
+  "PLUGINS": {
+    "TUTORIAL": {
+      "TITLE": "Tutoriels",
+      "PAGES": {
+        "EDIT": "Tutoriels > Modifier",
+        "LIST": "Tutoriels",
+        "ADD": "Tutoriels > Ajouter"
+      },
+      "LIST_PAGE": {
+        "TITLE": "Tutoriels",
+        "ADD_TUTORIAL": "Ajouter un tutoriel",
+        "SEARCH_PLACEHOLDER": "Tutoriel de recherche",
+        "VIEW_DETAILS": "Voir les détails",
+        "NO_TUTORIALS": "Aucun tutoriel trouvé"
+      },
+      "DETAILS": {
+        "TITLE": "Titre",
+        "TITLE_REQUIRED": "Le titre est requis",
+        "DESCRIPTION": "Description",
+        "DESCRIPTION_REQUIRED": "La description est obligatoire",
+        "PUBLISHED": "Publié",
+        "EDIT": "Modifier"
+      },
+      "TITLES": {
+        "NEW_TUTORIAL": "Nouveau tutoriel",
+        "TUTORIAL_DETAILS": "Détails du tutoriel",
+        "TUTORIALS": "Tutoriels"
+      }
+    }
+  }
+}

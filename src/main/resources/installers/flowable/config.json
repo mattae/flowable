@@ -1,0 +1,24 @@
+[
+    {
+        "category": "APP.TUTORIAL",
+        "data": [
+            {
+                "key": "APP.TITLE",
+                "value": "SNL",
+                "type": "string"
+            }
+        ]
+    },
+    {
+        "system": "ORGANISATION_IDENTIFIER_PROVIDER",
+        "description": "The type of identifier provider for base organizations",
+        "lang": "en",
+        "values": [
+            {
+                "code": "system",
+                "display": "System",
+                "active": true
+            }
+        ]
+    }
+]

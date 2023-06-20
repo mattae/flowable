@@ -1,0 +1,12 @@
+spring:
+  liquibase:
+    change-log: installers/flowable/schema/schema.xml
+    enabled: true
+  flyway:
+    enabled: false
+flowable:
+  eventregistry:
+    enabled: true
+  databaseSchemaUpdate: true
+server:
+  port: 9080

@@ -1,0 +1,83 @@
+[
+    {
+        "system": "http://hl7.org/fhir/ValueSet/administrative-gender",
+        "description": "Sex types used for patient documentation",
+        "lang": "en",
+        "values": [
+            {
+                "code": "female",
+                "display": "Female",
+                "active": true
+            },
+            {
+                "code": "male",
+                "display": "Male",
+                "active": true
+            },
+            {
+                "code": "other",
+                "display": "Other",
+                "active": true
+            },
+            {
+                "code": "unknown",
+                "display": "Unknown",
+                "active": true
+            }
+        ]
+    },
+    {
+        "system": "http://hl7.org/fhir/ValueSet/administrative-gender",
+        "description": "Sex types used for patient documentation",
+        "lang": "es",
+        "values": [
+            {
+                "code": "female",
+                "display": "Femenino",
+                "active": true
+            },
+            {
+                "code": "male",
+                "display": "Masculino",
+                "active": true
+            },
+            {
+                "code": "other",
+                "display": "otro",
+                "active": true
+            },
+            {
+                "code": "unknown",
+                "display": "Desconocido",
+                "active": true
+            }
+        ]
+    },
+    {
+        "system": "http://hl7.org/fhir/ValueSet/administrative-gender",
+        "description": "Sex types used for patient documentation",
+        "lang": "fr",
+        "values": [
+            {
+                "code": "female",
+                "display": "Femme",
+                "active": true
+            },
+            {
+                "code": "male",
+                "display": "Mâle",
+                "active": true
+            },
+            {
+                "code": "other",
+                "display": "Autre",
+                "active": true
+            },
+            {
+                "code": "unknown",
+                "display": "Inconnu",
+                "active": true
+            }
+        ]
+    }
+]

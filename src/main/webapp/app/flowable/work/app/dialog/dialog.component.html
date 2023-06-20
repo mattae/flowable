@@ -1,0 +1,65 @@
+<div class="relative flex flex-col w-full h-full">
+
+    <!-- Dismiss button -->
+    <ng-container *ngIf="data.dismissible">
+        <div class="absolute top-0 right-0 pt-4 pr-4">
+            <button
+                mat-icon-button
+                [matDialogClose]="undefined">
+                <mat-icon
+                    class="text-secondary"
+                    [svgIcon]="'heroicons_outline:x'"></mat-icon>
+            </button>
+        </div>
+    </ng-container>
+
+    <!-- Content -->
+    <div class="flex flex-col sm:flex-row flex-auto items-center sm:items-start p-8 pb-6 sm:pb-8">
+
+        <ng-container *ngIf="data.title">
+            <div
+                class="flex flex-col items-center sm:items-start mt-4 sm:mt-0 sm:pr-8 space-y-1 text-center sm:text-left">
+
+                <!-- Title -->
+                <ng-container *ngIf="data.title">
+                    <div
+                        class="text-xl leading-6 font-medium"
+                        [innerHTML]="data.title | transloco"></div>
+                </ng-container>
+            </div>
+            <div
+                class="text-secondary">
+                <mat-formio [form]="data.form" (change)="onChange($event)"></mat-formio>
+            </div>
+        </ng-container>
+
+    </div>
+
+    <!-- Actions -->
+    <ng-container>
+        <div
+            class="flex items-center justify-center sm:justify-end px-6 py-4 space-x-3 bg-gray-50 dark:bg-black dark:bg-opacity-10">
+
+            <!-- Cancel -->
+            <ng-container>
+                <button
+                    mat-stroked-button
+                    matDialogClose>
+                    {{'Cancel' | transloco}}
+                </button>
+            </ng-container>
+
+            <!-- Confirm -->
+            <ng-container>
+                <button
+                    mat-flat-button
+                    [color]="'primary'"
+                    (click)="submit()">
+                    {{'Submit' | transloco}}
+                </button>
+            </ng-container>
+
+        </div>
+    </ng-container>
+
+</div>

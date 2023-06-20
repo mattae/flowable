@@ -1,0 +1,45 @@
+<div class="flex flex-col pb-4 app">
+    <div [ngClass]="workForm.app.theme">
+        <div class="pr-4 w-full flex flex-col mx-auto border-t-2 app-border">
+            <div class="flex flex-row flex-auto">
+                <div class="w-10 h-10 app-background">
+                    <div class="pl-2 pt-2 space-x-0.5 flex items-center justify-center justify-items-end">
+                        <mat-icon svgIcon="feather:git-pull-request"
+                                  class="icon-size-5 white-icon"></mat-icon>
+                    </div>
+                </div>
+                <div class="pl-4 pt-2 w-11/12 text-2xl">
+                    {{workForm.app.name}}
+                </div>
+                <button *ngIf="!opened"
+                        (click)="toggle()">
+                    <mat-icon
+                        class="icon-size-5"
+                        [svgIcon]="'heroicons_outline:chevron-up'"></mat-icon>
+                </button>
+                <button *ngIf="opened"
+                        (click)="toggle()">
+                    <mat-icon
+                        class="icon-size-5"
+                        [svgIcon]="'heroicons_outline:chevron-down'"></mat-icon>
+                </button>
+            </div>
+        </div>
+        <div class="pl-10 grid grid-cols-2">
+            <ng-container *ngFor="let def of workForm.definitions">
+                <div class="h-10 flex flex-row hover:bg-gray-100 hover:cursor-pointer" *ngIf="opened"
+                     (click)="definitionClicked(def)">
+                    <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
+                        <mat-icon svgIcon="feather:git-pull-request" *ngIf="def.type === 'process'"
+                                  class="icon-size-5 icon"></mat-icon>
+                        <mat-icon svgIcon="feather:briefcase" *ngIf="def.type !== 'process'"
+                                  class="icon-size-5 icon"></mat-icon>
+                        <div class="ml-1.5 leading-5 mr-auto">
+                            {{def.name}}
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>
