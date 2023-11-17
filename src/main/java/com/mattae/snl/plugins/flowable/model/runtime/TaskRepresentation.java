@@ -12,9 +12,9 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
-import java.util.Date;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.flowable.cmmn.api.repository.CaseDefinition;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.task.api.Task;
@@ -23,9 +23,8 @@ import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.ui.common.model.AbstractRepresentation;
 import org.flowable.ui.common.model.UserRepresentation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.Date;
+import java.util.List;
 
 /**
  * REST representation of a task.

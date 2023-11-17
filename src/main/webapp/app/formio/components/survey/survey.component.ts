@@ -1,16 +1,21 @@
 import { Component } from '@angular/core';
 import { MaterialComponent } from '../MaterialComponent';
 import SurveyComponent from 'formiojs/components/survey/Survey.js';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormioFormFieldComponent } from '../formio-form-field/formio-form-field.component';
+import { NgForOf, NgIf } from '@angular/common';
+import { LabelComponent } from '../label/label.component';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
     selector: 'mat-formio-survey',
     template: `
-
         <mat-formio-form-field
-                [instance]="instance"
-                [componentTemplate]="componentTemplate"
-                [showDescription]="false"
+            [instance]="instance"
+            [componentTemplate]="componentTemplate"
+            [showDescription]="false"
         ></mat-formio-form-field>
         <ng-template #componentTemplate let-hasLabel>
             <div class="rounded ring-1 ring-primary-100 ring-inset p-3">
@@ -25,14 +30,14 @@ import { FormControl } from '@angular/forms';
                         <th class="border border-slate-340 dark:border-slate-600 font-semibold p-4 text-slate-900 dark:text-slate-200"
                             *ngFor="let value of instance.component.values"
                         >
-                            {{ value.label }}
+                            {{ value.label | transloco}}
                         </th>
                     </tr>
                     </thead>
 
                     <tbody>
                     <tr *ngFor="let question of instance.component.questions; index as i;">
-                        <td class="border border-slate-300 dark:border-slate-700 p-2 text-slate-500 dark:text-slate-400">{{ question.label }}</td>
+                        <td class="border border-slate-300 dark:border-slate-700 p-2 text-slate-500 dark:text-slate-400">{{ question.label | transloco}}</td>
                         <td class="border border-slate-300 dark:border-slate-700 p-2 text-slate-500 dark:text-slate-400"
                             *ngFor="let value of instance.component.values; index as j;"
                         >
@@ -47,61 +52,73 @@ import { FormControl } from '@angular/forms';
                         </td>
                     </tr>
                     <mat-hint *ngIf="instance.component.description" class="mat-formio-component-description">
-                        {{ instance.component.description }}
+                        {{ instance.component.description | transloco}}
                     </mat-hint>
                     </tbody>
-
-                    <mat-error *ngIf="instance.error">{{ instance.error.message }}</mat-error>
+                    <mat-error *ngIf="instance.error">{{ instance.error.message | transloco}}</mat-error>
                 </table>
             </div>
         </ng-template>
-    `
+    `,
+    imports: [
+        FormioFormFieldComponent,
+        NgIf,
+        LabelComponent,
+        NgForOf,
+        MatRadioModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        TranslocoModule
+    ],
+    standalone: true
 })
 export class MaterialSurveyComponent extends MaterialComponent {
-  public controls: any = {};
-  getFormControl(question) {
-    if (!this.controls[question]) {
-      this.controls[question] = new FormControl();
-      if (this.instance.shouldDisabled) {
-        this.controls[question].disable();
-      }
-    }
-    return this.controls[question];
-  }
+    public controls: any = {};
 
-  setDisabled(disabled) {
-    const method = disabled ? 'disable' : 'enable';
-    for (const question in this.controls) {
-      if (this.controls.hasOwnProperty(question)) {
-        this.controls[question][method]();
-      }
-    }
-  }
-
-  getValue() {
-    const values = {};
-    for (const question in this.controls) {
-      if (this.controls.hasOwnProperty(question)) {
-        values[question] = this.controls[question].value || false;
-      }
-    }
-    return values;
-  }
-
-  setValue(value) {
-    for (const question in value) {
-      if (value.hasOwnProperty(question)) {
-        const control = this.getFormControl(question);
-        if (control) {
-          control.setValue(value[question] || false);
+    getFormControl(question) {
+        if (!this.controls[question]) {
+            this.controls[question] = new FormControl();
+            if (this.instance.shouldDisabled) {
+                this.controls[question].disable();
+            }
         }
-      }
+        return this.controls[question];
     }
-  }
 
-  getUniqueName(question) {
-    return `${this.instance.id}-${question}`;
-  }
+    setDisabled(disabled) {
+        const method = disabled ? 'disable' : 'enable';
+        for (const question in this.controls) {
+            if (this.controls.hasOwnProperty(question)) {
+                this.controls[question][method]();
+            }
+        }
+    }
+
+    getValue() {
+        const values = {};
+        for (const question in this.controls) {
+            if (this.controls.hasOwnProperty(question)) {
+                values[question] = this.controls[question].value || false;
+            }
+        }
+        return values;
+    }
+
+    setValue(value) {
+        for (const question in value) {
+            if (value.hasOwnProperty(question)) {
+                const control = this.getFormControl(question);
+                if (control) {
+                    control.setValue(value[question] || false);
+                }
+            }
+        }
+    }
+
+    getUniqueName(question) {
+        return `${this.instance.id}-${question}`;
+    }
 }
+
 SurveyComponent.MaterialComponent = MaterialSurveyComponent;
 export { SurveyComponent };

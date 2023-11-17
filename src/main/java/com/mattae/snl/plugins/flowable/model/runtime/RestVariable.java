@@ -18,20 +18,29 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * Pojo representing a variable used in REST-service which defines it's name, variable, scope and type.
- * 
+ *
  * @author Frederik Heremans
  */
 public class RestVariable {
-
-    public enum RestVariableScope {
-        LOCAL, GLOBAL
-    }
 
     private String name;
     private String type;
     private RestVariableScope variableScope;
     private Object value;
     private String valueUrl;
+
+    public static RestVariableScope getScopeFromString(String scope) {
+        if (scope != null) {
+            for (RestVariableScope s : RestVariableScope.values()) {
+                if (s.name().equalsIgnoreCase(scope)) {
+                    return s;
+                }
+            }
+            return null;
+        } else {
+            return null;
+        }
+    }
 
     public String getName() {
         return name;
@@ -79,25 +88,16 @@ public class RestVariable {
         setVariableScope(getScopeFromString(scope));
     }
 
-    public void setValueUrl(String valueUrl) {
-        this.valueUrl = valueUrl;
-    }
-
     @JsonInclude(Include.NON_NULL)
     public String getValueUrl() {
         return valueUrl;
     }
 
-    public static RestVariableScope getScopeFromString(String scope) {
-        if (scope != null) {
-            for (RestVariableScope s : RestVariableScope.values()) {
-                if (s.name().equalsIgnoreCase(scope)) {
-                    return s;
-                }
-            }
-            return null;
-        } else {
-            return null;
-        }
+    public void setValueUrl(String valueUrl) {
+        this.valueUrl = valueUrl;
+    }
+
+    public enum RestVariableScope {
+        LOCAL, GLOBAL
     }
 }

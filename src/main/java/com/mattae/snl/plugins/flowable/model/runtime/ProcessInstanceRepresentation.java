@@ -89,6 +89,9 @@ public class ProcessInstanceRepresentation extends AbstractRepresentation {
         }
     }
 
+    public ProcessInstanceRepresentation() {
+    }
+
     protected void mapProcessDefinition(ProcessDefinition processDefinition) {
         if (processDefinition != null) {
             this.processDefinitionName = processDefinition.getName();
@@ -98,9 +101,6 @@ public class ProcessInstanceRepresentation extends AbstractRepresentation {
             this.processDefinitionVersion = processDefinition.getVersion();
             this.processDefinitionDeploymentId = processDefinition.getDeploymentId();
         }
-    }
-
-    public ProcessInstanceRepresentation() {
     }
 
     public String getId() {
@@ -113,6 +113,10 @@ public class ProcessInstanceRepresentation extends AbstractRepresentation {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public UserRepresentation getStartedBy() {
@@ -161,10 +165,6 @@ public class ProcessInstanceRepresentation extends AbstractRepresentation {
 
     public void setEnded(Date ended) {
         this.ended = ended;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getProcessDefinitionName() {

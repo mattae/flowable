@@ -1,17 +1,81 @@
-<div class="w-full">
-    <mat-chip-grid #chipList [attr.aria-label]="instance.component.label">
-        <mat-chip-option *ngFor="let tag of tags; index as i;"
-                         [selectable]="true"
-        >
-            {{tag}}
-            <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip-option>
-
-        <input [formControl]="control"
-               [matChipInputFor]="chipList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               [matChipInputAddOnBlur]="true"
-               (matChipInputTokenEnd)="add($event)"
-        >
-    </mat-chip-grid>
+<div class="flex flex-col bg-card p-2">
+    <div class="pb-2 w-full flex flex-row gap-x-2" *ngIf="!readonly">
+        <div class="flex-1">
+            <mat-form-field class="w-full">
+                <mat-chip-grid #chipGrid>
+                    <mat-chip-row *ngFor="let user of filteredUsers"
+                                  (removed)="remove(user)"
+                                  [editable]="false">
+                        {{user.fullName}}
+                        <button matChipRemove [attr.aria-label]="'remove ' + user.fullName">
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    </mat-chip-row>
+                    <input [formControl]="input"
+                           [matAutocomplete]="auto"
+                           [matChipInputFor]="chipGrid"
+                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                           [matChipInputAddOnBlur]="addOnBlur"/>
+                    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+                                      (optionSelected)="add($event)">
+                        <mat-option *ngFor="let option of users$ | async" [value]="option">
+                            {{option.fullName}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-chip-grid>
+            </mat-form-field>
+        </div>
+        <div class="">
+            <button type="button" mat-raised-button color="primary"
+                    (click)="addCandidates()">
+                {{'FLOWABLE.PEOPLE.ADD_CANDIDATES' | transloco}}
+            </button>
+        </div>
+    </div>
+    <div class="pb-2">
+        <div class="flex flex-row" *ngIf="assignee">
+            <img class="w-10 h-10 rounded-full" [src]="assignee.picture"
+                 *ngIf="assignee.picture"
+                 alt="Rounded avatar">
+            <div *ngIf="!assignee.picture"
+                 class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-300 rounded-full dark:bg-gray-600">
+                <span class="font-medium text-gray-600 dark:text-gray-300">{{getInitials(assignee)}}</span>
+            </div>
+            <div class="pl-4 flex flex-col">
+                <div class="font-semibold">
+                    {{assignee.fullName}}
+                </div>
+                <div class="text-sm">
+                    {{'FLOWABLE.PEOPLE.ASSIGNEE' | transloco}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overflow-scroll">
+        <ng-container *ngFor="let user of participants">
+            <div class="group flex flex-row hover:bg-gray-100 border-b p-1">
+                <img class="w-10 h-10 rounded-full" [src]="user.picture"
+                     *ngIf="user.picture"
+                     alt="Rounded avatar">
+                <div *ngIf="!user.picture"
+                     class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-300 rounded-full dark:bg-gray-600">
+                    <span class="font-medium text-gray-600 dark:text-gray-300">{{getInitials(user)}}</span>
+                </div>
+                <div class="pl-4 flex flex-col flex-1">
+                    <div class="font-semibold">
+                        {{user.fullName}}
+                    </div>
+                    <div class="text-sm">
+                        {{'FLOWABLE.PEOPLE.PARTICIPANT' | transloco}}
+                    </div>
+                </div>
+                <div class="group-hover:flex hidden" *ngIf="!readonly">
+                    <button mat-raised-button color="warn" (click)="removeCandidate(user)">
+                        <mat-icon>cancel</mat-icon>
+                        {{'FLOWABLE.PEOPLE.REMOVE_PARTICIPANT' | transloco}}
+                    </button>
+                </div>
+            </div>
+        </ng-container>
+    </div>
 </div>

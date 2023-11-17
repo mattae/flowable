@@ -51,7 +51,7 @@ public class FlowableProcessInstanceQueryService {
     private static final int DEFAULT_PAGE_SIZE = 25;
 
     protected final RepositoryService repositoryService;
-    
+
     protected final AppRepositoryService appRepositoryService;
 
     protected final HistoryService historyService;
@@ -86,7 +86,7 @@ public class FlowableProcessInstanceQueryService {
             for (AppDefinition appDefinition : appDefinitions) {
                 parentDeploymentIds.add(appDefinition.getDeploymentId());
             }
-            
+
             List<Deployment> deployments = repositoryService.createDeploymentQuery().parentDeploymentIds(parentDeploymentIds).list();
 
             List<String> deploymentIds = new ArrayList<>();

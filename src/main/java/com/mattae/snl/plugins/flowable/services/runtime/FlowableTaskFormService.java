@@ -98,16 +98,15 @@ public class FlowableTaskFormService {
 
         checkCurrentUserCanModifyTask(task);
 
-        FormInfo formInfo = formRepositoryService.getFormModelById(saveFormRepresentation.getFormId());
         Map<String, Object> formVariables = saveFormRepresentation.getValues();
 
         if (task.getProcessInstanceId() != null) {
             formService.saveFormInstanceByFormDefinitionId(formVariables, saveFormRepresentation.getFormId(), taskId,
-                            task.getProcessInstanceId(), task.getProcessDefinitionId(), task.getTenantId(), null);
+                task.getProcessInstanceId(), task.getProcessDefinitionId(), task.getTenantId(), null);
 
         } else {
             formService.saveFormInstanceWithScopeId(formVariables, saveFormRepresentation.getFormId(), taskId,
-                            task.getScopeId(), task.getScopeType(), task.getScopeDefinitionId(), task.getTenantId(), null);
+                task.getScopeId(), task.getScopeType(), task.getScopeDefinitionId(), task.getTenantId(), null);
         }
 
     }
@@ -125,10 +124,10 @@ public class FlowableTaskFormService {
 
         if (task.getProcessInstanceId() != null || task.getScopeType() == null) {
             taskService.completeTaskWithForm(taskId, completeTaskFormRepresentation.getFormId(),
-                    completeTaskFormRepresentation.getOutcome(), completeTaskFormRepresentation.getValues());
+                completeTaskFormRepresentation.getOutcome(), completeTaskFormRepresentation.getValues());
         } else {
             cmmnTaskService.completeTaskWithForm(taskId, completeTaskFormRepresentation.getFormId(), completeTaskFormRepresentation.getOutcome(),
-                            completeTaskFormRepresentation.getValues());
+                completeTaskFormRepresentation.getValues());
         }
     }
 

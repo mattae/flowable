@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDeploymentEntityImpl">
+
+    <!-- DEPLOYMENT INSERT -->
+
+    <insert id="insertDocumentDeployment" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDeploymentEntityImpl">
+        insert into ${prefix}ACT_CO_DEPLOYMENT(ID_, NAME_, CATEGORY_, KEY_, PARENT_DEPLOYMENT_ID_, TENANT_ID_, DEPLOY_TIME_)
+        values(
+                  #{id, jdbcType=VARCHAR},
+                  #{name, jdbcType=VARCHAR},
+                  #{category, jdbcType=VARCHAR},
+                  #{key, jdbcType=VARCHAR},
+                  #{parentDeploymentId, jdbcType=VARCHAR},
+                  #{tenantId, jdbcType=VARCHAR},
+                  #{deploymentTime, jdbcType=TIMESTAMP}
+              )
+    </insert>
+
+    <insert id="bulkInsertDocumentDeployment" parameterType="java.util.List">
+        insert into ${prefix}ACT_CO_DEPLOYMENT(ID_, NAME_, CATEGORY_, KEY_, PARENT_DEPLOYMENT_ID_, TENANT_ID_, DEPLOY_TIME_)
+        values
+        <foreach collection="list" item="documentDeployment" index="index" separator=",">
+            (
+            #{documentDeployment.id, jdbcType=VARCHAR},
+            #{documentDeployment.name, jdbcType=VARCHAR},
+            #{documentDeployment.category, jdbcType=VARCHAR},
+            #{documentDeployment.key, jdbcType=VARCHAR},
+            #{documentDeployment.parentDeploymentId, jdbcType=VARCHAR},
+            #{documentDeployment.tenantId, jdbcType=VARCHAR},
+            #{documentDeployment.deploymentTime, jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <!-- DEPLOYMENT UPDATE -->
+
+    <update id="updateDocumentDeployment" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDeploymentEntityImpl">
+        update ${prefix}ACT_CO_DEPLOYMENT
+        <set>
+            <if test="originalPersistentState.category != category">
+                CATEGORY_ = #{category, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.key != key">
+                KEY_ = #{key, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.tenantId != tenantId">
+                TENANT_ID_ = #{tenantId, jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID_ = #{id, jdbcType=VARCHAR}
+    </update>
+
+    <!-- DEPLOYMENT DELETE -->
+
+    <delete id="deleteDocumentDeployment" parameterType="string">
+        delete from ${prefix}ACT_CO_DEPLOYMENT where ID_ = #{id}
+    </delete>
+
+    <!-- DEPLOYMENT RESULTMAP -->
+
+    <resultMap id="documentDeploymentResultMap" type="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDeploymentEntityImpl">
+        <id property="id" column="ID_" jdbcType="VARCHAR" />
+        <result property="name" column="NAME_" jdbcType="VARCHAR" />
+        <result property="category" column="CATEGORY_" jdbcType="VARCHAR" />
+        <result property="key" column="KEY_" jdbcType="VARCHAR" />
+        <result property="parentDeploymentId" column="PARENT_DEPLOYMENT_ID_" jdbcType="VARCHAR" />
+        <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+        <result property="deploymentTime" column="DEPLOY_TIME_" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- DEPLOYMENT SELECT -->
+
+    <select id="selectDocumentDeploymentsByName" parameterType="org.flowable.common.engine.impl.db.ListQueryParameterObject" resultMap="documentDeploymentResultMap">
+        select * from ${prefix}ACT_CO_DEPLOYMENT D where NAME_=#{parameter} order by D.DEPLOY_TIME_ desc
+    </select>
+
+    <select id="selectDocumentDeployment" parameterType="string" resultMap="documentDeploymentResultMap">
+        select * from ${prefix}ACT_CO_DEPLOYMENT where ID_ = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectDocumentDeploymentsByQueryCriteria" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.repository.DocumentDeploymentQueryImpl" resultMap="documentDeploymentResultMap">
+        <if test="needsPaging">${limitBefore}</if>
+        SELECT RES.* <if test="needsPaging">${limitBetween}</if>
+        <include refid="selectDocumentDeploymentsByQueryCriteriaSql"/>
+        ${orderBy}
+        <if test="needsPaging">${limitAfter}</if>
+    </select>
+
+    <select id="selectDocumentDeploymentCountByQueryCriteria" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.repository.DocumentDeploymentQueryImpl" resultType="long">
+        select count(distinct RES.ID_)
+        <include refid="selectDocumentDeploymentsByQueryCriteriaSql"/>
+    </select>
+
+    <sql id="selectDocumentDeploymentsByQueryCriteriaSql">
+        from ${prefix}ACT_CO_DEPLOYMENT RES
+        <where>
+            <if test="deploymentId != null">
+                RES.ID_ = #{deploymentId}
+            </if>
+            <if test="deploymentIds != null &amp;&amp; !deploymentIds.empty">
+                and RES.ID_ IN
+                <foreach item="deploymentId" index="index" collection="deploymentIds"
+                         open="(" separator="," close=")">
+                    #{deploymentId}
+                </foreach>
+            </if>
+            <if test="name != null">
+                and RES.NAME_ = #{name}
+            </if>
+            <if test="nameLike != null">
+                and RES.NAME_ like #{nameLike}
+            </if>
+            <if test="category != null">
+                and RES.CATEGORY_ = #{category}
+            </if>
+            <if test="categoryNotEquals != null">
+                and ( RES.CATEGORY_ &lt;&gt; #{categoryNotEquals} OR RES.CATEGORY_ is null )
+            </if>
+            <if test="key != null">
+                and RES.KEY_ = #{key}
+            </if>
+            <if test="parentDeploymentId != null">
+                and RES.PARENT_DEPLOYMENT_ID_ = #{parentDeploymentId}
+            </if>
+            <if test="withoutTenantId">
+                and (RES.TENANT_ID_ = '' or RES.TENANT_ID_ is null)
+            </if>
+            <if test="tenantId != null">
+                and RES.TENANT_ID_ = #{tenantId}
+            </if>
+            <if test="tenantIdLike != null">
+                and RES.TENANT_ID_ like #{tenantIdLike}
+            </if>
+            <if test="latest">
+                and RES.DEPLOY_TIME_ = (select max(DEPLOY_TIME_) from ${prefix}ACT_CO_DEPLOYMENT where KEY_ = RES.KEY_
+                <if test="tenantId != null">
+                    and TENANT_ID_ = #{tenantId}
+                </if>
+                <if test="tenantIdLike != null">
+                    and TENANT_ID_ like #{tenantIdLike}${wildcardEscapeClause}
+                </if>
+                )
+            </if>
+        </where>
+    </sql>
+
+</mapper>

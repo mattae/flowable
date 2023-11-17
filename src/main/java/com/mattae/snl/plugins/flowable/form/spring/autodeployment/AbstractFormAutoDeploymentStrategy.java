@@ -13,16 +13,16 @@
 
 package com.mattae.snl.plugins.flowable.form.spring.autodeployment;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-
 import org.flowable.common.engine.impl.lock.LockManager;
 import org.flowable.common.spring.CommonAutoDeploymentProperties;
 import org.flowable.common.spring.CommonAutoDeploymentStrategy;
 import org.flowable.form.api.FormDeploymentBuilder;
 import org.flowable.form.engine.FormEngine;
 import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 /**
  * Abstract base class for implementations of {@link org.flowable.common.spring.AutoDeploymentStrategy AutoDeploymentStrategy}.

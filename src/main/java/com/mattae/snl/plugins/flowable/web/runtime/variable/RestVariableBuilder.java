@@ -12,11 +12,11 @@
  */
 package com.mattae.snl.plugins.flowable.web.runtime.variable;
 
-import java.util.List;
-
 import com.mattae.snl.plugins.flowable.model.runtime.RestVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author Tijs Rademakers

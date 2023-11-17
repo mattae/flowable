@@ -12,14 +12,13 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.mattae.snl.plugins.flowable.model.component.SimpleContentTypeMapper;
 import org.flowable.content.api.ContentItem;
 import org.flowable.ui.common.model.AbstractRepresentation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import java.util.Date;
 
 /**
  * @author Tijs Rademakers
@@ -35,6 +34,8 @@ public class ContentItemRepresentation extends AbstractRepresentation {
     protected String simpleType;
     protected Date created;
     protected String createdBy;
+    protected Date lastModified;
+    protected Long contentSize;
 
     public ContentItemRepresentation() {
     }
@@ -48,6 +49,8 @@ public class ContentItemRepresentation extends AbstractRepresentation {
         this.createdBy = content.getCreatedBy();
         this.contentAvailable = content.isContentAvailable();
         this.mimeType = content.getMimeType();
+        this.lastModified = content.getLastModified();
+        this.contentSize = content.getContentSize();
 
         if (mapper != null) {
             this.simpleType = mapper.getSimpleType(content);
@@ -127,5 +130,21 @@ public class ContentItemRepresentation extends AbstractRepresentation {
 
     public void setSimpleType(String simpleType) {
         this.simpleType = simpleType;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public Long getContentSize() {
+        return contentSize;
+    }
+
+    public void setContentSize(Long contentSize) {
+        this.contentSize = contentSize;
     }
 }

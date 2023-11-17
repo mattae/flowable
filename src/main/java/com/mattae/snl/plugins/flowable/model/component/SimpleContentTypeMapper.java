@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Mapper that converts mimetypes into simple types for convenience and grouping common types together (eg. xls and xsls mimetypes will all be 'excel').
- * 
+ *
  * @author Frederik Heremans
  */
 @Component

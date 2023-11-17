@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.RenditionItemEntityImpl">
+
+    <resultMap id="renditionItemResultMap" type="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.RenditionItemEntityImpl">
+        <id property="id" column="ID_" jdbcType="VARCHAR" />
+        <result property="contentItemId" column="CONTENT_ITEM_ID_" jdbcType="VARCHAR" />
+        <result property="name" column="NAME_" jdbcType="VARCHAR" />
+        <result property="mimeType" column="MIME_TYPE_" jdbcType="VARCHAR" />
+        <result property="taskId" column="TASK_ID_" jdbcType="VARCHAR" />
+        <result property="processInstanceId" column="PROC_INST_ID_" jdbcType="VARCHAR" />
+        <result property="scopeId" column="SCOPE_ID_" jdbcType="VARCHAR" />
+        <result property="scopeType" column="SCOPE_TYPE_" jdbcType="VARCHAR" />
+        <result property="contentStoreId" column="CONTENT_STORE_ID_" jdbcType="VARCHAR" />
+        <result property="contentStoreName" column="CONTENT_STORE_NAME_" jdbcType="VARCHAR" />
+        <result property="contentAvailable" column="CONTENT_AVAILABLE_" jdbcType="BOOLEAN" />
+        <result property="contentSize" column="CONTENT_SIZE_" jdbcType="BIGINT" />
+        <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR" />
+        <result property="created" column="CREATED_" jdbcType="TIMESTAMP" />
+        <result property="lastModified" column="LAST_MODIFIED_" jdbcType="VARCHAR" />
+        <result property="renditionType" column="RENDITION_TYPE_" jdbcType="VARCHAR" />
+        <result property="contentItemName" column="CONTENT_ITEM_NAME_" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <insert id="insertRenditionItem" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.RenditionItemEntityImpl">
+        insert into ${prefix}ACT_CO_RENDITION_ITEM (
+            ID_,
+            CONTENT_ITEM_ID_,
+            NAME_,
+            MIME_TYPE_,
+            TASK_ID_,
+            PROC_INST_ID_,
+            SCOPE_ID_,
+            SCOPE_TYPE_,
+            CONTENT_STORE_ID_,
+            CONTENT_STORE_NAME_,
+            CONTENT_AVAILABLE_,
+            CONTENT_SIZE_,
+            TENANT_ID_,
+            CREATED_,
+            LAST_MODIFIED_,
+            RENDITION_TYPE_)
+        values (
+                   #{id, jdbcType=VARCHAR},
+                   #{contentItemId, jdbcType=VARCHAR},
+                   #{name, jdbcType=VARCHAR},
+                   #{mimeType, jdbcType=VARCHAR},
+                   #{taskId, jdbcType=VARCHAR},
+                   #{processInstanceId, jdbcType=VARCHAR},
+                   #{scopeId, jdbcType=VARCHAR},
+                   #{scopeType, jdbcType=VARCHAR},
+                   #{contentStoreId, jdbcType=VARCHAR},
+                   #{contentStoreName, jdbcType=VARCHAR},
+                   #{contentAvailable, jdbcType=BOOLEAN},
+                   #{contentSize, jdbcType=BIGINT},
+                   #{tenantId, jdbcType=VARCHAR},
+                   #{created, jdbcType=TIMESTAMP},
+                   #{lastModified, jdbcType=TIMESTAMP},
+                   #{renditionType, jdbcType=VARCHAR}
+               )
+    </insert>
+
+    <insert id="bulkInsertRenditionItem" parameterType="java.util.List">
+        insert into ${prefix}ACT_CO_RENDITION_ITEM (
+        ID_,
+        CONTENT_ITEM_ID_,
+        NAME_,
+        MIME_TYPE_,
+        TASK_ID_,
+        PROC_INST_ID_,
+        SCOPE_ID_,
+        SCOPE_TYPE_,
+        CONTENT_STORE_ID_,
+        CONTENT_STORE_NAME_,
+        CONTENT_AVAILABLE_,
+        CONTENT_SIZE_,
+        TENANT_ID_,
+        CREATED_,
+        LAST_MODIFIED_,
+        RENDITION_TYPE_)
+        values
+        <foreach collection="list" item="renditionItem" index="index" separator=",">
+            (
+            #{renditionItem.id, jdbcType=VARCHAR},
+            #{renditionItem.contentItemId, jdbcType=VARCHAR},
+            #{renditionItem.name, jdbcType=VARCHAR},
+            #{renditionItem.mimeType, jdbcType=VARCHAR},
+            #{renditionItem.taskId, jdbcType=VARCHAR},
+            #{renditionItem.processInstanceId, jdbcType=VARCHAR},
+            #{renditionItem.scopeId, jdbcType=VARCHAR},
+            #{renditionItem.scopeType, jdbcType=VARCHAR},
+            #{renditionItem.contentStoreId, jdbcType=VARCHAR},
+            #{renditionItem.contentStoreName, jdbcType=VARCHAR},
+            #{renditionItem.contentAvailable, jdbcType=BOOLEAN},
+            #{renditionItem.contentSize, jdbcType=BIGINT},
+            #{renditionItem.tenantId, jdbcType=VARCHAR},
+            #{renditionItem.created, jdbcType=TIMESTAMP},
+            #{renditionItem.lastModified, jdbcType=TIMESTAMP},
+            #{renditionItem.renditionType, jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateRenditionItem" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.RenditionItemEntityImpl">
+        update ${prefix}ACT_CO_RENDITION_ITEM
+        <set>
+            CONTENT_ITEM_ID_=#{contentItemId, jdbcType=VARCHAR},
+            NAME_=#{name, jdbcType=VARCHAR},
+            MIME_TYPE_=#{mimeType, jdbcType=VARCHAR},
+            TASK_ID_=#{taskId, jdbcType=VARCHAR},
+            PROC_INST_ID_=#{processInstanceId, jdbcType=VARCHAR},
+            SCOPE_ID_=#{scopeId, jdbcType=VARCHAR},
+            SCOPE_TYPE_=#{scopeType, jdbcType=VARCHAR},
+            CONTENT_STORE_ID_=#{contentStoreId, jdbcType=VARCHAR},
+            CONTENT_STORE_NAME_=#{contentStoreName, jdbcType=VARCHAR},
+            CONTENT_AVAILABLE_=#{contentAvailable, jdbcType=BOOLEAN},
+            CONTENT_SIZE_=#{contentSize, jdbcType=BIGINT},
+            TENANT_ID_=#{tenantId, jdbcType=BIGINT},
+            CREATED_=#{created, jdbcType=TIMESTAMP},
+            LAST_MODIFIED_=#{lastModified, jdbcType=TIMESTAMP},
+            RENDITION_TYPE_=#{renditionType, jdbcType=VARCHAR},
+        </set>
+        where ID_ = #{id, jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectRenditionItem" parameterType="string" resultMap="renditionItemResultMap">
+        select RES.*, CONTENT.NAME_ as CONTENT_ITEM_NAME_
+        from ${prefix}ACT_CO_RENDITION_ITEM RES
+                 left join ${prefix}ACT_CO_CONTENT_ITEM CONTENT ON RES.CONTENT_ITEM_ID_ = CONTENT.ID_
+        where RES.ID_ = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectRenditionItemsByQueryCriteria" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.RenditionItemQueryImpl" resultMap="renditionItemResultMap">
+        SELECT RES.*, CONTENT.NAME_ as CONTENT_ITEM_NAME_
+        FROM (
+        <!-- top 100 percent is only needed when doing order by in a subselect -->
+        <if test="needsPaging">${limitBefore}</if>
+        SELECT <if test="_databaseId == 'mssql'">top 100 percent</if> RES.* <if test="needsPaging">${limitBetween}</if>
+        from ${prefix}ACT_CO_RENDITION_ITEM RES
+        <include refid="commonSelectRenditionItemsByQueryCriteriaSql"/>
+        ${orderBy}
+        <if test="needsPaging">${limitAfter}</if>
+        ) RES
+        left join ${prefix}ACT_CO_CONTENT_ITEM CONTENT ON RES.CONTENT_ITEM_ID_ = CONTENT.ID_
+        ${outerJoinOrderBy}
+    </select>
+
+    <select id="selectRenditionItemCountByQueryCriteria" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.RenditionItemQueryImpl" resultType="long">
+        select count(RES.ID_)
+        from ${prefix}ACT_CO_RENDITION_ITEM RES
+        <include refid="commonSelectRenditionItemsByQueryCriteriaSql"/>
+    </select>
+
+    <sql id="commonSelectRenditionItemsByQueryCriteriaSql">
+        <where>
+            <if test="contentItemName != null || contentItemNameLike != null" >
+                exists (
+                select 1
+                from ${prefix}ACT_CO_CONTENT_ITEM CONTENT
+                <where>
+                    RES.CONTENT_ITEM_ID_ = CONTENT.ID_
+                    <if test="contentItemName != null" >
+                        and CONTENT.NAME_ = #{contentItemName}
+                    </if>
+                    <if test="contentItemNameLike != null" >
+                        and CONTENT.NAME_ like #{contentItemNameLike}
+                    </if>
+                </where>
+                )
+            </if>
+            <if test="id != null">
+                and RES.ID_ = #{id}
+            </if>
+            <if test="ids != null and ids">
+                and RES.ID_ in
+                <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="contentItemId != null">
+                RES.CONTENT_ITEM_ID_ = #{contentItemId}
+            </if>
+            <if test="contentItemIdLike != null">
+                and RES.CONTENT_ITEM_ID_ like #{contentItemIdLike}
+            </if>
+            <if test="name != null">
+                and RES.NAME_ = #{name}
+            </if>
+            <if test="nameLike != null">
+                and RES.NAME_ like #{nameLike}
+            </if>
+            <if test="mimeType != null">
+                and RES.MIME_TYPE_ = #{mimeType}
+            </if>
+            <if test="mimeTypeLike != null">
+                and RES.MIME_TYPE_ like #{mimeTypeLike}
+            </if>
+            <if test="taskId != null">
+                and RES.TASK_ID_ = #{taskId}
+            </if>
+            <if test="taskIdLike != null">
+                and RES.TASK_ID_ like #{taskIdLike}
+            </if>
+            <if test="processInstanceId != null">
+                and RES.PROC_INST_ID_ = #{processInstanceId}
+            </if>
+            <if test="processInstanceIdLike != null">
+                and RES.PROC_INST_ID_ like #{processInstanceIdLike}
+            </if>
+            <if test="scopeId != null">
+                and RES.SCOPE_ID_ = #{scopeId}
+            </if>
+            <if test="scopeIdLike != null">
+                and RES.SCOPE_ID_ like #{scopeIdLike}
+            </if>
+            <if test="scopeType != null">
+                and RES.SCOPE_TYPE_ = #{scopeType}
+            </if>
+            <if test="scopeTypeLike != null">
+                and RES.SCOPE_TYPE_ like #{scopeTypeLike}
+            </if>
+            <if test="contentStoreId != null">
+                and RES.CONTENT_STORE_ID_ = #{contentStoreId}
+            </if>
+            <if test="contentStoreIdLike != null">
+                and RES.CONTENT_STORE_ID_ like #{contentStoreIdLike}
+            </if>
+            <if test="contentStoreName != null">
+                and RES.CONTENT_STORE_NAME_ = #{contentStoreName}
+            </if>
+            <if test="contentStoreNameLike != null">
+                and RES.CONTENT_STORE_NAME_ like #{contentStoreNameLike}
+            </if>
+            <if test="contentAvailable != null">
+                and RES.CONTENT_AVAILABLE_ = #{contentAvailable}
+            </if>
+            <if test="contentSize != null">
+                and RES.CONTENT_SIZE_ = #{contentSize}
+            </if>
+            <if test="minContentSize != null">
+                and RES.CONTENT_SIZE_ &gt;= #{minContentSize}
+            </if>
+            <if test="maxContentSize != null">
+                and RES.CONTENT_SIZE_ &lt;= #{maxContentSize}
+            </if>
+            <if test="createdDate != null">
+                and RES.CREATED_ = #{createdDate}
+            </if>
+            <if test="createdDateBefore != null">
+                and RES.CREATED_ &lt; #{createdDateBefore}
+            </if>
+            <if test="createdDateAfter != null">
+                and RES.CREATED_ &gt; #{createdDateAfter}
+            </if>
+            <if test="lastModifiedDate != null">
+                and RES.LAST_MODIFIED_ = #{lastModifiedDate}
+            </if>
+            <if test="lastModifiedDateBefore != null">
+                and RES.LAST_MODIFIED_ &lt; #{lastModifiedDateBefore}
+            </if>
+            <if test="lastModifiedDateAfter != null">
+                and RES.LAST_MODIFIED_ &gt; #{lastModifiedDateAfter}
+            </if>
+            <if test="tenantId != null">
+                and RES.TENANT_ID_ = #{tenantId}
+            </if>
+            <if test="tenantIdLike != null">
+                and RES.TENANT_ID_ like #{tenantIdLike}
+            </if>
+            <if test="withoutTenantId">
+                and (RES.TENANT_ID_ = '' or RES.TENANT_ID_ is null)
+            </if>
+            <if test="renditionType != null">
+                and (RES.RENDITION_TYPE_ = #{renditionType})
+            </if>
+        </where>
+    </sql>
+
+    <delete id="deleteRenditionItem" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.RenditionItemEntityImpl">
+        delete from ${prefix}ACT_CO_RENDITION_ITEM where ID_ = #{id, jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteRenditionItemsByProcessInstanceId" parameterType="string">
+        delete from ${prefix}ACT_CO_RENDITION_ITEM where PROC_INST_ID_ = #{processInstanceId, jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteRenditionItemsByTaskId" parameterType="string">
+        delete from ${prefix}ACT_CO_RENDITION_ITEM where TASK_ID_ = #{taskId, jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteRenditionItemsByScopeIdAndScopeType" parameterType="map">
+        delete from ${prefix}ACT_CO_RENDITION_ITEM where SCOPE_ID_ = #{scopeId, jdbcType=VARCHAR} AND SCOPE_TYPE_ = #{scopeType, jdbcType=VARCHAR}
+    </delete>
+
+</mapper>

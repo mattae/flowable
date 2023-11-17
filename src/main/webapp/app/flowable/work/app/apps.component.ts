@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { WorkService } from '../../services/work.service';
 import { WorkForm } from '../../model/work.model';
 import { NgForOf, NgIf } from '@angular/common';
@@ -9,15 +9,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { ProcessService } from '../../services/process.service';
 import { CaseService } from '../../services/case.service';
-import { DateTime } from 'luxon';
-import { NgxPrettyDateModule } from 'ngx-pretty-date';
-import { CovalentCommonModule } from '@covalent/core/common';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CreateDialogComponent } from './dialog/dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'apps',
+    selector: 'flw-apps',
     templateUrl: './apps.component.html',
     standalone: true,
     imports: [
@@ -28,27 +25,37 @@ import { ActivatedRoute, Router } from '@angular/router';
         MatInputModule,
         NgIf,
         MatButtonModule,
-        NgxPrettyDateModule,
-        CovalentCommonModule,
+        MatDialogModule
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
+    styles: [
+        `
+            .dialog-content {
+                padding: unset;
+            }
+
+        `
+    ]
 })
 export class AppsComponent implements OnInit {
-    workForms: WorkForm[];
-    filteredWorkForms: WorkForm[];
-    time = DateTime.now().minus({seconds: 30})
+    workForms: WorkForm[] = [];
+    filteredWorkForms: WorkForm[] = [];
 
     constructor(private _workService: WorkService,
                 private _cdr: ChangeDetectorRef,
                 private _processService: ProcessService,
                 private _caseService: CaseService,
                 private _dialog: MatDialog,
+                private _dialogRef: MatDialogRef<AppsComponent>,
                 private _router: Router,
                 private _activatedRoute: ActivatedRoute) {
     }
 
     definitionSelected(event: DefinitionEvent) {
-        let hasStartForm = event.definition.hasStartFormKey;
+        this._dialogRef.close();
+
+        let hasStartForm = event.definition.hasStartForm;
         if (hasStartForm) {
             if (event.definition.type === 'process') {
                 this._processService.getProcessDefinitionStartForm(event.definition.id).subscribe(res => {
@@ -57,7 +64,7 @@ export class AppsComponent implements OnInit {
                     const ref = this._dialog.open(CreateDialogComponent, {
                         data: {
                             form: startForm,
-                            title: 'FLOWABLE.APP.CREATE.PROCESS'
+                            title: 'FLOWABLE.APPS.CREATE.PROCESS'
                         }
                     });
                     ref.afterClosed().subscribe(data => {
@@ -67,7 +74,7 @@ export class AppsComponent implements OnInit {
                                 values: data,
                                 formId: ''
                             }).subscribe(res => {
-                                this._router.navigate(['process', res.id], {relativeTo: this._activatedRoute})
+                                this._router.navigate(['/work/processes', res.id], {relativeTo: this._activatedRoute})
                             });
                         }
                     });
@@ -79,7 +86,7 @@ export class AppsComponent implements OnInit {
                     const ref = this._dialog.open(CreateDialogComponent, {
                         data: {
                             form: startForm,
-                            title: 'FLOWABLE.APP.CREATE.CASE'
+                            title: 'FLOWABLE.APPS.CREATE.CASE'
                         }
                     });
                     ref.afterClosed().subscribe(data => {
@@ -89,7 +96,7 @@ export class AppsComponent implements OnInit {
                                 values: data,
                                 formId: ''
                             }).subscribe(res => {
-                                this._router.navigate(['case', res.id], {relativeTo: this._activatedRoute})
+                                this._router.navigate(['/work/cases', res.id], {relativeTo: this._activatedRoute})
                             });
                         }
                     });
@@ -101,14 +108,14 @@ export class AppsComponent implements OnInit {
                     processDefinitionId: event.definition.id,
                     formId: ''
                 }).subscribe(res => {
-                    this._router.navigate(['processes', res.id], {relativeTo: this._activatedRoute})
+                    this._router.navigate(['/work/processes', res.id], {relativeTo: this._activatedRoute})
                 });
             } else {
                 this._caseService.createCaseInstance({
                     caseDefinitionId: event.definition.id,
                     formId: ''
                 }).subscribe(res => {
-                    this._router.navigate(['cases', res.id], {relativeTo: this._activatedRoute})
+                    this._router.navigate(['/work/cases', res.id], {relativeTo: this._activatedRoute})
                 });
             }
         }
@@ -135,5 +142,4 @@ export class AppsComponent implements OnInit {
             this._cdr.markForCheck();
         });
     }
-
 }

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for managing the Engine case definitions.
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class CaseDefinitionsResource {
 
     protected final FlowableCaseDefinitionService caseDefinitionService;
@@ -34,7 +34,7 @@ public class CaseDefinitionsResource {
 
     @GetMapping(value = "/rest/case-definitions")
     public ResultListDataRepresentation getCaseDefinitions(@RequestParam(value = "latest", required = false) Boolean latest,
-            @RequestParam(value = "appDefinitionKey", required = false) String appDefinitionKey) {
+                                                           @RequestParam(value = "appDefinitionKey", required = false) String appDefinitionKey) {
 
         return caseDefinitionService.getCaseDefinitions(latest, appDefinitionKey);
     }

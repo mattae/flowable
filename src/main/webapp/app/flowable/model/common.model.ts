@@ -9,17 +9,18 @@ export interface RestVariable {
 export interface Group {
     id: string;
     name: string;
-    type: string;
+    type?: string;
 }
 
 export interface User {
     id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
     fullName: string;
-    tenantId: string;
-    groups: Group[];
+    tenantId?: string;
+    picture?: string;
+    groups?: Group[];
 }
 
 export interface FormOutcome {
@@ -33,7 +34,7 @@ export interface FormModel {
     description?: string;
     key: string;
     version: number;
-    fields: { [key: string]: any; }[];
+    fields?: { [key: string]: any; }[];
     components: { [key: string]: any; }[];
     outcomes?: FormOutcome[];
     outcomeVariableName?: String;

@@ -12,17 +12,17 @@
  */
 package com.mattae.snl.plugins.flowable.web.runtime;
 
+import com.mattae.snl.plugins.flowable.form.model.FormIOFormModel;
 import com.mattae.snl.plugins.flowable.model.runtime.FormModelRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.FlowableCaseDefinitionService;
 import org.flowable.form.api.FormInfo;
-import org.flowable.form.model.SimpleFormModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class CaseDefinitionResource {
 
     protected final FlowableCaseDefinitionService caseDefinitionService;
@@ -34,7 +34,7 @@ public class CaseDefinitionResource {
     @GetMapping(value = "/rest/case-definitions/{caseDefinitionId}/start-form", produces = "application/json")
     public FormModelRepresentation getCaseDefinitionStartForm(@PathVariable String caseDefinitionId) {
         FormInfo formInfo = caseDefinitionService.getCaseDefinitionStartForm(caseDefinitionId);
-        SimpleFormModel formModel = (SimpleFormModel) formInfo.getFormModel();
+        FormIOFormModel formModel = (FormIOFormModel) formInfo.getFormModel();
         return new FormModelRepresentation(formInfo, formModel);
     }
 

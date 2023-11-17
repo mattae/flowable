@@ -1,0 +1,125 @@
+<div *ngIf="visible">
+    <mat-formio-form-field [instance]="instance"
+                           [componentTemplate]="componentTemplate"></mat-formio-form-field>
+    <ng-template #componentTemplate let-hasLabel>
+        <mat-label *ngIf="hasLabel">
+            <span [instance]="instance" matFormioLabel></span>
+        </mat-label>
+
+        <span *ngIf="instance.component.prefix"
+              matPrefix>{{ instance.component.prefix }}&nbsp;</span>
+    </ng-template>
+    <div class="flex w-full items-center justify-center">
+        <div class="flex w-full">
+            <div class="flex flex-col w-full">
+                <div upload [multiple]="instance.component.multiple"
+                     [accept]="instance.component.filePattern"
+                     (files)="loadFiles($event)"
+                     [maxSize]="instance.component.fileMaxSize"
+                     class="w-full relative border-2 border-gray-300 border-dashed rounded-b-sm">
+                    <input #input type="file"
+                           class="absolute inset-0 w-full h-full opacity-0 z-50"
+                           [multiple]="instance.component.multiple"
+                           [accept]="instance.component.filePattern"
+                           (click)="click(input)"
+                           (change)="onChange($event)"/>
+                    <div class="text-center">
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">
+                            <label for="file-upload" class="relative cursor-pointer">
+                                <span>{{'FLOWABLE.COMPONENTS.UPLOAD.DRAG' | transloco}}</span>
+                                <span
+                                    class="text-primary-500">&nbsp;{{'FLOWABLE.COMPONENTS.UPLOAD.BROWSE' | transloco}}</span>
+                                <span>&nbsp{{'FLOWABLE.COMPONENTS.UPLOAD.UPLOAD' | transloco}}</span>
+                                <input id="file-upload" name="file-upload" type="file"
+                                       [multiple]="instance.component.multiple"
+                                       [accept]="instance.component.filePattern"
+                                       (click)="click(input)"
+                                       (change)="onChange($event)"
+                                       class="sr-only">
+                            </label>
+                        </h3>
+                    </div>
+                    <div class="w-full border grid grid-cols-12">
+                        <ng-container *ngIf="uploads.length > 0">
+                            <div class="grid grid-cols-2 gap-4 mt-4 md:grid-cols-6">
+                                <ng-container *ngFor="let upload of uploads">
+                                    <div
+                                        class="relative flex flex-col items-center overflow-hidden text-center bg-gray-100 border rounded cursor-move select-none">
+                                        <button
+                                            class="absolute top-0 right-0 z-50 p-1 bg-white rounded-bl focus:outline-none"
+                                            type="button" (click)="remove(upload)">
+                                            <svg class="w-4 h-4 text-gray-700" xmlns="http://www.w3.org/2000/svg"
+                                                 fill="none"
+                                                 viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                        <ng-container *ngIf="upload.file.type.includes('audio/')">
+                                            <svg
+                                                class="absolute w-12 h-12 text-gray-400 transform top-1/2 -translate-y-2/3"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                                            </svg>
+                                        </ng-container>
+                                        <ng-container
+                                            *ngIf="upload.file.type.includes('application/') || upload.file.type === ''">
+                                            <svg
+                                                class="absolute w-12 h-12 text-gray-400 transform top-1/2 -translate-y-2/3"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                            </svg>
+                                        </ng-container>
+                                        <ng-container *ngIf="upload.file.type.includes('image/')">
+                                            <img
+                                                [src]="loadFile(upload.file)"
+                                                class="absolute inset-0 z-0 object-cover w-full h-full border-4 border-white preview"/>
+                                        </ng-container>
+                                        <ng-container *ngIf="upload.file.type.includes('video/')">
+                                            <video
+                                                [src]="loadFile(upload.file)"
+                                                class="absolute inset-0 object-cover w-full h-full border-4 border-white pointer-events-none preview">
+                                            </video>
+                                        </ng-container>
+                                        <div
+                                            class="absolute bottom-0 left-0 right-0 flex flex-col p-2 text-xs bg-white bg-opacity-50">
+                                            <span
+                                                class="w-full font-bold text-gray-900 truncate">{{upload.file.name}}</span>
+                                            <span class="text-xs text-gray-900">{{upload.file.size | bytes}}</span>
+                                        </div>
+                                        <ng-container *ngIf="instance.component.showType && documentTypes.length">
+                                            <mat-form-field>
+                                                <mat-label>{{'FLOWABLE.COMPONENTS.UPLOAD.CONTENT_TYPE' | transloco}}</mat-label>
+                                                <mat-select [required]="instance.component.typeRequired">
+                                                    <mat-option></mat-option>
+                                                    <mat-option *ngFor="let type of documentTypes"
+                                                                [value]="type.name"
+                                                                [mtxPopoverTriggerOn]="'click'"
+                                                                [mtxPopoverTriggerFor]="popover"
+                                                                [mtxPopoverTriggerData]="{type: type.name, file: upload.file.name}">
+                                                        {{type.name}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<mtx-popover #popover="mtxPopover">
+    <ng-template mtxPopoverContent let-type="type" let-name="name">
+        <div class="flex w-full">
+            <mat-formio [form]="form" #forms (change)="validate()"></mat-formio>
+        </div>
+    </ng-template>
+</mtx-popover>

@@ -12,9 +12,9 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
-import java.util.Date;
-
 import org.flowable.ui.common.model.AbstractRepresentation;
+
+import java.util.Date;
 
 /**
  * @author Joram Barrez
@@ -36,66 +36,87 @@ public class PlanItemInstanceRepresentation extends AbstractRepresentation {
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
+
     public String getCaseDefinitionId() {
         return caseDefinitionId;
     }
+
     public void setCaseDefinitionId(String caseDefinitionId) {
         this.caseDefinitionId = caseDefinitionId;
     }
+
     public String getCaseInstanceId() {
         return caseInstanceId;
     }
+
     public void setCaseInstanceId(String caseInstanceId) {
         this.caseInstanceId = caseInstanceId;
     }
+
     public String getStageInstanceId() {
         return stageInstanceId;
     }
+
     public void setStageInstanceId(String stageInstanceId) {
         this.stageInstanceId = stageInstanceId;
     }
+
     public boolean isStage() {
         return isStage;
     }
+
     public void setStage(boolean stage) {
         isStage = stage;
     }
+
     public String getElementId() {
         return elementId;
     }
+
     public void setElementId(String elementId) {
         this.elementId = elementId;
     }
+
     public String getPlanItemDefinitionId() {
         return planItemDefinitionId;
     }
+
     public void setPlanItemDefinitionId(String planItemDefinitionId) {
         this.planItemDefinitionId = planItemDefinitionId;
     }
+
     public String getPlanItemDefinitionType() {
         return planItemDefinitionType;
     }
+
     public void setPlanItemDefinitionType(String planItemDefinitionType) {
         this.planItemDefinitionType = planItemDefinitionType;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getState() {
         return state;
     }
+
     public void setState(String state) {
         this.state = state;
     }
+
     public Date getCreateTime() {
         return createTime;
     }
+
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }

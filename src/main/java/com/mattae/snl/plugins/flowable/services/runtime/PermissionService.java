@@ -106,7 +106,7 @@ public class PermissionService {
                 if (hasReadPermissionOnProcessInstance) {
                     return task;
                 }
-                
+
             } else if (task != null && task.getParentTaskId() != null) {
                 validateReadPermissionOnTask(user, task.getParentTaskId());
                 return task;
@@ -197,7 +197,8 @@ public class PermissionService {
         }
 
         // Start user check
-        if (historicProcessInstance.getStartUserId() != null && historicProcessInstance.getStartUserId().equals(user.getUserId())) {
+        if ((historicProcessInstance.getStartUserId() != null && historicProcessInstance.getStartUserId().equals(user.getUserId())) ||
+            StringUtils.isBlank(historicProcessInstance.getStartUserId())) {
             return true;
         }
 
@@ -236,7 +237,8 @@ public class PermissionService {
         }
 
         // Start user check
-        if (historicCaseInstance.getStartUserId() != null && historicCaseInstance.getStartUserId().equals(user.getUserId())) {
+        if ((historicCaseInstance.getStartUserId() != null && historicCaseInstance.getStartUserId().equals(user.getUserId())) ||
+            StringUtils.isBlank(historicCaseInstance.getStartUserId())) {
             return true;
         }
 

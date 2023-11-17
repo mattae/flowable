@@ -49,7 +49,7 @@ public class FlowableCaseInstanceQueryService {
     private static final int DEFAULT_PAGE_SIZE = 25;
 
     protected final CmmnRepositoryService cmmnRepositoryService;
-    
+
     protected final AppRepositoryService appRepositoryService;
 
     protected final CmmnHistoryService cmmnHistoryService;
@@ -83,7 +83,7 @@ public class FlowableCaseInstanceQueryService {
             for (AppDefinition appDefinition : appDefinitions) {
                 parentDeploymentIds.add(appDefinition.getDeploymentId());
             }
-            
+
             List<CmmnDeployment> deployments = cmmnRepositoryService.createDeploymentQuery().parentDeploymentIds(parentDeploymentIds).list();
 
             List<String> deploymentIds = new ArrayList<>();
@@ -171,8 +171,8 @@ public class FlowableCaseInstanceQueryService {
                 }
 
                 CaseDefinition caseDefinition = cmmnRepositoryService.getCaseDefinition(caseInstance.getCaseDefinitionId());
-                CaseInstanceRepresentation instanceRepresentation = new CaseInstanceRepresentation(caseInstance, caseDefinition, 
-                                caseDefinition.hasGraphicalNotation(), userRep);
+                CaseInstanceRepresentation instanceRepresentation = new CaseInstanceRepresentation(caseInstance, caseDefinition,
+                    caseDefinition.hasGraphicalNotation(), userRep);
                 result.add(instanceRepresentation);
             }
 

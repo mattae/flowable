@@ -16,6 +16,7 @@
         "lib": [
             "ES2022",
             "dom"
-        ]
+        ],
+        "allowSyntheticDefaultImports": true
     }
 }

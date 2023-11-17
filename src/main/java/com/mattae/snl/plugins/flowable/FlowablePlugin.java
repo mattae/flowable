@@ -1,15 +1,16 @@
 package com.mattae.snl.plugins.flowable;
 
 import io.github.jbella.snl.core.api.bootstrap.EnhancedSpringBootstrap;
-import org.laxture.sbp.SpringBootPlugin;
+import io.github.jbella.snl.core.api.bootstrap.JpaSpringBootPlugin;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
-import org.laxture.sbp.spring.boot.configurer.SbpDataSourceConfigurer;
 import org.pf4j.PluginWrapper;
 
-public class FlowablePlugin extends SpringBootPlugin {
+import java.util.Collections;
+
+public class FlowablePlugin extends JpaSpringBootPlugin {
 
     public FlowablePlugin(PluginWrapper wrapper) {
-        super(wrapper, new SbpDataSourceConfigurer());
+        super(wrapper, Collections.emptyList());
     }
 
     @Override

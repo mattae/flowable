@@ -29,7 +29,7 @@ import java.util.List;
  * @author martin.grofcik
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class DebuggerResource {
 
     protected final DebuggerService debuggerService;

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <logger name="org.pf4j.update" level="DEBUG"/>
+    <logger name="org.laxture" level="INFO"/>
+    <logger name="org.laxture.sbp.spring" level="OFF"/>
+    <logger name="com.blazebit" level="INFO"/>
+    <logger name="org.springframework.web" level="TRACE"/>
+    <logger name="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity" level="TRACE"/>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+</configuration>

@@ -1,1 +1,2 @@
 com.mattae.snl.plugins.spring.boot.FormEngineAutoConfiguration
+com.mattae.snl.plugins.spring.boot.ContentEngineAutoConfiguration

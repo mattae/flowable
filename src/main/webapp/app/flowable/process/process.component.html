@@ -6,7 +6,7 @@
                     <mat-icon svgIcon="feather:git-pull-request"
                               class="icon-size-5 ml-auto white-icon"></mat-icon>
                     <div class="ml-1.5 leading-5 mr-auto text-white">
-                        {{'Process' | transloco}}
+                        {{'FLOWABLE.WORK.TITLE.PROCESS' | transloco}}
                     </div>
                 </div>
             </div>
@@ -14,7 +14,10 @@
         <div class="grid grid-cols-2 gap-4 pt-2">
             <div class="pl-8 pt-4">
                 <div class="text-4xl tracking-tight leading-none">
-                    {{instance.name | transloco}}
+                    {{(instance.name ?? instance.processDefinitionName)| transloco}}
+                </div>
+                <div class="text-sm">
+                    {{instance.processDefinitionDescription | transloco}}
                 </div>
             </div>
             <div class="justify-items-end">
@@ -22,7 +25,7 @@
                     <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
                         <mat-icon svgIcon="heroicons_solid:calendar"></mat-icon>
                         <div class="ml-1.5 leading-5 mr-auto">
-                            {{'FLOWABLE.PROCESS.CREATED' | transloco}}
+                            {{'FLOWABLE.WORK.CREATED_IN' | transloco}}
                         </div>
                         <div class="ml-1.5 leading-5 mr-auto">
                             {{instance.started | timeAgo}}
@@ -31,7 +34,7 @@
                     <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
                         <mat-icon svgIcon="heroicons_solid:user"></mat-icon>
                         <div class="ml-1.5 leading-5 mr-auto">
-                            {{'FLOWABLE.PROCESS.STARTED_BY' | transloco}}
+                            {{'FLOWABLE.WORK.STARTED_BY' | transloco}}
                         </div>
                         <div class="ml-1.5 leading-5 mr-auto">
                             {{instance.startedBy?.fullName}}
@@ -44,9 +47,6 @@
             <div class="bg-gray-200 h-16 w-full">
                 <div class="pt-3 grid justify-items-end">
                     <div class="flex space-x-1.5">
-                        <button mat-raised-button>Outcome 1</button>
-                        <button mat-raised-button>Outcome 2</button>
-                        <button mat-raised-button>Outcome 3</button>
                         <div>
                             <button (click)="$event.stopPropagation()"
                                     mat-icon-button
@@ -66,43 +66,67 @@
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="assignment"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    {{'FLOWABLE.PROCESS.OPEN_TASKS' | transloco}}
+                    {{'FLOWABLE.WORK.OPEN_TASKS' | transloco}}
                 </ng-template>
+                <flw-sub-items [processInstanceId]="instance.id" [activeTasks]="true"></flw-sub-items>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="assignment"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    {{'FLOWABLE.PROCESS.WORK_FORM' | transloco}}
+                    {{'FLOWABLE.WORK.WORK_FORM' | transloco}}
                 </ng-template>
-                <mat-formio [form]="form" [renderOptions]="{readonly: true}"></mat-formio>
+                <mat-formio *ngIf="instance.startFormDefined" [form]="form"
+                            [renderOptions]="{readOnly: true}" [submission]=""></mat-formio>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="heroicons_solid:user"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    People
+                    {{'FLOWABLE.WORK.PEOPLE' | transloco}}
                 </ng-template>
+                <flw-people [processInstanceId]="instance.id" [readonly]="!!instance.ended"></flw-people>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="heroicons_outline:chat-bubble-left-right"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    {{'FLOWABLE.WORK.COMMENTS' | transloco}}
+                </ng-template>
+                <div class="">
+                    <flw-comments [readOnly]="!!instance.ended"
+                                  [processInstanceId]="instance.id">
+                    </flw-comments>
+                </div>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="format_list_bulleted"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    Subtasks
+                    {{'FLOWABLE.WORK.SUB_ITEMS' | transloco}}
                 </ng-template>
+                <flw-sub-items [processInstanceId]="instance.id"></flw-sub-items>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="heroicons_outline:document"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    Documents
+                    {{'FLOWABLE.WORK.DOCUMENTS' | transloco}}
+                </ng-template>
+                <flw-documents [processInstanceId]="instance.id" [readonly]="!!instance.ended"></flw-documents>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="heroicons_outline:shield-check"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    {{'FLOWABLE.WORK.AUDIT_TRAIL' | transloco}}
                 </ng-template>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="history"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    History
+                    {{'FLOWABLE.WORK.HISTORY' | transloco}}
                 </ng-template>
             </mat-tab>
         </mat-tab-group>

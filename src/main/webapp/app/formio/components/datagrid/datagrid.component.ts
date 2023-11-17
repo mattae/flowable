@@ -1,12 +1,18 @@
 import { Component } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MaterialNestedComponent } from '../MaterialNestedComponent';
 import DataGridComponent from 'formiojs/components/datagrid/DataGrid.js';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
+import { LabelComponent } from '../label/label.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { FormioFormFieldComponent } from '../formio-form-field/formio-form-field.component';
+import { TranslocoModule } from '@ngneat/transloco';
 
 Object.defineProperty(DataGridComponent.prototype, 'visible', {
     set(visible) {
-        console.log('DataGridComponent', visible);
         if (this._visible !== visible) {
             this._visible = visible;
             this.clearOnHide();
@@ -36,7 +42,7 @@ Object.defineProperty(DataGridComponent.prototype, 'visible', {
                         *ngIf="instance.hasAddButton() && (instance.component.addAnotherPosition === 'both' || instance.component.addAnotherPosition === 'top')">
                         <button mat-raised-button color="primary" (click)="addAnother()">
                             <mat-icon>add</mat-icon>
-                            {{instance.component.addAnother || 'Add Another'}}
+                            {{instance.component.addAnother || 'FLOWABLE.COMPONENTS.DATA_GRID.ADD' | transloco}}
                         </button>
                     </mat-card-actions>
                     <table
@@ -80,7 +86,7 @@ Object.defineProperty(DataGridComponent.prototype, 'visible', {
                 <mat-card-actions *ngIf="instance.hasAddButton() && instance.component.addAnotherPosition !== 'top'">
                     <button mat-raised-button color="primary" (click)="addAnother()">
                         <mat-icon>add</mat-icon>
-                        {{instance.component.addAnother || 'Add Another'}}
+                        {{instance.component.addAnother || 'FLOWABLE.COMPONENTS.DATA_GRID.ADD' | transloco}}
                     </button>
                 </mat-card-actions>
             </mat-card>
@@ -94,11 +100,25 @@ Object.defineProperty(DataGridComponent.prototype, 'visible', {
     `,
     styles: [
         '.datagrid-row { height: auto; }'
-    ]
+    ],
+    imports: [
+        LabelComponent,
+        MatCardModule,
+        MatIconModule,
+        MatButtonModule,
+        CdkDrag,
+        NgIf,
+        MatTableModule,
+        CdkDropList,
+        NgTemplateOutlet,
+        FormioFormFieldComponent,
+        TranslocoModule
+    ],
+    standalone: true
 })
 export class MaterialDataGridComponent extends MaterialNestedComponent {
-    displayedColumns: string[];
-    formColumns: string[];
+    displayedColumns!: string[];
+    formColumns!: string[];
     columns: any;
     dataSource = new MatTableDataSource();
 

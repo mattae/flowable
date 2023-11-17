@@ -13,9 +13,7 @@
 package com.mattae.snl.plugins.flowable.model.runtime;
 
 /**
- * 
  * @author Yvo Swillens
- *
  */
 public class ProcessInstanceVariableRepresentation {
 
@@ -36,16 +34,16 @@ public class ProcessInstanceVariableRepresentation {
         return id;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getType() {
         return type;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Object getValue() {

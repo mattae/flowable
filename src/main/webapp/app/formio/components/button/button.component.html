@@ -9,6 +9,6 @@
   <mat-icon *ngIf="done">done</mat-icon>
   <mat-icon *ngIf="error">close</mat-icon>
   <mat-icon class="mat-icon-spin" *ngIf="loading">autorenew</mat-icon>
-  {{ instance.component.label }}
+  {{ instance.component.label | transloco}}
   <mat-icon *ngIf="instance.component.rightIcon">{{instance.component.rightIcon}}</mat-icon>
 </button>

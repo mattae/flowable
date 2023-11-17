@@ -134,7 +134,7 @@ public class FlowableProcessDefinitionService {
             if (StringUtils.isNotEmpty(startEvent.getFormKey())) {
                 Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(processDefinition.getDeploymentId()).singleResult();
                 formInfo = formRepositoryService.getFormModelByKeyAndParentDeploymentId(startEvent.getFormKey(), deployment.getParentDeploymentId(),
-                        processDefinition.getTenantId(), processEngineConfiguration.isFallbackToDefaultTenant());
+                    processDefinition.getTenantId(), processEngineConfiguration.isFallbackToDefaultTenant());
             }
         }
 

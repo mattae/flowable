@@ -48,24 +48,11 @@ import java.util.*;
 @Transactional
 public class FlowableAppDefinitionService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FlowableAppDefinitionService.class);
-
-    protected final AppRepositoryService appRepositoryService;
-
-    protected final RepositoryService repositoryService;
-
-    protected final CmmnRepositoryService cmmnRepositoryService;
-
-    protected final DmnRepositoryService dmnRepositoryService;
-
-    protected final FormRepositoryService formRepositoryService;
-
-    protected final ObjectMapper objectMapper;
-
     protected static final AppDefinitionRepresentation taskAppDefinitionRepresentation = AppDefinitionRepresentation.createDefaultAppDefinitionRepresentation("tasks");
     protected static final AppDefinitionRepresentation adminAppDefinitionRepresentation;
     protected static final AppDefinitionRepresentation idmAppDefinitionRepresentation;
     protected static final AppDefinitionRepresentation modelerAppDefinitionRepresentation;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FlowableAppDefinitionService.class);
 
     static {
         if (ClassUtils.isPresent("org.flowable.ui.admin.conf.ApplicationConfiguration", null)) {
@@ -86,6 +73,13 @@ public class FlowableAppDefinitionService {
             modelerAppDefinitionRepresentation = null;
         }
     }
+
+    protected final AppRepositoryService appRepositoryService;
+    protected final RepositoryService repositoryService;
+    protected final CmmnRepositoryService cmmnRepositoryService;
+    protected final DmnRepositoryService dmnRepositoryService;
+    protected final FormRepositoryService formRepositoryService;
+    protected final ObjectMapper objectMapper;
 
     public FlowableAppDefinitionService(AppRepositoryService appRepositoryService, RepositoryService repositoryService, CmmnRepositoryService cmmnRepositoryService, DmnRepositoryService dmnRepositoryService, FormRepositoryService formRepositoryService, ObjectMapper objectMapper) {
         this.appRepositoryService = appRepositoryService;
@@ -120,13 +114,13 @@ public class FlowableAppDefinitionService {
         }
 
         //if (hasAccessToTask) {
-            resultList.addAll(getTaskAppList(currentSecurityScope));
+        resultList.addAll(getTaskAppList(currentSecurityScope));
         //}
         var b = getTaskAppList(currentSecurityScope)
-       .stream().map(a -> {
-            a.setName("Demo app");
-            return a;
-        })
+            .stream().map(a -> {
+                a.setName("Demo app");
+                return a;
+            })
             .toList();
         resultList.addAll(b);
         ResultListDataRepresentation result = new ResultListDataRepresentation(resultList);
@@ -200,7 +194,7 @@ public class FlowableAppDefinitionService {
 
             if (resourceAppName != null) {
                 AppDeployment appDeployment = appRepositoryService.createDeployment().addInputStream(resourceAppName,
-                        repositoryService.getResourceAsStream(deployment.getId(), resourceAppName)).deploy();
+                    repositoryService.getResourceAsStream(deployment.getId(), resourceAppName)).deploy();
                 deploymentIdMap.put(deployment.getId(), appDeployment.getId());
             }
         }

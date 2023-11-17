@@ -3,14 +3,19 @@ import FormioComponent from './Base';
 import Validator from 'formiojs/validator/Validator.js';
 import { FormioControl } from '../FormioControl';
 import get from 'lodash/get';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
     selector: 'mat-formio-comp',
-    template: '<mat-card>Unknown Component: {{ instance.component.type }}</mat-card>'
+    template: '<mat-card>Unknown Component: {{ instance.component.type }}</mat-card>',
+    standalone: true,
+    imports: [
+        MatCardModule
+    ]
 })
 export class MaterialComponent implements AfterViewInit, OnInit {
     @Input() instance: any;
-    @ViewChild('input') input: ElementRef;
+    @ViewChild('input') input!: ElementRef;
     @Input() control: FormioControl = new FormioControl();
 
     constructor(public element: ElementRef, public ref: ChangeDetectorRef) {
@@ -68,7 +73,7 @@ export class MaterialComponent implements AfterViewInit, OnInit {
     }
 
     getFormValue(path) {
-        const formData = JSON.parse(sessionStorage.getItem('formData'));
+        const formData = JSON.parse(<string>sessionStorage.getItem('formData'));
 
         if (!formData) {
             return null;
@@ -157,6 +162,5 @@ export class MaterialComponent implements AfterViewInit, OnInit {
         }
     }
 }
-
 FormioComponent.MaterialComponent = MaterialComponent;
 export { FormioComponent };

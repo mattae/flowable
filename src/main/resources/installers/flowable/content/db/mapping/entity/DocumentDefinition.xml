@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDefinitionEntityImpl">
+
+    <!-- RESULTMAP -->
+
+    <resultMap id="documentDefinitionResultMap" type="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDefinitionEntityImpl">
+        <id property="id" column="ID_" jdbcType="VARCHAR"/>
+        <result property="revision" column="REV_" jdbcType="INTEGER"/>
+        <result property="key" column="KEY_" jdbcType="VARCHAR"/>
+        <result property="version" column="VERSION_" jdbcType="INTEGER"/>
+        <result property="deploymentId" column="DEPLOYMENT_ID_" jdbcType="VARCHAR"/>
+        <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR"/>
+        <result property="name" column="NAME_" jdbcType="VARCHAR"/>
+        <result property="resourceName" column="RESOURCE_NAME_" jdbcType="VARCHAR"/>
+        <result property="category" column="CATEGORY_" jdbcType="VARCHAR"/>
+        <result property="created" column="CREATED_" jdbcType="TIMESTAMP"/>
+        <result property="lastModified" column="LAST_MODIFIED_" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- DocumentDefinition INSERT -->
+
+    <insert id="insertDocumentDefinition" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDefinitionEntityImpl">
+        insert into ${prefix}ACT_CO_DEFINITION (
+            ID_,
+            REV_,
+            KEY_,
+            VERSION_,
+            DEPLOYMENT_ID_,
+            TENANT_ID_,
+            NAME_,
+            RESOURCE_NAME_,
+            CATEGORY_,
+            CREATED_,
+            LAST_MODIFIED_
+        )
+        values (
+                   #{id, jdbcType=VARCHAR},
+                   1,
+                   #{key, jdbcType=VARCHAR},
+                   #{version, jdbcType=INTEGER},
+                   #{deploymentId, jdbcType=VARCHAR},
+                   #{tenantId, jdbcType=VARCHAR},
+                   #{name, jdbcType=VARCHAR},
+                   #{resourceName, jdbcType=VARCHAR},
+                   #{category, jdbcType=VARCHAR},
+                   #{created, jdbcType=TIMESTAMP},
+                   #{lastModified, jdbcType=TIMESTAMP}
+               )
+    </insert>
+
+    <insert id="bulkInsertDocumentDefinition" parameterType="java.util.List">
+        insert into ${prefix}ACT_CO_DEFINITION(ID_, REV_, KEY_, VERSION_, DEPLOYMENT_ID_, TENANT_ID_,
+        NAME_, RESOURCE_NAME_, CATEGORY_, CREATED_, LAST_MODIFIED_)
+        values
+        <foreach collection="list" item="documentDefinition" index="index" separator=",">
+            (#{documentDefinition.id, jdbcType=VARCHAR},
+            1,
+            #{documentDefinition.key, jdbcType=VARCHAR},
+            #{documentDefinition.version, jdbcType=INTEGER},
+            #{documentDefinition.deploymentId, jdbcType=VARCHAR},
+            #{documentDefinition.tenantId, jdbcType=VARCHAR},
+            #{documentDefinition.name, jdbcType=VARCHAR},
+            #{documentDefinition.resourceName, jdbcType=VARCHAR},
+            #{documentDefinition.category, jdbcType=VARCHAR},
+            #{documentDefinition.created, jdbcType=TIMESTAMP},
+            #{documentDefinition.lastModified, jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!-- SELECT -->
+
+    <select id="selectDocumentDefinition" parameterType="string" resultMap="documentDefinitionResultMap">
+        select * from ${prefix}ACT_CO_DEFINITION where ID_ = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectDocumentDefinitionByDeploymentAndKey" parameterType="map" resultMap="documentDefinitionResultMap">
+        select * from ${prefix}ACT_CO_DEFINITION where DEPLOYMENT_ID_ = #{deploymentId, jdbcType=VARCHAR} and KEY_ = #{documentDefinitionKey, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectDocumentDefinitionByDeploymentAndKeyAndTenantId" parameterType="map" resultMap="documentDefinitionResultMap">
+        select * from ${prefix}ACT_CO_DEFINITION where DEPLOYMENT_ID_ = #{deploymentId, jdbcType=VARCHAR} and
+            KEY_ = #{documentDefinitionKey, jdbcType=VARCHAR} and
+            TENANT_ID_ = #{tenantId, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectLatestDocumentDefinitionByKey" parameterType="string" resultMap="documentDefinitionResultMap">
+        select *
+        from ${prefix}ACT_CO_DEFINITION
+        where KEY_ = #{key} and
+            (TENANT_ID_ = ''  or TENANT_ID_ is null) and
+                VERSION_ = (select max(VERSION_) from ${prefix}ACT_CO_DEFINITION where KEY_ = #{key} and (TENANT_ID_ = '' or TENANT_ID_ is null))
+    </select>
+
+    <select id="selectLatestDocumentDefinitionByKeyAndTenantId" parameterType="map" resultMap="documentDefinitionResultMap">
+        select *
+        from ${prefix}ACT_CO_DEFINITION
+        where KEY_ = #{documentDefinitionKey} and
+            TENANT_ID_ = #{tenantId} and
+                VERSION_ = (select max(VERSION_) from ${prefix}ACT_CO_DEFINITION where KEY_ = #{documentDefinitionKey} and TENANT_ID_ = #{tenantId})
+    </select>
+
+    <select id="selectDocumentDefinitionsByQueryCriteria" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.repository.DocumentDefinitionQueryImpl"
+            resultMap="documentDefinitionResultMap">
+        <if test="needsPaging">${limitBefore}</if>
+        SELECT RES.* <if test="needsPaging">${limitBetween}</if>
+        from ${prefix}ACT_CO_DEFINITION RES
+        <include refid="commonSelectDocumentDefinitionsByQueryCriteriaSql" />
+        ${orderBy}
+        <if test="needsPaging">${limitAfter}</if>
+    </select>
+
+    <select id="selectDocumentDefinitionCountByQueryCriteria" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.repository.DocumentDefinitionQueryImpl" resultType="long">
+        select count(RES.ID_)
+        from ${prefix}ACT_CO_DEFINITION RES
+        <include refid="commonSelectDocumentDefinitionsByQueryCriteriaSql" />
+    </select>
+
+    <sql id="commonSelectDocumentDefinitionsByQueryCriteriaSql">
+        <where>
+            <if test="id != null">
+                and RES.ID_ = #{id}
+            </if>
+            <if test="ids != null and !ids.empty">
+                and RES.ID_ in
+                <foreach item="item" collection="ids" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="key != null">
+                and RES.KEY_ = #{key}
+            </if>
+            <if test="keyLike != null">
+                and RES.KEY_ like #{keyLike}
+            </if>
+            <if test="keys != null and !keys.empty">
+                and RES.KEY_ in
+                <foreach item="item" collection="keys" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="name != null">
+                and RES.NAME_ = #{name}
+            </if>
+            <if test="nameLike != null">
+                and RES.NAME_ like #{nameLike}
+            </if>
+            <if test="nameLikeIgnoreCase != null">
+                and LOWER(RES.NAME_) like #{nameLikeIgnoreCase}
+            </if>
+            <if test="category != null">
+                and RES.CATEGORY_ = #{category}
+            </if>
+            <if test="categoryLike != null">
+                and RES.CATEGORY_ like #{categoryLike}
+            </if>
+            <if test="version != null">
+                and RES.VERSION_ = #{version}
+            </if>
+            <if test="deploymentId != null">
+                and RES.DEPLOYMENT_ID_ = #{deploymentId}
+            </if>
+            <if test="tenantId != null">
+                and RES.TENANT_ID_ = #{tenantId}
+            </if>
+            <if test="tenantIdLike != null">
+                and RES.TENANT_ID_ like #{tenantIdLike}
+            </if>
+            <if test="latest">
+                and RES.VERSION_ = (select max(VERSION_) from ${prefix}ACT_CO_DEFINITION where KEY_ = RES.KEY_
+                <if test="tenantId != null">
+                    and TENANT_ID_ = #{tenantId}
+                </if>
+                <if test="tenantId == null">
+                    and ( (TENANT_ID_ IS NOT NULL and TENANT_ID_ = RES.TENANT_ID_) or (TENANT_ID_ IS NULL and RES.TENANT_ID_ IS NULL) )
+                </if>
+                )
+            </if>
+            <if test="accessibleByUser != null">
+                and exists (select I.ID_ from ${prefix} ACT_RU_IDENTITYLINK I
+                where I.SCOPE_DEFINITION_ID_ = RES.ID_
+                and I.SCOPE_TYPE_ = 'document_definition'
+                and I.TYPE_ in ('candidate', 'assignee', 'owner')
+                and (
+                I.USER_ID_ = #{accessibleByUser}
+                <if test="accessibleByGroups != null &amp;&amp; !accessibleByGroups.empty">
+                    <foreach item="safeAccessibleByGroupListItem" collection="safeAccessibleByGroups">
+                        or I.GROUP_ID_ IN
+                        <foreach collection="safeAccessibleByGroupListItem" item="group" open="(" separator="," close=")">
+                            #{group}
+                        </foreach>
+                    </foreach>
+                </if>
+                ))
+            </if>
+        </where>
+    </sql>
+
+
+    <!-- DocumentDefinition UPDATE -->
+
+    <update id="updateDocumentDefinition" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDefinitionEntityImpl">
+        update ${prefix}ACT_CO_DEFINITION
+        <set>
+            REV_ = #{revisionNext, jdbcType=INTEGER},
+            <if test="originalPersistentState.key != key">
+                KEY_ = #{key, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.tenantId != tenantId">
+                TENANT_ID_ = #{tenantId, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.name != name">
+                NAME_ = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.resourceName != resourceName">
+                RESOURCE_NAME_ = #{resourceName, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.category != category">
+                CATEGORY_ = #{category, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.updateTime != updateTime">
+                LAST_MODIFIED_ = #{lastModified, jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where ID_ = #{id, jdbcType=VARCHAR}
+        and REV_ = #{revision, jdbcType=INTEGER}
+    </update>
+
+    <!-- DELETE -->
+
+    <delete id="deleteDocumentDefinition" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.DocumentDefinitionEntityImpl">
+        delete from ${prefix}ACT_CO_DEFINITION where ID_ = #{id} and REV_ = #{revision}
+    </delete>
+</mapper>

@@ -12,7 +12,8 @@ module.exports = withModuleFederationPlugin({
     //respective Angular component or module in your web project. For other web frameworks, it is
     //usually the path to the web element exposing your component
     exposes: {
-        'TutorialModule': './src/main/webapp/app/tutorial/tutorial.module.ts'
+        'WorkRoute': './src/main/webapp/app/flowable/work.routes.ts',
+        'TaskRoute': './src/main/webapp/app/flowable/tasks.routes.ts'
     },
     shared: share({
         "@angular/core": {singleton: true, strictVersion: false},
@@ -23,7 +24,9 @@ module.exports = withModuleFederationPlugin({
         "@angular/animations": {singleton: true, strictVersion: false},
         "@ngrx/store": {singleton: true, strictVersion: false},
         "@angular/material": {singleton: true, includeSecondaries: true, strictVersion: false},
-        "@ngneat/transloco": {singleton: true, strictVersion: false}
+        "@ngneat/transloco": {singleton: true, strictVersion: false},
+        "@mattae/angular-shared": {singleton: true, strictVersion: false},
+        "rxjs": {singleton: true, strictVersion: false},
     })
 });
 

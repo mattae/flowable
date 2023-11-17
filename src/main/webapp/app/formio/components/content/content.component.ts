@@ -3,9 +3,13 @@ import { MaterialComponent } from '../MaterialComponent';
 import ContentComponent from 'formiojs/components/content/Content.js';
 
 @Component({
-  selector: 'mat-formio-content',
-  template: `<div [innerHTML]="instance.content"></div>`
+    selector: 'mat-formio-content',
+    template: `
+        <div [innerHTML]="instance.content"></div>`,
+    standalone: true
 })
-export class MaterialContentComponent extends MaterialComponent {}
+export class MaterialContentComponent extends MaterialComponent {
+}
+
 ContentComponent.MaterialComponent = MaterialContentComponent;
 export { ContentComponent };

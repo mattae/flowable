@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class RuntimeDisplayJsonClientResource {
 
     protected final RepositoryService repositoryService;
@@ -296,7 +296,7 @@ public class RuntimeDisplayJsonClientResource {
 
         for (org.flowable.bpmn.model.Process process : pojoModel.getProcesses()) {
             processElements(process.getFlowElements(), pojoModel, elementArray, flowArray, collapsedArray,
-                    diagramInfo, completedElements, currentElements, breakpoints, null, processInstanceId);
+                diagramInfo, completedElements, currentElements, breakpoints, null, processInstanceId);
             processArtifacts(process.getArtifacts(), pojoModel, elementArray, flowArray, diagramInfo);
         }
 
@@ -423,7 +423,7 @@ public class RuntimeDisplayJsonClientResource {
                     }
 
                     processElements(subProcess.getFlowElements(), model, elementArray, flowArray, collapsedArray,
-                            diagramInfo, completedElements, currentElements, breakpoints, newCollapsedNode, processInstanceId);
+                        diagramInfo, completedElements, currentElements, breakpoints, newCollapsedNode, processInstanceId);
                     processArtifacts(subProcess.getArtifacts(), model, elementArray, flowArray, diagramInfo);
                 }
             }

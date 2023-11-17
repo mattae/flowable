@@ -42,7 +42,7 @@ export interface ProcessDefinition {
     resourceName: string;
     deploymentId: string;
     diagramResourceName: string;
-    hasStartFormKey: boolean;
+    hasStartForm: boolean;
     hasGraphicalNotation: boolean;
     isSuspended: boolean;
     tenantId: string;

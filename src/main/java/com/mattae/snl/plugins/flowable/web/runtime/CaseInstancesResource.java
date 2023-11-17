@@ -15,14 +15,13 @@ package com.mattae.snl.plugins.flowable.web.runtime;
 import com.mattae.snl.plugins.flowable.model.runtime.CaseInstanceRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.CreateCaseInstanceRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.FlowableCaseInstanceService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class CaseInstancesResource {
 
     protected final FlowableCaseInstanceService caseInstanceService;

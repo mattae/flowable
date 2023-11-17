@@ -1,9 +1,18 @@
-import { AfterViewInit, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, forwardRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MaterialNestedComponent } from '../MaterialNestedComponent';
 import EditGridComponent from 'formiojs/components/editgrid/EditGrid.js';
 import { MatFormioComponent } from '../../mat-formio.component';
 import Components from 'formiojs/components/Components';
 import isString from 'lodash/isString';
+import { FormioFormFieldComponent } from '../formio-form-field/formio-form-field.component';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { NgForOf, NgIf, NgTemplateOutlet } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { TranslocoModule } from '@ngneat/transloco';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { LabelComponent } from '../label/label.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 enum EditRowState {
     NEW = 'new',
@@ -74,7 +83,7 @@ const DEFAULT_ROW_TEMPLATES = [
             <mat-icon
                 color="warn"
                 class="icon-size-5"
-                [svgIcon]="'heroicons_solid:pencil-alt'"></mat-icon>
+                [svgIcon]="'heroicons_solid:pencil-square'"></mat-icon>
          </button>
          <button
                 class="w-8 h-8 min-h-8"
@@ -93,29 +102,48 @@ const DEFAULT_ROW_TEMPLATES = [
 @Component({
     selector: 'mat-formio-editgrid',
     styleUrls: ['./editgrid.component.css'],
-    templateUrl: './editgrid.component.html'
+    templateUrl: './editgrid.component.html',
+    imports: [
+        FormioFormFieldComponent,
+        MatExpansionModule,
+        NgIf,
+        NgTemplateOutlet,
+        NgForOf,
+        MatFormioComponent,
+        MatButtonModule,
+        TranslocoModule,
+        MatIconModule,
+        MatCardModule,
+        MatTooltipModule,
+        LabelComponent,
+        forwardRef(() => MaterialEditGridComponent)
+    ],
+    standalone: true
 })
 export class MaterialEditGridComponent extends MaterialNestedComponent implements AfterViewInit {
-    @ViewChild('header') headerElement: ElementRef;
-    @ViewChild('footer') footerElement: ElementRef;
-    @ViewChildren('rows') rowElements: QueryList<ElementRef>;
-    @ViewChildren('forms') forms: QueryList<MatFormioComponent>;
-    public header: string;
-    public footer: string;
-    public displayedColumns: string[];
+    @ViewChild('header') headerElement!: ElementRef;
+    @ViewChild('footer') footerElement!: ElementRef;
+    @ViewChildren('rows') rowElements!: QueryList<ElementRef>;
+    @ViewChildren('forms') forms!: QueryList<MatFormioComponent>;
+    public header!: string;
+    public footer!: string;
+    public displayedColumns!: string[];
     public columns: any = {};
     public colWidth = 0;
     public valid = true;
     public RowStates = EditRowState;
 
     getRowTemplate(content) {
-        return `<mat-list style="display: flex;">
-      {% (components || []).forEach(function(component) { %}
-        {% if (!component.hasOwnProperty('tableView') || component.tableView) { %}
-          <mat-list-item style="width: {{ colWidth }}%; margin: 0 0.8rem">${content}</mat-list-item>
-        {% } %}
-      {% }) %}
-    </mat-list>`;
+        return `
+        <div style="display: flex;">
+            {% (components || []).forEach(function(component) { %}
+                {% if (!component.hasOwnProperty('tableView') || component.tableView) { %}
+                    <div style="width: {{ colWidth }}%; margin: 0 0.8rem">
+                        <div class="h-full">${content}</div>
+                    </div>
+                {% } %}
+            {% }) %}
+        </div>`;
     }
 
     validate(index) {
@@ -160,7 +188,7 @@ export class MaterialEditGridComponent extends MaterialNestedComponent implement
         const dataValue = instance.dataValue || [];
         this.colWidth = instance.component.components.length ? Math.floor(100 / instance.component.components.length) : 100;
         if (instance.component.templates && instance.component.templates.header) {
-            let header = instance.component.templates.header.replace('row', 'flex').replace('col-sm-2', 'flex-1');
+            let header = instance.component.templates.header;
             this.header = instance.renderString(header, {
                 components: instance.component.components,
                 value: dataValue,
@@ -168,7 +196,7 @@ export class MaterialEditGridComponent extends MaterialNestedComponent implement
             });
         }
         if (instance.component.templates && instance.component.templates.footer) {
-            let footer = instance.component.templates.footer.replace('row', 'flex').replace('col-sm-2', 'flex-1');
+            let footer = instance.component.templates.footer;
             this.footer = instance.renderString(footer, {
                 components: instance.component.components,
                 value: dataValue,
@@ -176,6 +204,7 @@ export class MaterialEditGridComponent extends MaterialNestedComponent implement
             });
         }
         setTimeout(() => {
+            console.log('Header', this.header, this.headerElement)
             this.renderTemplate(this.headerElement, this.header);
             this.renderTemplate(this.footerElement, this.footer);
         }, 0);
@@ -210,7 +239,7 @@ export class MaterialEditGridComponent extends MaterialNestedComponent implement
         const self = this;
         const editRow: any = {...this.instance.editRows[index]};
         if (editRow.state !== this.RowStates.NEW) {
-            const template = this.instance.component.templates.row.replace('row', 'flex').replace('col-sm-2', 'flex-1')
+            const template = this.instance.component.templates.row
             this.renderTemplate(rowElement, this.instance.renderString(template, {
                 row: this.instance.dataValue[index] || {},
                 data: this.instance.data,

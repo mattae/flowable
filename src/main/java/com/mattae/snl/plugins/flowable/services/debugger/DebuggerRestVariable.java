@@ -13,7 +13,7 @@
 package com.mattae.snl.plugins.flowable.services.debugger;
 
 import org.flowable.variable.api.history.HistoricVariableInstance;
-import org.flowable.variable.api.persistence.entity.VariableInstance; 
+import org.flowable.variable.api.persistence.entity.VariableInstance;
 
 /**
  * @author martin.grofcik

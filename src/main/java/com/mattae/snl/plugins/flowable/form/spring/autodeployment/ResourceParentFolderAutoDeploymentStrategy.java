@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -13,13 +13,6 @@
 
 package com.mattae.snl.plugins.flowable.form.spring.autodeployment;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.flowable.common.spring.CommonAutoDeploymentProperties;
 import org.flowable.form.api.FormDeploymentBuilder;
 import org.flowable.form.api.FormRepositoryService;
@@ -28,23 +21,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 /**
  * Implementation of {@link org.flowable.common.spring.AutoDeploymentStrategy AutoDeploymentStrategy}
  * that performs a separate deployment for each set of {@link Resource}s that share the same parent folder.
  * The namehint is used to prefix the names of deployments. If the parent folder for a {@link Resource} cannot be determined, the resource's name is used.
- * 
+ *
  * @author Tiese Barrell
  * @author Joram Barrez
  */
 public class ResourceParentFolderAutoDeploymentStrategy extends AbstractFormAutoDeploymentStrategy {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceParentFolderAutoDeploymentStrategy.class);
-
     /**
      * The deployment mode this strategy handles.
      */
     public static final String DEPLOYMENT_MODE = "resource-parent-folder";
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceParentFolderAutoDeploymentStrategy.class);
     private static final String DEPLOYMENT_NAME_PATTERN = "%s.%s";
 
     public ResourceParentFolderAutoDeploymentStrategy() {

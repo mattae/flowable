@@ -12,27 +12,24 @@
  */
 package com.mattae.snl.plugins.flowable.web.runtime;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mattae.snl.plugins.flowable.form.model.FormIOFormModel;
 import com.mattae.snl.plugins.flowable.model.runtime.FormModelRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.ProcessInstanceRepresentation;
+import com.mattae.snl.plugins.flowable.services.model.ExtendedUserRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.FlowableProcessInstanceService;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.flowable.form.api.FormInfo;
-import org.flowable.form.model.SimpleFormModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * REST controller for managing a process instance.
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class ProcessInstanceResource {
 
     protected final FlowableProcessInstanceService processInstanceService;
@@ -49,7 +46,7 @@ public class ProcessInstanceResource {
     @GetMapping(value = "/rest/process-instances/{processInstanceId}/start-form", produces = "application/json")
     public FormModelRepresentation getProcessInstanceStartForm(@PathVariable String processInstanceId, HttpServletResponse response) {
         FormInfo formInfo = processInstanceService.getProcessInstanceStartForm(processInstanceId, response);
-        SimpleFormModel formModel = (SimpleFormModel) formInfo.getFormModel();
+        FormIOFormModel formModel = (FormIOFormModel) formInfo.getFormModel();
         return new FormModelRepresentation(formInfo, formModel);
     }
 
@@ -59,4 +56,21 @@ public class ProcessInstanceResource {
         processInstanceService.deleteProcessInstance(processInstanceId);
     }
 
+    @PutMapping(value = "/rest/process-instances/{processInstanceId}/action/involve", produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void involveUser(@PathVariable("processInstanceId") String processInstanceId, @RequestBody ObjectNode requestNode) {
+        processInstanceService.involveUser(processInstanceId, requestNode);
+    }
+
+    @PutMapping(value = "/rest/process-instances/{processInstanceId}/action/remove-involved", produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void removeInvolvedUser(@PathVariable("processInstanceId") String processInstanceId, @RequestBody ObjectNode requestNode) {
+        processInstanceService.removeInvolvedUser(processInstanceId, requestNode);
+    }
+
+    @GetMapping(value = "/rest/process-instances/{processInstanceId}/involved-users", produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<ExtendedUserRepresentation> getInvolvedUsers(@PathVariable("processInstanceId") String processInstanceId) {
+        return processInstanceService.getInvolvedUsers(processInstanceId);
+    }
 }

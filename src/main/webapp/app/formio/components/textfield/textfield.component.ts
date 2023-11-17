@@ -1,6 +1,13 @@
 import { AfterContentInit, Component } from '@angular/core';
 import TextFieldComponent from 'formiojs/components/textfield/TextField.js';
 import { MaterialComponent } from '../MaterialComponent';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { NgIf } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { FormioFormFieldComponent } from '../formio-form-field/formio-form-field.component';
+import { LabelComponent } from '../label/label.component';
+import { TranslocoModule } from '@ngneat/transloco';
 
 export const TEXTFIELD_TEMPLATE = `
   <mat-formio-form-field [instance]="instance" [componentTemplate]="componentTemplate"></mat-formio-form-field>
@@ -19,7 +26,7 @@ export const TEXTFIELD_TEMPLATE = `
       <input matInput
             type="{{ inputType }}"
             [formControl]="control"
-            [placeholder]="instance.component.placeholder"
+            [placeholder]="instance.component.placeholder | transloco"
             (input)="onChange()" #input
       >
       <span *ngIf="instance.component.suffix" matSuffix>{{ instance.component.suffix }}</span>
@@ -29,14 +36,24 @@ export const TEXTFIELD_TEMPLATE = `
       </mat-hint>
 
       <br/>
-      <mat-error *ngIf="isError()" >{{ getErrorMessage() }}</mat-error>
+      <mat-error *ngIf="isError()" >{{ getErrorMessage()  | transloco}}</mat-error>
     </mat-form-field>
   </ng-template>
 `;
 
 @Component({
     selector: 'mat-formio-textfield',
-    template: TEXTFIELD_TEMPLATE
+    template: TEXTFIELD_TEMPLATE,
+    imports: [
+        MatFormFieldModule,
+        NgIf,
+        ReactiveFormsModule,
+        MatInputModule,
+        FormioFormFieldComponent,
+        LabelComponent,
+        TranslocoModule
+    ],
+    standalone: true
 })
 export class MaterialTextfieldComponent extends MaterialComponent implements AfterContentInit {
     public inputType = 'text';
@@ -88,7 +105,7 @@ export class MaterialTextfieldComponent extends MaterialComponent implements Aft
             const {messages} = this.instance.error;
 
             for (const msg of messages) {
-                if (msg.context && (this.control.hasError(msg.context.validator) || this.control.hasError('email'))) {
+                if (msg.context && (this.control.hasError(msg.context.validator) || msg.context.validator)) {
                     return this.instance.error.message;
                 }
             }

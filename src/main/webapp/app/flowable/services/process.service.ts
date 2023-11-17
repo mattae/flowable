@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { CreateProcessForm, ProcessDefinition, ProcessInstance } from '../model/process.model';
-import { FormModel, ListResult } from '../model/common.model';
+import { FormModel, ListResult, User } from '../model/common.model';
 import { DateTime } from 'luxon';
 import { map } from 'rxjs';
 
@@ -9,13 +9,21 @@ import { map } from 'rxjs';
     providedIn: 'root'
 })
 export class ProcessService {
-    private resourceUrl = '/app/rest'
+    private resourceUrl = '/api/rest'
 
     constructor(private http: HttpClient) {
     }
 
     getProcessDefinitionStartForm(processDefinitionId: string) {
-        return this.http.get<FormModel>(`${this.resourceUrl}/process-definitions/${processDefinitionId}/start-form}`);
+        return this.http.get<FormModel>(`${this.resourceUrl}/process-definitions/${processDefinitionId}/start-form}`).pipe(
+            map(res => {
+                    res.components = res.components.filter(cmp => {
+                        return cmp.key !== 'submit' || cmp.action !== 'submit'
+                    })
+                    return res;
+                }
+            )
+        );
     }
 
     listProcessDefinitions(request: { latest?: boolean; appDefinitionKey?: string }) {
@@ -59,6 +67,18 @@ export class ProcessService {
 
     createProcessInstance(processForm: CreateProcessForm) {
         return this.http.post<ProcessInstance>(`${this.resourceUrl}/process-instances`, processForm);
+    }
+
+    involveProcess(processInstanceId: string, userId: string) {
+        return this.http.put<void>(`${this.resourceUrl}/process-instances/${processInstanceId}/action/involve`, {userId: userId});
+    }
+
+    removeInvolveProcess(processInstanceId: string, payload: { userId?: string; email?: string }) {
+        return this.http.put<void>(`${this.resourceUrl}/process-instances/${processInstanceId}/action/remove-involve`, payload);
+    }
+
+    getInvolvedUsers(processInstanceId: string) {
+        return this.http.get<User[]>(`${this.resourceUrl}/process-instances/${processInstanceId}/involved-users`);
     }
 
     private convertFromServer(processInstance: ProcessInstance) {

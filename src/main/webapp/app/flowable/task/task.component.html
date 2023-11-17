@@ -1,4 +1,4 @@
-<div class="bg-gray-100 w-full mx-auto p-1 ml-2 mr-2">
+<div class="bg-gray-100 w-full mx-auto p-1 ml-2 mr-2" *ngIf="instance">
     <div class="relative bg-card h-64 border-t-gray-400 border-4 shadow-xl">
         <div class="pl-8">
             <div class="h-8 bg-gray-400 rounded-b-lg w-26 items-center pt-1">
@@ -6,17 +6,21 @@
                     <mat-icon svgIcon="mat_outline:assignment_turned_in"
                               class="icon-size-5 ml-auto white-icon"></mat-icon>
                     <div class="ml-1.5 leading-5 mr-auto text-white">
-                        {{'FLOWABLE.WORK.TASK' | transloco}}
+                        {{'FLOWABLE.WORK.TITLE.TASK' | transloco}}
                     </div>
                 </div>
             </div>
         </div>
         <div class="grid grid-cols-2 gap-4 pt-2">
-            <div class="pl-8 pt-4">
-                <div class="text-4xl tracking-tight leading-none">
+            <div class="pl-8 pt-4 flex flex-col">
+                <div class="text-3xl tracking-tight leading-none">
                     {{instance.name | transloco}}
                 </div>
-                <div class="pt-6" *ngIf="instance.caseInstanceId || instance.processInstanceId">
+                <div class="text-sm">
+                    {{instance.description | transloco}}
+                </div>
+                <div class="pt-6"
+                     *ngIf="instance.caseInstanceId || instance.processInstanceId || instance.parentTaskId">
                     <div>
                         <a
                             class="inline-flex items-center leading-6 text-primary hover:underline"
@@ -26,8 +30,10 @@
                                   class="icon-size-5 text-current"></mat-icon>
                         <mat-icon svgIcon="feather:briefcase" *ngIf="instance.caseInstanceId"
                                   class="icon-size-5 text-current"></mat-icon>
+                        <mat-icon svgIcon="feather:briefcase" *ngIf="instance.parentTaskId"
+                                  class="icon-size-5 text-current"></mat-icon>
                         <span class="ml-1.5 font-medium leading-5">
-                            {{definition.name ?? definition.caseDefinitionName ?? definition.processDefinitionName}}
+                            {{(instance.caseDefinitionName ?? instance.processDefinitionName ?? instance.parentTaskName) | transloco}}
                         </span>
                     </span>
                         </a>
@@ -36,17 +42,17 @@
             </div>
             <div class="justify-items-end">
                 <div class="w-80 ml-auto grid grid-cols-1 gap-y-1.5">
-                    <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                        <mat-icon svgIcon="heroicons_solid:calendar"></mat-icon>
+                    <div class="pl-2 space-x-1.5 flex items-center justify-items-end">
+                        <mat-icon svgIcon="heroicons_solid:calendar" class="icon-size-4"></mat-icon>
                         <div class="ml-1.5 leading-5 mr-auto">
-                            {{'FLOWABLE.TASK.CREATED' | transloco}}
+                            {{'FLOWABLE.WORK.CREATED_IN' | transloco}}
                         </div>
                         <div class="ml-1.5 leading-5 mr-auto">
                             {{instance.created | timeAgo}}
                         </div>
                     </div>
-                    <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                        <mat-icon svgIcon="heroicons_solid:user"></mat-icon>
+                    <div class="pl-2 space-x-1.5 flex items-center justify-items-end">
+                        <mat-icon svgIcon="heroicons_solid:user" class="icon-size-4"></mat-icon>
                         <div class="ml-1.5 leading-5 mr-auto">
                             {{'FLOWABLE.TASK.ASSIGNEE' | transloco}}
                         </div>
@@ -75,12 +81,12 @@
                             </ng-container>
                         </div>
                     </div>
-                    <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                        <mat-icon svgIcon="heroicons_outline:calendar"></mat-icon>
+                    <div class="pl-2 space-x-1.5 flex items-center justify-items-end">
+                        <mat-icon svgIcon="heroicons_outline:calendar" class="icon-size-4"></mat-icon>
                         <div class="ml-1.5 leading-5 mr-auto">
                             {{'FLOWABLE.TASK.DUE_DATE' | transloco}}
                         </div>
-                        <div class="ml-1.5 leading-5 mr-auto" *ngIf="instance.dueDate">
+                        <div class="ml-1.5 leading-5 mr-auto">
                             <div class="text-primary hover:cursor-pointer" *ngIf="!showDueDateInput"
                                  (click)="dueDateClicked()" [matMenuTriggerFor]="appMenu">
                                 <ng-container *ngIf="instance.dueDate">
@@ -99,28 +105,34 @@
             <div class="bg-gray-200 h-16 w-full">
                 <div class="pt-3 grid justify-items-end">
                     <div class="flex space-x-2">
-                        <ng-container *ngIf="form?.outcomes && !instance.endDate && instance.assignee">
+                        <ng-container *ngIf="form?.outcomes && !instance.endDate && isTaskClaimedByCandidateMember()">
                             <ng-container *ngFor="let outcome of form.outcomes">
                                 <button mat-raised-button color="primary"
-                                        [disabled]="!formValid"
+                                        [disabled]="!formValid || selectedTab !== 0"
                                         (click)="executeOutcome(outcome)">
                                     {{outcome.name | transloco}}
                                 </button>
                             </ng-container>
                         </ng-container>
                         <button mat-raised-button
-                                *ngIf="!instance.endDate && !form?.outcomes && instance.formKey && instance.assignee"
-                                [disabled]="!formValid"
+                                *ngIf="!instance.endDate && !form?.outcomes && isTaskClaimedByCandidateMember()"
+                                [disabled]="!formValid  || selectedTab !== 0"
+                                color="primary"
                                 (click)="completeTask()">
                             {{'FLOWABLE.TASK.COMPLETE' | transloco}}
                         </button>
-                        <button mat-raised-button *ngIf="!instance.endDate && instance.formKey && instance.assignee"
+                        <button mat-raised-button
+                                *ngIf="!instance.endDate && instance.formKey && isTaskClaimedByCandidateMember()"
                                 (click)="saveTask()">
                             {{'FLOWABLE.TASK.SAVE' | transloco}}
                         </button>
-                        <button mat-raised-button color="primary" *ngIf="!instance.assignee"
+                        <button mat-raised-button color="primary" *ngIf="isTaskClaimable()"
                                 (click)="claimTask()">
                             {{'FLOWABLE.TASK.CLAIM' | transloco}}
+                        </button>
+                        <button mat-raised-button color="primary" *ngIf="isTaskClaimedByCandidateMember()"
+                                (click)="unClaimTask()">
+                            {{'FLOWABLE.TASK.UN_CLAIM' | transloco}}
                         </button>
                         <div>
                             <button (click)="$event.stopPropagation()"
@@ -136,17 +148,17 @@
         </div>
     </div>
     <div class="mt-8 bg-card shadow-xl">
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab-group #sections mat-stretch-tabs="false" mat-align-tabs="start"
+                       (selectedTabChange)="tabChanged($event.index)">
             <mat-tab>
                 <ng-template mat-tab-label>
-                    <mat-formio [form]="form" [renderOptions]="{readonly: true}"></mat-formio>
                     <mat-icon svgIcon="assignment"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    {{'FLOWABLE.TASK.TASK' | transloco}}
+                    {{'FLOWABLE.WORK.TASK' | transloco}}
                 </ng-template>
                 <ng-container *ngIf="instance.formKey; else noForm">
-                    <mat-formio [form]="form" [renderOptions]="{readonly: !!instance.endDate}"
-                                (change)="trackValid($event)">
+                    <mat-formio [form]="form" [renderOptions]="{readOnly: !!instance.endDate}"
+                                (change)="trackValid($event)" [submission]="savedSubmission">
                     </mat-formio>
                 </ng-container>
                 <ng-template #noForm>
@@ -157,83 +169,48 @@
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="heroicons_solid:user"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    {{'FLOWABLE.TASK.PEOPLE' | transloco}}
+                    {{'FLOWABLE.WORK.PEOPLE' | transloco}}
                 </ng-template>
+                <div class="">
+                    <flw-people [readonly]="!!instance.endDate"
+                                [taskId]="instance.id"
+                                [assignee]="instance.assignee"></flw-people>
+                </div>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon svgIcon="heroicons_outline:chat-bubble-left-right"
+                              class="icon-size-5 ml-auto mr-1"></mat-icon>
+                    {{'FLOWABLE.WORK.COMMENTS' | transloco}} {{comments | number}}
+                </ng-template>
+                <div class="">
+                    <flw-comments [readOnly]="!!instance.endDate"
+                                  [taskId]="instance.id" (count)="commentCount($event)">
+                    </flw-comments>
+                </div>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="format_list_bulleted"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    {{'FLOWABLE.TASK.SUBTASKS' | transloco}}
+                    {{'FLOWABLE.WORK.SUBTASKS' | transloco}}
                 </ng-template>
                 <div class="flex flex-row">
-                    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+                    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="w-full">
                         <mat-tab>
                             <ng-template mat-tab-label>
                                 <mat-icon svgIcon="format_list_bulleted"
                                           class="icon-size-5 ml-auto mr-1"></mat-icon>
                                 {{'FLOWABLE.TASK.CURRENT_SUBTASKS' | transloco}}
                             </ng-template>
-                            <ng-container *ngFor="let task of subTasks">
-                                <div class="flex flex-row">
-                                    <div class="grid grid-cols-12 border-gray-300 border-b p-2 hover:bg-gray-100"
-                                         (click)="taskSelected(task)">
-                                        <div class="flex items-center justify-center">
-                                            <mat-icon svgIcon="heroicons_outline:clipboard"
-                                                      class="icon-size-7"></mat-icon>
-                                        </div>
-                                        <div class="flex flex-col col-span-5">
-                                            <div class="pl-2.5 font-medium">
-                                                {{task.name | transloco}}
-                                            </div>
-                                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                                                <mat-icon svgIcon="heroicons_outline:user"
-                                                          class="icon-size-4"></mat-icon>
-                                                <div class="ml-1.5 leading-5 mr-auto pl-1.5">
-                                                    {{task.assignee?.fullName}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="flex flex-col pl-2 col-span-3">
-                                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                                                <mat-icon svgIcon="heroicons_outline:calendar-days"
-                                                          class="icon-size-4"></mat-icon>
-                                                <div class="ml-1.5 leading-5 mr-auto">
-                                                    {{'FLOWABLE.TASK.CREATED' | transloco}}
-                                                </div>
-                                                <div class="ml-1.5 leading-5 mr-auto pl-1.5">
-                                                    {{task.created | timeAgo}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="flex flex-col pl-2 col-span-3">
-                                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                                                <ng-container *ngIf="!task.endDate; else completed">
-                                                    <mat-icon svgIcon="mat_outline:sync"
-                                                              class="icon-size-4"></mat-icon>
-                                                    <div class="ml-1.5 leading-5 mr-auto">
-                                                        {{'FLOWABLE.TASK.IN_PROGRESS' | transloco}}
-                                                    </div>
-                                                </ng-container>
-                                                <ng-template #completed>
-                                                    <mat-icon svgIcon="mat_outline:done"
-                                                              class="icon-size-4"></mat-icon>
-                                                    <div class="ml-1.5 leading-5 mr-auto">
-                                                        {{'FLOWABLE.TASK.DONE' | transloco}}
-                                                    </div>
-                                                </ng-template>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </ng-container>
+                            <flw-sub-items [taskId]="instance.id"></flw-sub-items>
                         </mat-tab>
                         <mat-tab (click)="createTask()">
                             <ng-template mat-tab-label>
                                 <mat-icon svgIcon="add"></mat-icon>
                                 {{'FLOWABLE.TASK.ADD_SUBTASK' | transloco}}
                             </ng-template>
-                            <div class="w-full" *ngIf="showAdhocTask">
+                            <div class="w-full">
                                 <adhoc-task [task]="instance" [embedded]="true"
                                             (taskCreated)="taskCreated()"></adhoc-task>
                             </div>
@@ -245,14 +222,15 @@
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="heroicons_outline:document"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    {{'FLOWABLE.TASK.DOCUMENTS' | transloco}}
+                    {{'FLOWABLE.WORK.DOCUMENTS' | transloco}}
                 </ng-template>
+                <flw-documents [taskId]="instance.id" [readonly]="!!instance.endDate"></flw-documents>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="history"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    {{'FLOWABLE.TASK.HISTORY' | transloco}}
+                    {{'FLOWABLE.WORK.HISTORY' | transloco}}
                 </ng-template>
             </mat-tab>
         </mat-tab-group>

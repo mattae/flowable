@@ -22,6 +22,7 @@ import org.flowable.form.api.FormRepositoryService;
 import org.flowable.form.engine.impl.FormQueryProperty;
 import org.flowable.form.rest.FormRestResponseFactory;
 import org.flowable.form.rest.service.api.repository.FormDefinitionResponse;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,13 +34,13 @@ import java.util.Map;
 import static org.flowable.common.rest.api.PaginateListUtil.paginateList;
 
 
-
 /**
  * @author Yvo Swillens
  */
 
 @RestController
-@RequestMapping("/app/rest")
+@RequestMapping("/api/rest")
+@Transactional
 public class FormDefinitionCollectionResource {
 
     private static final Map<String, QueryProperty> properties = new HashMap<>();

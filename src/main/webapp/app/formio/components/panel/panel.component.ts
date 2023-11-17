@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { MaterialNestedComponent } from '../MaterialNestedComponent';
 import PanelComponent from 'formiojs/components/panel/Panel.js';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { NgIf } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { TranslocoModule } from '@ngneat/transloco';
 
 Object.defineProperty(PanelComponent.prototype, 'visible', {
     set(visible) {
@@ -21,7 +25,7 @@ Object.defineProperty(PanelComponent.prototype, 'visible', {
     template: `
         <mat-card *ngIf="!instance.component.collapsible">
             <mat-card-title *ngIf="instance?.component?.title">
-                {{ instance.component.title }}
+                {{ instance.component.title | transloco}}
             </mat-card-title>
             <mat-card-content class="flex flex-col">
                 <ng-template #components></ng-template>
@@ -32,7 +36,7 @@ Object.defineProperty(PanelComponent.prototype, 'visible', {
         >
             <mat-expansion-panel-header *ngIf="instance?.component?.title">
                 <mat-panel-title>
-                    {{ instance.component.title }}
+                    {{ instance.component.title | transloco}}
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <ng-template #components></ng-template>
@@ -40,7 +44,14 @@ Object.defineProperty(PanelComponent.prototype, 'visible', {
     `,
     styles: [
         ':host { margin-bottom: 1em; }'
-    ]
+    ],
+    imports: [
+        MatExpansionModule,
+        NgIf,
+        MatCardModule,
+        TranslocoModule
+    ],
+    standalone: true
 })
 export class MaterialPanelComponent extends MaterialNestedComponent {
 }

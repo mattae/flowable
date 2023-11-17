@@ -3,6 +3,12 @@ import { MaterialComponent } from '../MaterialComponent';
 import SelectComponent from 'formiojs/components/select/Select.js';
 import _ from 'lodash';
 import { HttpClient } from '@angular/common/http';
+import { FormioFormFieldComponent } from '../formio-form-field/formio-form-field.component';
+import { MatSelectModule } from '@angular/material/select';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { LabelComponent } from '../label/label.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
     selector: 'mat-formio-select',
@@ -16,18 +22,18 @@ import { HttpClient } from '@angular/common/http';
                 </mat-label>
 
                 <span *ngIf="instance.component.prefix" matPrefix>
-          {{ instance.component.prefix }}&nbsp;
-        </span>
+                    {{ instance.component.prefix }}&nbsp;
+                </span>
                 <mat-select
-                    [multiple]="instance.component.multiple"
-                    [formControl]="control"
-                    [placeholder]="instance.component.placeholder | transloco"
-                    (selectionChange)="onChange()"
-                    [compareWith]="compareObjects"
+                        [multiple]="instance.component.multiple"
+                        [formControl]="control"
+                        [placeholder]="instance.component.placeholder | transloco"
+                        (selectionChange)="onChange()"
+                        [compareWith]="compareObjects"
                 >
                     <div class="mat-option m-3.5 border ring-1 ring-primary-100">
                         <input class="m-2 mat-input-element" placeholder="Type to search"
-                               (input)="onFilter($event.target.value)">
+                               (input)="onFilter($event.target)">
                     </div>
                     <mat-option *ngIf="!filteredOptionsLength" disabled>
                         <span>Nothing was found</span>
@@ -38,17 +44,28 @@ import { HttpClient } from '@angular/common/http';
                 </mat-select>
 
                 <span *ngIf="instance.component.suffix" matSuffix>
-          {{ instance.component.suffix }}
-        </span>
-                <mat-error *ngIf="instance.error">{{ instance.error.message }}</mat-error>
+                    {{ instance.component.suffix }}
+                </span>
+                <mat-error *ngIf="instance.error">{{ instance.error.message | transloco}}</mat-error>
             </mat-form-field>
         </ng-template>
-    `
+    `,
+    imports: [
+        FormioFormFieldComponent,
+        MatSelectModule,
+        NgIf,
+        LabelComponent,
+        ReactiveFormsModule,
+        TranslocoModule,
+        AsyncPipe,
+        NgForOf
+    ],
+    standalone: true
 })
 export class MaterialSelectComponent extends MaterialComponent implements OnInit {
-    selectOptions: Promise<any[]>;
-    filteredOptions: Promise<any[]>;
-    filteredOptionsLength: number;
+    selectOptions!: Promise<any[]>;
+    filteredOptions!: Promise<any[]>;
+    filteredOptionsLength!: number;
 
     selectOptionsResolve: any;
 
@@ -77,8 +94,8 @@ export class MaterialSelectComponent extends MaterialComponent implements OnInit
         this.filteredOptions = this.selectOptions;
     }
 
-    onFilter(value) {
-        value = value.toLowerCase().trim();
+    onFilter(event: any) {
+        const value = event.value.toLowerCase().trim();
         this.filteredOptions = this.selectOptions.then((options) => {
             const filtered = options.filter((option) => option.label?.toLowerCase().indexOf(value) !== -1);
             this.filteredOptionsLength = filtered.length;

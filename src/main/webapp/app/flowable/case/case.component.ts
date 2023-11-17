@@ -1,48 +1,57 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormioModule } from '../../formio/angular-material-formio.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatDrawer } from '@angular/material/sidenav';
 import { Subject } from 'rxjs';
-import { CaseInstance } from '../model/case.model';
-import { TaskInstance } from '../model/task.model';
+import { CaseInstance, PlanItemRepresentation } from '../model/case.model';
 import { NgForOf, NgIf } from '@angular/common';
-import { ProcessInstance } from '../model/process.model';
 import { FormModel } from '../model/common.model';
 import { CaseService } from '../services/case.service';
+import { CovalentCommonModule } from '@covalent/core/common';
+import { PeopleComponent } from '../people/people.component';
+import { SubItemsComponent } from '../sub-items/sub-items.component';
+import { DocumentsComponent } from '../documents/documents.component';
+import { TaskService } from '../services/task.service';
+import { FormService } from '../services/form.service';
+import { MatFormioComponent } from '../../formio/mat-formio.component';
 
 @Component({
-    selector: 'flowable-case',
+    selector: 'flw-case',
     templateUrl: './case.component.html',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         MatButtonModule,
-        MatFormioModule,
         MatIconModule,
         MatStepperModule,
         MatTabsModule,
         TranslocoModule,
         RouterLink,
         NgForOf,
-        NgIf
-
+        NgIf,
+        CovalentCommonModule,
+        PeopleComponent,
+        SubItemsComponent,
+        DocumentsComponent,
+        MatFormioComponent
     ]
 })
 export class CaseComponent implements OnInit {
-    caseInstance: CaseInstance;
-    @ViewChild('matDrawer', {static: true}) matDrawer: MatDrawer;
-    drawerMode: 'side';
+    instance: CaseInstance;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-    openTasks: TaskInstance[] = [];
-    instance: ProcessInstance;
+    enabledPlanItems: PlanItemRepresentation[] = [];
     form: FormModel;
+    submission: any;
 
-    constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _caseService: CaseService) {
+    constructor(private _router: Router,
+                private _activatedRoute: ActivatedRoute,
+                private _changeDetectorRef: ChangeDetectorRef,
+                private _caseService: CaseService,
+                private _formService: FormService,
+                private _taskService: TaskService) {
     }
 
     ngOnInit(): void {
@@ -51,9 +60,23 @@ export class CaseComponent implements OnInit {
             if (this.instance.startFormDefined) {
                 this._caseService.getCaseInstanceStartForm(this.instance.id).subscribe(form => {
                     this.form = form;
+
+                    this._formService.getFormData({
+                        formDefinitionKey: form.key,
+                        caseInstanceId: instance.id
+                    }).subscribe(data => {
+                        this.submission = {
+                            data: data
+                        };
+                        this._changeDetectorRef.markForCheck();
+                    });
                 });
             }
+            this.listEnabledTasks();
+
+            this._changeDetectorRef.markForCheck();
         });
+
     }
 
     ngOnDestroy(): void {
@@ -62,10 +85,16 @@ export class CaseComponent implements OnInit {
         this._unsubscribeAll.complete();
     }
 
-    taskSelected(task: TaskInstance): void {
-        this._router.navigate(['../tasks', task.id], {relativeTo: this._activatedRoute})
+    startPlanItem(item: PlanItemRepresentation) {
+        this._caseService.startPlanItem(this.instance.id, item.id).subscribe(res => {
+            this.listEnabledTasks();
+        });
     }
 
-    onSubmit(event) {
+    listEnabledTasks(): void {
+        this._caseService.enabledPlanItems(this.instance.id).subscribe(res => {
+            this.enabledPlanItems = res.data.filter(pi => pi.planItemDefinitionType.includes('human-task'));
+            this._changeDetectorRef.markForCheck();
+        });
     }
 }

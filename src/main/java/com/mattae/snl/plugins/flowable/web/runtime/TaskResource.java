@@ -12,21 +12,17 @@
  */
 package com.mattae.snl.plugins.flowable.web.runtime;
 
-import java.util.List;
-
 import com.mattae.snl.plugins.flowable.model.runtime.TaskRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.TaskUpdateRepresentation;
+import com.mattae.snl.plugins.flowable.services.model.ExtendedUserRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.FlowableTaskService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class TaskResource {
 
     protected final FlowableTaskService taskService;
@@ -36,7 +32,7 @@ public class TaskResource {
     }
 
     @GetMapping(value = "/rest/tasks/{taskId}", produces = "application/json")
-    public TaskRepresentation getTask(@PathVariable String taskId   ) {
+    public TaskRepresentation getTask(@PathVariable String taskId) {
         return taskService.getTask(taskId);
     }
 
@@ -50,4 +46,9 @@ public class TaskResource {
         return taskService.getSubTasks(taskId);
     }
 
+    @GetMapping(value = "/rest/tasks/{taskId}/involved-users", produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<ExtendedUserRepresentation> getInvolvedUsers(@PathVariable("taskId") String taskId) {
+        return taskService.getInvolvedUsers(taskId);
+    }
 }

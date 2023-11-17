@@ -6,7 +6,7 @@
                     <mat-icon svgIcon="feather:briefcase"
                               class="icon-size-5 ml-auto white-icon"></mat-icon>
                     <div class="ml-1.5 leading-5 mr-auto text-white">
-                        {{'Case' | transloco}}
+                        {{'FLOWABLE.WORK.TITLE.CASE' | transloco}}
                     </div>
                 </div>
             </div>
@@ -14,19 +14,7 @@
         <div class="grid grid-cols-2 gap-4 pt-2">
             <div class="pl-8 pt-4">
                 <div class="text-4xl tracking-tight leading-none">
-                    {{caseInstance?.name}}
-                </div>
-                <div class="pt-6">
-                    <div>
-                        <a
-                            class="inline-flex items-center leading-6 text-primary hover:underline"
-                            [routerLink]="['..']">
-                    <span class="inline-flex items-center">
-                        <mat-icon svgIcon="feather:git-pull-request" class="icon-size-5 text-current"></mat-icon>
-                        <span class="ml-1.5 font-medium leading-5">Parent process</span>
-                    </span>
-                        </a>
-                    </div>
+                    {{instance.name | transloco}}
                 </div>
             </div>
             <div class="justify-items-end">
@@ -34,28 +22,19 @@
                     <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
                         <mat-icon svgIcon="heroicons_solid:calendar"></mat-icon>
                         <div class="ml-1.5 leading-5 mr-auto">
-                            {{'Started:' | transloco}}
+                            {{'FLOWABLE.CASE.STARTED_IN' | transloco}}
                         </div>
                         <div class="ml-1.5 leading-5 mr-auto">
-                            2 seconds ago
-                        </div>
-                    </div>
-                    <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                        <mat-icon svgIcon="heroicons_solid:user"></mat-icon>
-                        <div class="ml-1.5 leading-5 mr-auto">
-                            {{'Started by:' | transloco}}
-                        </div>
-                        <div class="ml-1.5 leading-5 mr-auto">
-                            {{caseInstance?.startedBy?.fullName}}
+                            {{instance.started | timeAgo}}
                         </div>
                     </div>
                     <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
                         <mat-icon svgIcon="heroicons_solid:user"></mat-icon>
                         <div class="ml-1.5 leading-5 mr-auto">
-                            {{'Assignee:' | transloco}}
+                            {{'FLOWABLE.CASE.STARTED_BY' | transloco}}
                         </div>
                         <div class="ml-1.5 leading-5 mr-auto">
-                            2 seconds ago
+                            {{instance.startedBy?.fullName}}
                         </div>
                     </div>
                 </div>
@@ -79,8 +58,12 @@
                 <div class="pt-3 grid justify-items-end">
                     <div class="flex space-x-1.5">
                         <button mat-raised-button>Terminate</button>
-                        <button mat-raised-button>Outcome 1</button>
-                        <button mat-raised-button>Outcome 2</button>
+                        <ng-container *ngFor="let item of enabledPlanItems">
+                            <button mat-raised-button (click)="startPlanItem(item)">
+                                <mat-icon svgIcon="mat_outline:play_arrow"></mat-icon>
+                                {{item.name | transloco}}
+                            </button>
+                        </ng-container>
                         <div>
                             <button (click)="$event.stopPropagation()"
                                     mat-icon-button
@@ -102,46 +85,7 @@
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
                     {{'FLOWABLE.CASE.OPEN_TASKS' | transloco}}
                 </ng-template>
-                <ng-container *ngFor="let task of openTasks">
-                    <div class="grid grid-cols-12 border-gray-300 border-b p-2 hover:bg-gray-100" (click)="taskSelected(task)">
-                        <div class="flex items-center justify-center">
-                            <mat-icon svgIcon="heroicons_outline:clipboard" class="icon-size-7"></mat-icon>
-                        </div>
-                        <div class="flex flex-col col-span-5">
-                            <div class="pl-2.5 font-medium">
-                                {{task.name}}
-                            </div>
-                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                                <mat-icon svgIcon="heroicons_outline:user" class="icon-size-4"></mat-icon>
-                                <div class="ml-1.5 leading-5 mr-auto pl-1.5">
-                                    {{task?.owner}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex flex-col pl-2 col-span-3">
-                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                                <mat-icon svgIcon="heroicons_outline:calendar-days" class="icon-size-4"></mat-icon>
-                                <div class="ml-1.5 leading-5 mr-auto">
-                                    {{'Started ' | transloco}}
-                                </div>
-                                <div class="ml-1.5 leading-5 mr-auto pl-1.5">
-                                    {{task?.created}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex flex-col pl-2 col-span-3">
-                            <div class="pl-2 space-x-0.5 flex items-center justify-items-end">
-                                <mat-icon svgIcon="heroicons_outline:bell" class="icon-size-4"></mat-icon>
-                                <div class="ml-1.5 leading-5 mr-auto" *ngIf="!task.dueDate">
-                                    {{'No due date' | transloco}}
-                                </div>
-                                <div class="ml-1.5 leading-5 mr-auto pl-1.5" *ngIf="task.dueDate">
-                                    {{task?.dueDate}}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </ng-container>
+                <flw-sub-items [caseInstanceId]="instance.id" [activeTasks]="true"></flw-sub-items>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
@@ -149,41 +93,45 @@
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
                     {{'FLOWABLE.CASE.WORK_FORM' | transloco}}
                 </ng-template>
-                <mat-formio [form]="form" [renderOptions]="{readonly: true}"></mat-formio>
+                <mat-formio *ngIf="instance.startFormDefined" [form]="form"
+                            [renderOptions]="{readOnly: true}" [submission]="submission"></mat-formio>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="heroicons_solid:user"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    People
+                    {{'FLOWABLE.CASE.PEOPLE' | transloco}}
                 </ng-template>
+                <flw-people [caseInstanceId]="instance.id" [readonly]="!!instance.ended"></flw-people>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="format_list_bulleted"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    Subtasks
+                    {{'FLOWABLE.WORK.SUB_ITEMS' | transloco}}
                 </ng-template>
+                <flw-sub-items [caseInstanceId]="instance.id"></flw-sub-items>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="heroicons_outline:document"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    Documents
+                    {{'FLOWABLE.WORK.DOCUMENTS' | transloco}}
                 </ng-template>
+                <flw-documents [caseInstanceId]="instance.id" [readonly]="!!instance.ended"></flw-documents>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="heroicons_outline:shield-check"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    Audit trail
+                    {{'FLOWABLE.WORK.AUDIT_TRAIL' | transloco}}
                 </ng-template>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <mat-icon svgIcon="history"
                               class="icon-size-5 ml-auto mr-1"></mat-icon>
-                    History
+                    {{'FLOWABLE.WORK.HISTORY' | transloco}}
                 </ng-template>
             </mat-tab>
         </mat-tab-group>

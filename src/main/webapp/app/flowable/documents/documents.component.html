@@ -1,0 +1,71 @@
+<div class="pt-2 bg-card">
+    <div class="flex flex-col bg-card p-2">
+        <fuse-alert
+            *ngIf="showAlert"
+            [appearance]="'outline'"
+            [showIcon]="false"
+            [type]="'error'">
+            {{'FLOWABLE.CONTENT.UPLOAD_ERROR' | transloco}}
+        </fuse-alert>
+        <div class="flex flex-row justify-end pb-8 pt-4">
+            <button mat-raised-button color="primary" (click)="click(upload)" *ngIf="!readonly">
+                <mat-icon svgIcon="mat_outline:file_upload"></mat-icon>
+                Upload
+            </button>
+        </div>
+        <input #upload type='file' class="hidden"
+               (change)="addContent($event)"/>
+
+        <div class="border-b">
+            <div class="pb-1 grid grid-cols-12 flex-1 ">
+                <div class="flex flex-col col-span-5">
+                    <div class="font-semibold text-md">
+                        {{'NAME' | transloco}}
+                    </div>
+                </div>
+                <div class="flex flex-col col-span-2">
+                    <div class="font-semibold text-md">
+                        {{'TYPE' | transloco}}
+                    </div>
+                </div>
+                <div class="flex flex-col col-span-3">
+                    <div class="font-semibold text-md">
+                        {{'CREATED' | transloco}}
+                    </div>
+                </div>
+                <div class="flex flex-col col-span-2">
+                    <div class="font-semibold text-md">
+                        {{'SIZE' | transloco}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pt-2 max-h-100" fuseScrollbar
+             [fuseScrollbarOptions]="{wheelPropagation: false, suppressScrollX: true}">
+            <ng-container *ngFor="let doc of documents">
+                <div class="pb-1 grid grid-cols-12 flex-1 ">
+                    <div class="flex flex-col col-span-5">
+                        <div class="text-md">
+                            {{doc.name}}
+                        </div>
+                    </div>
+                    <div class="flex flex-col col-span-2">
+                        <div class="text-md">
+                            {{doc.mimeType}}
+                        </div>
+                    </div>
+                    <div class="flex flex-col col-span-3">
+                        <div class="text-md">
+                            {{doc.lastModified | dateTimeToFormat: 'DD':{locale: langKey} }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col col-span-2">
+                        <div class="text-md">
+                            {{doc.contentSize | bytes}}
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

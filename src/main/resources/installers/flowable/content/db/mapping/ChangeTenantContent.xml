@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.ChangeTenantContent">
+
+    <!-- Content items -->
+    <select id="countChangeTenantIdContentItemInstances" parameterType="map" resultType="long">
+        select count(RES.ID_) FROM ${prefix}ACT_CO_CONTENT_ITEM RES
+        <include refid="changeTenantIdContentCriteriaSql"/>
+        <if test="definitionTenantId != null">
+            <include refid="changeTenantIdOnlyDefinedDefinitionContentCriteriaSql"/>
+        </if>
+    </select>
+
+    <update id="changeTenantIdContentItemInstances" parameterType="map">
+        update ${prefix}ACT_CO_CONTENT_ITEM <if test="_databaseId != 'mssql'">RES</if>
+        <set>
+            TENANT_ID_ = #{targetTenantId, jdbcType=VARCHAR}
+        </set>
+        <if test="_databaseId == 'mssql'">FROM ${prefix}ACT_CO_CONTENT_ITEM RES</if>
+        <include refid="changeTenantIdContentCriteriaSql"/>
+        <if test="definitionTenantId != null">
+            <include refid="changeTenantIdOnlyDefinedDefinitionContentCriteriaSql"/>
+        </if>
+    </update>
+
+    <!-- Rendition items -->
+    <select id="countChangeTenantIdRenditionItemInstances" parameterType="map" resultType="long">
+        select count(RES.ID_) FROM ${prefix}ACT_CO_RENDITION_ITEM RES
+        <include refid="changeTenantIdContentCriteriaSql"/>
+        <if test="definitionTenantId != null">
+            <include refid="changeTenantIdOnlyDefinedDefinitionRenditionCriteriaSql"/>
+        </if>
+    </select>
+
+    <update id="changeTenantIdRenditionItemInstances" parameterType="map">
+        update ${prefix}ACT_CO_RENDITION_ITEM <if test="_databaseId != 'mssql'">RES</if>
+        <set>
+            TENANT_ID_ = #{targetTenantId, jdbcType=VARCHAR}
+        </set>
+        <if test="_databaseId == 'mssql'">FROM ${prefix}ACT_CO_RENDITION_ITEM RES</if>
+        <include refid="changeTenantIdContentCriteriaSql"/>
+        <if test="definitionTenantId != null">
+            <include refid="changeTenantIdOnlyDefinedDefinitionRenditionCriteriaSql"/>
+        </if>
+    </update>
+
+    <!-- Common SQL -->
+    <sql id="changeTenantIdContentCriteriaSql">
+        where
+        <choose>
+            <when test="sourceTenantId == null or sourceTenantId == ''">RES.TENANT_ID_ IS NULL OR RES.TENANT_ID_ = ''</when>
+            <otherwise>RES.TENANT_ID_ = #{sourceTenantId, jdbcType=VARCHAR}</otherwise>
+        </choose>
+    </sql>
+
+    <sql id="changeTenantIdOnlyDefinedDefinitionContentCriteriaSql">
+        and RES.DEFINITION_ID_ in (
+        select SUB.ID_
+        from ${prefix}ACT_CO_DEFINITION SUB
+        where
+        <choose>
+            <when test="definitionTenantId == ''"> SUB.TENANT_ID_ IS NULL OR SUB.TENANT_ID_ = ''</when>
+            <otherwise>SUB.TENANT_ID_ = #{definitionTenantId, jdbcType=VARCHAR}</otherwise>
+        </choose>
+        )
+    </sql>
+
+    <sql id="changeTenantIdOnlyDefinedDefinitionRenditionCriteriaSql">
+        and RES.CONTENT_ITEM_ID_ in (
+        select CON.ID_
+        from ${prefix}ACT_CO_CONTENT_ITEM CON
+        where CON.DEFINITION_ID_ in (
+        select SUB.ID_
+        from ${prefix}ACT_CO_DEFINITION SUB
+        where
+        <choose>
+            <when test="definitionTenantId == ''"> SUB.TENANT_ID_ IS NULL OR SUB.TENANT_ID_ = ''</when>
+            <otherwise>SUB.TENANT_ID_ = #{definitionTenantId, jdbcType=VARCHAR}</otherwise>
+        </choose>
+        )
+        )
+    </sql>
+
+</mapper>

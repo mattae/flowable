@@ -12,13 +12,13 @@
  */
 package com.mattae.snl.plugins.flowable.services.editor.mapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.FormProperty;
 import org.flowable.bpmn.model.UserTask;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserTaskInfoMapper extends AbstractInfoMapper {
 

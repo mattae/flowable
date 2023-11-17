@@ -1,15 +1,22 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { MatFormioModule } from '../../formio/angular-material-formio.module';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AngularSplitModule } from 'angular-split';
 import { WorkService } from '../services/work.service';
 import { AppsComponent } from './app/apps.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { AdhocTaskComponent } from '../task/adhoc-task.component';
+import { User } from '../model/common.model';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { map, Observable, startWith } from 'rxjs';
+import { DocumentsComponent } from '../documents/documents.component';
+import { CommentsComponent } from '../comments/comments.component';
+import { SubItemsComponent } from '../sub-items/sub-items.component';
+import { TranslocoModule } from '@ngneat/transloco';
+import { StylesheetService } from '@mattae/angular-shared';
 
 @Component({
     selector: 'flowable-work',
@@ -17,7 +24,6 @@ import { AdhocTaskComponent } from '../task/adhoc-task.component';
     standalone: true,
     imports: [
         CommonModule,
-        //MatFormioModule,
         RouterOutlet,
         RouterLink,
         AngularSplitModule,
@@ -28,18 +34,36 @@ import { AdhocTaskComponent } from '../task/adhoc-task.component';
         MatAutocompleteModule,
         ReactiveFormsModule,
         AdhocTaskComponent,
-        MatFormioModule
+        DocumentsComponent,
+        CommentsComponent,
+        SubItemsComponent,
+        TranslocoModule
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WorkComponent implements OnInit, OnDestroy {
-
-    ngOnInit() {
-
-    }
+    input = new FormControl<User | null>(null);
 
     constructor(private _changeDetectorRef: ChangeDetectorRef, private ws: WorkService) {
+        inject(StylesheetService).loadStylesheet('/js/flowable/styles.css');
     }
+
+    ngOnInit() {
+        this.users$ = this.input.valueChanges.pipe(
+            startWith(''),
+            map(value => {
+                const name = typeof value === 'string' ? value : value?.fullName;
+                return name ? this._userFilter(name as string) : [];
+            }),
+        );
+    }
+
+    private _userFilter(name: string): User[] {
+        const filterValue = name.toLowerCase();
+
+        return this.users.filter(option => option.fullName.toLowerCase().includes(filterValue));
+    }
+
     ngOnDestroy(): void {
     }
 
@@ -662,7 +686,7 @@ export class WorkComponent implements OnInit, OnDestroy {
         "name": "wizard",
     }
 
-    form2={
+    form2 = {
         "_id": "57aa1d2a5b7a477b002717fe",
         "machineName": "examples:example",
         "modified": "2022-12-09T17:14:46.932Z",
@@ -1518,5 +1542,44 @@ export class WorkComponent implements OnInit, OnDestroy {
 
     change(event) {
         console.log(event);
+    }
+
+    userInput = new FormControl<User | null>(null);
+    users: User[];
+    users$: Observable<User[]>;
+    filteredUsers: User[] = [];
+    candidates: User[] = [];
+    addOnBlur = true;
+    readonly separatorKeysCodes = [ENTER, COMMA] as const;
+
+    add(event: MatAutocompleteSelectedEvent): void {
+        const value: User = event.option.value;
+
+        // Add our user
+        if (value) {
+            const user = this.users.find(user => user.fullName.toLowerCase().includes(value.fullName.toLowerCase()));
+            if (user) {
+                this.filteredUsers.push(user);
+            }
+        }
+
+        // Clear the input value
+        //event.chipInput!.clear();
+    }
+
+    remove(user: User): void {
+        const index = this.filteredUsers.indexOf(user);
+
+        if (index >= 0) {
+            this.filteredUsers.splice(index, 1);
+        }
+    }
+
+    getInitials(user: User) {
+        return user.firstName.charAt(0).toUpperCase() + user.lastName.charAt(0).toUpperCase();
+    }
+
+    displayFn(user: User): string {
+        return user && user.fullName ? user.fullName : '';
     }
 }

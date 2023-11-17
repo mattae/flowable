@@ -28,7 +28,7 @@
                 </ng-container>
             </div>
             <div
-                class="text-secondary">
+                class="text-secondary p-2">
                 <mat-formio [form]="data.form" (change)="onChange($event)"></mat-formio>
             </div>
         </ng-container>
@@ -45,7 +45,7 @@
                 <button
                     mat-stroked-button
                     matDialogClose>
-                    {{'Cancel' | transloco}}
+                    {{'CORE.BUTTONS.CANCEL' | transloco}}
                 </button>
             </ng-container>
 
@@ -55,7 +55,7 @@
                     mat-flat-button
                     [color]="'primary'"
                     (click)="submit()">
-                    {{'Submit' | transloco}}
+                    {{'FLOWABLE.BUTTONS.SUBMIT' | transloco}}
                 </button>
             </ng-container>
 

@@ -47,7 +47,7 @@ public class FlowableCaseDefinitionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowableCaseDefinitionService.class);
 
     protected final CmmnRepositoryService cmmnRepositoryService;
-    
+
     protected final AppRepositoryService appRepositoryService;
 
     protected final PermissionService permissionService;
@@ -117,7 +117,7 @@ public class FlowableCaseDefinitionService {
         CmmnModel cmmnModel = this.cmmnRepositoryService.getCmmnModel(caseDefinition.getId());
         List<Case> cases = cmmnModel.getCases();
         if (cases == null || cases.size() != 1) {
-            throw new FlowableObjectNotFoundException("Case definition " + caseDefinition.getId()+ " start form was not found.");
+            throw new FlowableObjectNotFoundException("Case definition " + caseDefinition.getId() + " start form was not found.");
         }
 
         Case caze = cases.get(0);

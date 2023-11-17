@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.MetadataInstanceEntityImpl">
+
+    <!-- METADATA INSTANCE INSERT -->
+
+    <insert id="insertMetadataInstance" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.MetadataInstanceEntityImpl">
+        insert into ${prefix}ACT_CO_METADATA (ID_, REV_, TYPE_, NAME_, CONTENT_ITEM_ID_, BYTEARRAY_ID_, DOUBLE_, LONG_ , TEXT_, TEXT2_)
+        values (
+                   #{id, jdbcType=VARCHAR},
+                   1,
+                   #{type, jdbcType=VARCHAR},
+                   #{name, jdbcType=VARCHAR},
+                   #{contentItemId, jdbcType=VARCHAR},
+                   #{byteArrayRef, typeHandler=VariableByteArrayRefTypeHandler},
+                   #{doubleValue, jdbcType=DOUBLE},
+                   #{longValue, jdbcType=BIGINT},
+                   #{textValue, jdbcType=VARCHAR},
+                   #{textValue2, jdbcType=VARCHAR}
+               )
+    </insert>
+
+    <insert id="bulkInsertMetadataInstance" parameterType="java.util.List">
+        INSERT INTO ${prefix}ACT_CO_METADATA (ID_, REV_, TYPE_, NAME_, CONTENT_ITEM_ID_, BYTEARRAY_ID_, DOUBLE_, LONG_ , TEXT_, TEXT2_) VALUES
+        <foreach collection="list" item="metadata" index="index" separator=",">
+            (
+            #{metadata.id, jdbcType=VARCHAR},
+            1,
+            #{metadata.typeName, jdbcType=VARCHAR },
+            #{metadata.name, jdbcType=VARCHAR},
+            #{metadata.contentItemId, jdbcType=VARCHAR},
+            #{metadata.byteArrayRef, typeHandler=VariableByteArrayRefTypeHandler},
+            #{metadata.doubleValue, jdbcType=DOUBLE},
+            #{metadata.longValue, jdbcType=BIGINT},
+            #{metadata.textValue, jdbcType=VARCHAR},
+            #{metadata.textValue2, jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <!-- METADATA INSTANCE UPDATE -->
+
+    <update id="updateMetadataInstance" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.MetadataInstanceEntityImpl">
+        update ${prefix}ACT_CO_METADATA
+        <set>
+            REV_ = #{revisionNext, jdbcType=INTEGER},
+            <if test="originalPersistentState.name != name">
+                NAME_ = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.contentItemId != contentItemId">
+                CONTENT_ITEM_ID_ = #{contentItemId, jdbcType=VARCHAR},
+            </if>
+            <if test="(byteArrayRef != null and originalPersistentState.byteArrayRef == null) or (byteArrayRef == null and originalPersistentState.byteArrayRef != null) or (byteArrayRef != null and originalPersistentState.byteArrayRef != byteArrayRef.id)">
+                BYTEARRAY_ID_ = #{byteArrayRef, typeHandler=VariableByteArrayRefTypeHandler},
+            </if>
+            <if test="(originalPersistentState.typeName == null and type != null) or (originalPersistentState.typeName != null and type == null) or (originalPersistentState.typeName != type.typeName)">
+                TYPE_ = #{type, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.doubleValue != doubleValue">
+                DOUBLE_ = #{doubleValue, jdbcType=DOUBLE},
+            </if>
+            <if test="originalPersistentState.longValue != longValue">
+                LONG_ = #{longValue, jdbcType=BIGINT},
+            </if>
+            <if test="originalPersistentState.textValue != textValue">
+                TEXT_ = #{textValue, jdbcType=VARCHAR},
+            </if>
+            <if test="originalPersistentState.textValue2 != textValue2">
+                TEXT2_ = #{textValue2, jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID_ = #{id, jdbcType=VARCHAR}
+        and REV_ = #{revision, jdbcType=INTEGER}
+    </update>
+
+    <!-- METADATA INSTANCE DELETE -->
+
+    <delete id="deleteMetadataInstance" parameterType="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.MetadataInstanceEntityImpl">
+        delete from ${prefix}ACT_CO_METADATA where ID_ = #{id, jdbcType=VARCHAR} and REV_ = #{revision}
+    </delete>
+
+    <delete id="deleteMetadataInstancesByContentItemId" parameterType="string">
+        delete from ${prefix}ACT_CO_METADATA where CONTENT_ITEM_ID_ = #{id, jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteBytesForMetadataInstancesByContentItemId" parameterType="string">
+        delete <if test="_databaseId == 'mysql' or _databaseId == 'mssql'"> BYTES_ </if> from ${prefix}ACT_GE_BYTEARRAY BYTES_
+        where BYTES_.ID_ in (
+        select RES.BYTEARRAY_ID_
+        from ${prefix}ACT_CO_METADATA RES
+        where RES.CONTENT_ITEM_ID_ = #{id, jdbcType=VARCHAR}
+        and RES.BYTEARRAY_ID_ is not null
+        )
+    </delete>
+
+    <!-- METADATA INSTANCE RESULT MAP -->
+    <resultMap id="metadataInstanceResultMap" type="com.mattae.snl.plugins.flowable.content.engine.impl.persistence.entity.MetadataInstanceEntityImpl">
+        <id property="id" column="ID_" jdbcType="VARCHAR" />
+        <result property="revision" column="REV_" jdbcType="INTEGER" />
+        <result property="type" column="TYPE_" javaType="org.flowable.variable.api.types.VariableType" jdbcType="VARCHAR" />
+        <result property="name" column="NAME_" javaType="String" jdbcType="VARCHAR" />
+        <result property="contentItemId" column="CONTENT_ITEM_ID_" jdbcType="VARCHAR" />
+        <result property="byteArrayRef" column="BYTEARRAY_ID_" typeHandler="VariableByteArrayRefTypeHandler" />
+        <result property="doubleValue" column="DOUBLE_" jdbcType="DOUBLE" />
+        <result property="textValue" column="TEXT_" jdbcType="VARCHAR" />
+        <result property="textValue2" column="TEXT2_" jdbcType="VARCHAR" />
+        <result property="longValue" column="LONG_" jdbcType="BIGINT" />
+    </resultMap>
+
+    <!-- METADATA INSTANCE SELECT -->
+
+    <select id="selectMetadataInstance" parameterType="string" resultMap="metadataInstanceResultMap">
+        select * from ${prefix}ACT_CO_METADATA where ID_ = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectMetadataInstancesByContentItemId" parameterType="org.flowable.common.engine.impl.db.ListQueryParameterObject" resultMap="metadataInstanceResultMap">
+        select * from ${prefix}ACT_CO_METADATA
+        where CONTENT_ITEM_ID_ = #{parameter, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectMetadataInstancesByContentItemIds" parameterType="org.flowable.common.engine.impl.db.ListQueryParameterObject" resultMap="metadataInstanceResultMap">
+        select * from ${prefix}ACT_CO_METADATA
+        and CONTENT_ITEM_ID_ in
+        <foreach item="item" index="index" collection="parameter" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectMetadataInstanceByContentItemIdAndName" parameterType="java.util.Map" resultMap="metadataInstanceResultMap">
+        select * from ${prefix}ACT_CO_METADATA
+        where CONTENT_ITEM_ID_ = #{contentItemId, jdbcType=VARCHAR} and NAME_= #{name, jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectMetadataInstancesByContentItemIdAndNames" parameterType="java.util.Map" resultMap="metadataInstanceResultMap">
+        select * from ${prefix}ACT_CO_METADATA
+        where CONTENT_ITEM_ID_ = #{parameter.contentItemId, jdbcType=VARCHAR}
+        <if test="parameter.names != null and parameter.names.size > 0">
+            and (
+            <foreach collection="parameter.names" index="index" item="name" separator=" or ">
+                NAME_= #{name, jdbcType=VARCHAR}
+            </foreach>
+            )
+        </if>
+    </select>
+
+</mapper>

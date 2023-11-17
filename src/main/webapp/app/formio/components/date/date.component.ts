@@ -2,7 +2,16 @@ import { Component, ViewChild } from '@angular/core';
 import { MaterialComponent } from '../MaterialComponent';
 import DateTimeComponent from 'formiojs/components/datetime/DateTime.js';
 import { momentDate } from 'formiojs/utils/utils.js';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormioFormFieldComponent } from '../formio-form-field/formio-form-field.component';
+import { LabelComponent } from '../label/label.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatIconModule } from '@angular/material/icon';
+import { NgIf } from '@angular/common';
+import { MatInputModule } from '@angular/material/input';
+import { MaterialCalendarComponent } from '../calendar/calendar.component';
+import { MaskDirective } from '../../directives/mask.directive';
 
 @Component({
     selector: 'mat-formio-date',
@@ -66,13 +75,26 @@ import { FormControl } from '@angular/forms';
                 <mat-error *ngIf="instance.error">{{ instance.error.message }}</mat-error>
             </form>
         </ng-template>
-    `
+    `,
+    imports: [
+        FormioFormFieldComponent,
+        LabelComponent,
+        MatFormFieldModule,
+        MatDatepickerModule,
+        MatIconModule,
+        NgIf,
+        ReactiveFormsModule,
+        MatInputModule,
+        MaterialCalendarComponent,
+        MaskDirective
+    ],
+    standalone: true
 })
 
 export class MaterialDateComponent extends MaterialComponent {
     public timeControl: FormControl = new FormControl();
     public displayControl: FormControl = new FormControl();
-    public isPickerOpened: boolean;
+    public isPickerOpened!: boolean;
     public selectedDate: any;
     public selectedTime: any = '00:00';
     public allowManualInput = true;
@@ -87,7 +109,7 @@ export class MaterialDateComponent extends MaterialComponent {
         return this.instance && this.instance.component.enableTime === true;
     }
 
-    setDisplayControlValue(value = null) {
+    setDisplayControlValue(value: null | string = null) {
         const format = `YYYY-MM-DD${this.enableTime ? 'THH:mm' : ''}`;
         value = value || this.getDateTimeValue();
 
