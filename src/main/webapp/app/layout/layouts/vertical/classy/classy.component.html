@@ -1,0 +1,59 @@
+
+<!-- Navigation -->
+<fuse-vertical-navigation
+    [mode]="isScreenSmall ? 'over' : 'side'"
+    [name]="'mainNavigation'"
+    [navigation]="defaultNavigation"
+    [opened]="!isScreenSmall"
+    class="dark bg-gray-900 print:hidden">
+    <!-- Navigation header hook -->
+    <ng-container fuseVerticalNavigationContentHeader>
+        <div class="flex items-center w-full p-4 pl-6">
+            <!-- Logo -->
+            <div class="flex items-center justify-center">
+                <img
+                    class="w-8"
+                    [src]="logoUrl">
+            </div>
+        </div>
+
+    </ng-container>
+    <!-- Navigation footer hook -->
+    <ng-container fuseVerticalNavigationContentFooter>
+        <div class="flex flex-0 items-center justify-center h-16 pr-6 pl-2 mt-2 mb-4 opacity-12">
+            <img
+                class="max-w-36"
+                [src]="'/assets/angular.png'">
+        </div>
+    </ng-container>
+</fuse-vertical-navigation>
+<!-- Wrapper -->
+<div class="flex flex-col flex-auto w-full min-w-0" fuseScrollReset>
+    <!-- Header -->
+    <div
+        class="top-0 sticky flex flex-0 items-center w-full h-16 px-4 md:px-6 z-49 shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
+        <!-- Navigation toggle button -->
+        <button
+            (click)="toggleNavigation('mainNavigation')"
+            mat-icon-button>
+            <mat-icon [svgIcon]="'heroicons_outline:bars-3'"></mat-icon>
+        </button>
+        <!-- Components -->
+        <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
+            <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
+        </div>
+    </div>
+    <!-- Content -->
+    <div class="flex flex-col flex-auto h-screen">
+        <!-- *ngIf="true" hack is required here for router-outlet to work correctly.
+             Otherwise, layout changes won't be registered and the view won't be updated! -->
+        @if (true) {
+            <router-outlet></router-outlet>
+        }
+    </div>
+    <!-- Footer -->
+    <div
+        class="bottom-0 sticky flex flex-0 items-center justify-start w-full h-14 px-4 md:px-6 z-49 border-t bg-card dark:bg-transparent print:hidden">
+        <span class="font-medium text-secondary">&copy; {{ currentYear }}</span>
+    </div>
+</div>
