@@ -9,14 +9,14 @@ module.exports = webpackMerge(commonConfig, {
                 context: [
                     '/app/rest'
                 ],
-                target: `http://localhost:9080`,
+                target: `http://localhost:8080`,
                 secure: false,
             },
             {
                 context: [
-                    '/websocket'
+                    '/api'
                 ],
-                target: 'ws://127.0.0.1:9080',
+                target: 'http://localhost:8080',
                 ws: true
             }],
         historyApiFallback: true

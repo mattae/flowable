@@ -15,7 +15,7 @@ import { SubItemsComponent } from '../sub-items/sub-items.component';
 import { CommentsComponent } from '../comments/comments.component';
 import { FormService } from '../services/form.service';
 import { TaskService } from '../services/task.service';
-import { MatFormioComponent } from '../../formio/mat-formio.component';
+import { MatFormioComponent } from '@mattae/angular-shared';
 
 @Component({
     selector: 'flowable-process',

@@ -105,6 +105,7 @@
     "defaultProject": "flowable",
     "cli": {
         "defaultCollection": "@angular-eslint/schematics",
-        "packageManager": "yarn"
+        "packageManager": "yarn",
+        "analytics": "0af0e20f-4c81-4d67-9289-f2e56159daf4"
     }
 }

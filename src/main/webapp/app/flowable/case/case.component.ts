@@ -16,7 +16,7 @@ import { SubItemsComponent } from '../sub-items/sub-items.component';
 import { DocumentsComponent } from '../documents/documents.component';
 import { TaskService } from '../services/task.service';
 import { FormService } from '../services/form.service';
-import { MatFormioComponent } from '../../formio/mat-formio.component';
+import { MatFormioComponent } from '@mattae/angular-shared';
 
 @Component({
     selector: 'flw-case',

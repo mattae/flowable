@@ -1,0 +1,14 @@
+@import 'styles/tailwind';
+@import 'styles/themes';
+@import 'styles/main';
+@tailwind components;
+@tailwind utilities;
+/*@import 'styles/easymde.min.css';*/
+/*@import '~@angular/material/prebuilt-themes/indigo-pink.css';*/
+@import "bootswatch/dist/cosmo/_variables.scss";
+@import "bootstrap/scss/bootstrap.scss";
+@import "bootswatch/dist/cosmo/_bootswatch.scss";
+$fa-font-path: '~font-awesome/fonts';
+@import 'font-awesome/scss/font-awesome';
+
+

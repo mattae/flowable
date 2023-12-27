@@ -20,11 +20,10 @@ import { PeopleComponent } from '../people/people.component';
 import { DocumentsComponent } from '../documents/documents.component';
 import { CommentsComponent } from '../comments/comments.component';
 import { SubItemsComponent } from '../sub-items/sub-items.component';
-import { AccountService, FuseConfirmationService } from '@mattae/angular-shared';
+import { AccountService, FuseConfirmationService, MatFormioComponent } from '@mattae/angular-shared';
 import { FormService } from '../services/form.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatFormioComponent } from '../../formio/mat-formio.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({

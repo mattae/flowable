@@ -1,4 +1,7 @@
-<div class="flex flex-row w-full h-full modeler">
+<!--<div class="flex flex-row w-full h-full modeler">
     <div class="w-4/5 h-full" #canvas id="canvas"></div>
     <div class="w-1/5" id="properties"></div>
+</div>-->
+<div class="p-2 w-full">
+    <mat-formio [form]="form" (change)="change($event)"/>
 </div>

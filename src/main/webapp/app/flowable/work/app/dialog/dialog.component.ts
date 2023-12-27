@@ -4,7 +4,7 @@ import { NgClass, NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@ngneat/transloco';
-import { MatFormioComponent } from '../../../../formio/mat-formio.component';
+import { MatFormioComponent } from '@mattae/angular-shared';
 
 @Component({
     selector: 'create-dialog',
@@ -13,6 +13,7 @@ import { MatFormioComponent } from '../../../../formio/mat-formio.component';
         `
             .fuse-confirmation-dialog-panel {
                 @apply md:w-128;
+
                 .mat-mdc-dialog-container {
                     .mat-mdc-dialog-surface {
                         padding: 0 !important;
@@ -23,12 +24,20 @@ import { MatFormioComponent } from '../../../../formio/mat-formio.component';
     ],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [NgIf, MatButtonModule, MatDialogModule, MatIconModule, NgClass, TranslocoModule, MatFormioComponent],
+    imports: [
+        NgIf,
+        MatButtonModule,
+        MatDialogModule,
+        MatIconModule,
+        NgClass,
+        TranslocoModule,
+        MatFormioComponent
+    ],
 })
 export class CreateDialogComponent {
     private submission: any;
 
-    constructor(@Inject(MAT_DIALOG_DATA) public data, private dialogRef: MatDialogRef<CreateDialogComponent>,) {
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any, private dialogRef: MatDialogRef<CreateDialogComponent>,) {
     }
 
     submit() {

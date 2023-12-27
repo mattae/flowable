@@ -1,15 +1,30 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import { WorkService } from './flowable/services/work.service';
 import { DEFAULT_TOOLBAR, Editor, Toolbar } from 'ngx-editor';
+import { FuseNavigationItem, FuseScrollResetDirective, FuseVerticalNavigationComponent } from '@mattae/angular-shared';
+import { RouterOutlet } from '@angular/router';
 
 // use Camunda BPMN namespace
 
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
+    imports: [
+        FuseVerticalNavigationComponent,
+        FuseScrollResetDirective,
+        RouterOutlet
+    ],
+    standalone: true
 
 })
 export class AppComponent implements AfterViewInit {
+    defaultNavigation: FuseNavigationItem[] = [
+        {
+            id: 'example',
+            type: 'basic',
+            link: '/'
+        }
+    ];
 
     form = {
         components: [
