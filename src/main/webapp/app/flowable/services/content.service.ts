@@ -4,12 +4,13 @@ import { ListResult } from '../model/common.model';
 import { Content } from '../model/content.model';
 import { DateTime } from 'luxon';
 import { map } from 'rxjs';
+import { upload } from 'ngx-operators';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ContentService {
-    private resourceUrl = '/app/rest';
+    private resourceUrl = '/api/rest';
 
     constructor(private http: HttpClient) {
     }
@@ -48,8 +49,15 @@ export class ContentService {
     }
 
     createRawContentItemOnTask(taskId: string, formData: FormData) {
-        return this.http.post<Content>(`${this.resourceUrl}/tasks/${taskId}/raw-content`, formData).pipe(
-            map(res => this.convertContentFromServer(res))
+        return this.http.post<Content>(`${this.resourceUrl}/tasks/${taskId}/raw-content`, formData, {
+            reportProgress: true,
+            observe: 'events'
+        }).pipe(
+            upload(),
+            map(res => {
+                res.body = this.convertContentFromServer(res.body);
+                return res;
+            })
         );
     }
 
@@ -59,20 +67,43 @@ export class ContentService {
         );
     }
 
-    createRawContentItemOnProcessInstance(processInstanceId: string, content: Content) {
-        return this.http.post<Content>(`${this.resourceUrl}/process-instances/${processInstanceId}/raw-content`, content).pipe(
-            map(res => this.convertContentFromServer(res))
+    createRawContentItemOnProcessInstance(processInstanceId: string, content: FormData) {
+        return this.http.post<Content>(`${this.resourceUrl}/process-instances/${processInstanceId}/raw-content`, content, {
+            reportProgress: true,
+            observe: 'events'
+        }).pipe(
+            upload(),
+            map(res => {
+                res.body = this.convertContentFromServer(res.body);
+                return res;
+            })
         );
     }
 
-    createRawContentItemOnCaseInstance(caseInstanceId: string, content: Content) {
-        return this.http.post<Content>(`${this.resourceUrl}/case-instances/${caseInstanceId}/raw-content`, content).pipe(
-            map(res => this.convertContentFromServer(res))
+    createRawContentItemOnCaseInstance(caseInstanceId: string, content: FormData) {
+        return this.http.post<Content>(`${this.resourceUrl}/case-instances/${caseInstanceId}/raw-content`, content, {
+            reportProgress: true,
+            observe: 'events'
+        }).pipe(
+            upload(),
+            map(res => {
+                res.body = this.convertContentFromServer(res.body);
+                return res;
+            })
         );
     }
 
     createTemporaryRawContentItem(formData: FormData) {
-        return this.http.post<Content>(`${this.resourceUrl}/content/raw`, formData, {})
+        return this.http.post<Content>(`${this.resourceUrl}/content/raw`, formData, {
+            reportProgress: true,
+            observe: 'events'
+        }).pipe(
+            upload(),
+            map(res => {
+                res.body = this.convertContentFromServer(res.body);
+                return res;
+            })
+        );
     }
 
     deleteContentItem(contentId: string) {
@@ -84,7 +115,10 @@ export class ContentService {
     }
 
     getRawContentItem(contentId: string) {
-        return this.http.get(`${this.resourceUrl}/content/${contentId}/raw`,{  responseType: 'blob',  observe: 'response'});
+        return this.http.get(`${this.resourceUrl}/content/${contentId}/raw`, {
+            responseType: 'blob',
+            observe: 'response'
+        });
     }
 
     private convertFromServer(contents: Content[]) {
@@ -97,6 +131,7 @@ export class ContentService {
 
     private convertContentFromServer(content: Content) {
         content.created = DateTime.fromISO(content.created as unknown as string);
+        content.lastModified = DateTime.fromISO(content.lastModified as unknown as string);
         return content;
     }
 }

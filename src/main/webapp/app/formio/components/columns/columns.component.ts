@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MaterialNestedComponent } from '../MaterialNestedComponent';
 import ColumnsComponent from 'formiojs/components/columns/Columns.js';
+import { NgClass, NgForOf } from '@angular/common';
 
 @Component({
     selector: 'mat-formio-columns',
@@ -14,6 +15,11 @@ import ColumnsComponent from 'formiojs/components/columns/Columns.js';
             </div>
         </div>
     `,
+    imports: [
+        NgClass,
+        NgForOf
+    ],
+    standalone: true
 })
 export class MaterialColumnsComponent extends MaterialNestedComponent {
     public flexGap = 0.5;

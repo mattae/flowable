@@ -75,9 +75,9 @@ public class DebuggerService implements ProcessDebugger, ApplicationContextAware
 
     public Collection<String> getBrokenExecutions(String activityId, String processInstanceId) {
         List<Job> brokenJobs = getManagementService().createSuspendedJobQuery().
-                processInstanceId(processInstanceId).
-                handlerType(HANDLER_TYPE_BREAK_POINT).
-                list();
+            processInstanceId(processInstanceId).
+            handlerType(HANDLER_TYPE_BREAK_POINT).
+            list();
 
         ArrayList<String> executions = new ArrayList<>();
         for (Job brokenJob : brokenJobs) {
@@ -132,7 +132,7 @@ public class DebuggerService implements ProcessDebugger, ApplicationContextAware
     protected RuntimeService getRuntimeService() {
         return this.applicationContext.getBean(RuntimeService.class);
     }
-   
+
     protected HistoryService getHistoricService() {
         return this.applicationContext.getBean(HistoryService.class);
     }
@@ -146,21 +146,21 @@ public class DebuggerService implements ProcessDebugger, ApplicationContextAware
         List<Execution> executions = getRuntimeService().createExecutionQuery().executionId(executionId).list();
         if (executions.isEmpty()) {
             return getHistoricService().createHistoricVariableInstanceQuery().executionId(executionId).list().stream().
-                    map(DebuggerRestVariable::new).
-                    collect(Collectors.toList());
-        }
-        return getRuntimeService().getVariableInstances(executionId).values().stream().
                 map(DebuggerRestVariable::new).
                 collect(Collectors.toList());
+        }
+        return getRuntimeService().getVariableInstances(executionId).values().stream().
+            map(DebuggerRestVariable::new).
+            collect(Collectors.toList());
     }
-    
+
     public List<ExecutionRepresentation> getExecutions(String processInstanceId) {
         List<Execution> executions = getRuntimeService().createExecutionQuery().processInstanceId(processInstanceId).list();
         List<ExecutionRepresentation> executionRepresentations = new ArrayList<>(executions.size());
         for (Execution execution : executions) {
-            executionRepresentations.add(new ExecutionRepresentation(execution.getId(), execution.getParentId(), 
-                    execution.getProcessInstanceId(), execution.getSuperExecutionId(), execution.getActivityId(), 
-                    execution.isSuspended(), execution.getTenantId()));
+            executionRepresentations.add(new ExecutionRepresentation(execution.getId(), execution.getParentId(),
+                execution.getProcessInstanceId(), execution.getSuperExecutionId(), execution.getActivityId(),
+                execution.isSuspended(), execution.getTenantId()));
         }
         return executionRepresentations;
     }
@@ -176,13 +176,13 @@ public class DebuggerService implements ProcessDebugger, ApplicationContextAware
     }
 
     public void evaluateScript(final String executionId, final String scriptLanguage, final String script) {
-        getManagementService().executeCommand(
-                (Command<Void>) commandContext -> {
-                    ScriptingEngines scriptingEngines = Context.getProcessEngineConfiguration().getScriptingEngines();
-                    Execution execution = Context.getProcessEngineConfiguration().getExecutionEntityManager().findById(executionId);
-                    scriptingEngines.evaluate(script, scriptLanguage, (ExecutionEntityImpl) execution, false);
-                    return null;
-                }
-        );
+/*        getManagementService().executeCommand(
+            (Command<Void>) commandContext -> {
+                ScriptingEngines scriptingEngines = Context.getProcessEngineConfiguration().getScriptingEngines();
+                Execution execution = Context.getProcessEngineConfiguration().getExecutionEntityManager().findById(executionId);
+                scriptingEngines.evaluate(script, scriptLanguage, (ExecutionEntityImpl) execution, false);
+                return null;
+            }
+        );*/
     }
 }

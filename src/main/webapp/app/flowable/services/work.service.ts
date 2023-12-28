@@ -14,7 +14,7 @@ export class WorkService {
     }
 
     getWorkForm() {
-        return this.http.get<ListResult<AppDefinition>>('/app/rest/runtime/app-definitions').pipe(
+        return this.http.get<ListResult<AppDefinition>>('/api/rest/runtime/app-definitions').pipe(
             map((apps: ListResult<AppDefinition>) => apps.data),
             switchMap((apps: AppDefinition[]) => {
                 const deployments = new Set<string>();

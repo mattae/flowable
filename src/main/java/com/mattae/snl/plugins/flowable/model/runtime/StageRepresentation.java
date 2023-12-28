@@ -12,9 +12,9 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
-import java.util.Date;
-
 import org.flowable.ui.common.model.AbstractRepresentation;
+
+import java.util.Date;
 
 public class StageRepresentation extends AbstractRepresentation {
 
@@ -33,12 +33,15 @@ public class StageRepresentation extends AbstractRepresentation {
     public String getName() {
         return name;
     }
+
     public String getState() {
         return state;
     }
+
     public Date getStartedDate() {
         return startedDate;
     }
+
     public Date getEndedDate() {
         return endedDate;
     }

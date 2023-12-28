@@ -13,11 +13,9 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
     prefix = "flowable.content"
 )
 public class FlowableContentProperties {
-    private boolean enabled = true;
-    @NestedConfigurationProperty
-    private final FlowableServlet servlet = new FlowableServlet("/content-api", "Flowable Content Rest API");
     @NestedConfigurationProperty
     private final Storage storage = new Storage();
+    private boolean enabled = true;
 
     public FlowableContentProperties() {
     }
@@ -28,10 +26,6 @@ public class FlowableContentProperties {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public FlowableServlet getServlet() {
-        return this.servlet;
     }
 
     public Storage getStorage() {

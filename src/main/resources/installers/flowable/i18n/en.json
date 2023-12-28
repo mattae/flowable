@@ -1,31 +1,92 @@
 {
-    "PLUGINS": {
-        "TUTORIAL": {
-            "TITLE": "Tutorials",
-            "PAGES": {
-                "EDIT": "Tutorials > Edit",
-                "LIST": "Tutorials",
-                "ADD": "Tutorials > Add"
+    "FLOWABLE": {
+        "APPS": {
+            "CREATE": {
+                "CASE": "Create Case",
+                "PROCESS": "Create Process",
+                "TITLE": "Create",
+                "DESCRIPTION": "Select an item below to create"
+            }
+        },
+        "BUTTONS": {
+            "SUBMIT": "Submit"
+        },
+        "PEOPLE": {
+            "ADD_CANDIDATES": "Add candidates",
+            "ASSIGNEE": "Assignee",
+            "PARTICIPANT": "Participant",
+            "REMOVE_PARTICIPANT": "Remove participant"
+        },
+        "TASK": {
+            "CURRENT_SUBTASKS": "Current sub-tasks",
+            "ADD_SUBTASK": "Add sub task",
+            "COMPLETE": "Complete",
+            "SAVE": "Save",
+            "CLAIM": "Claim",
+            "UN_CLAIM": "Un claim",
+            "NO_ASSIGNEE": "No assignee",
+            "ASSIGNEE": "Assignee",
+            "DUE_DATE": "Due date",
+            "STARTED_IN": "Started",
+            "NO_DUE_DATE": "No due date",
+            "IN_PROGRESS": "In progress",
+            "COMPLETED": "Completed",
+            "NAME": "Name",
+            "NAME_REQUIRED": "Name is required",
+            "FORM_KEY_EXISTS": "Form key already exists",
+            "FORM_DEFINITION": "Form definition",
+            "ATTACH_FORM": "Attach form",
+            "DESCRIPTION": "Description",
+            "SAVE_SUBTASK": "Save",
+            "NO_FORM": "Task has no additional information to show or collect"
+        },
+        "WORK": {
+            "TITLE": {
+                "CASE": "Case",
+                "PROCESS": "Process",
+                "TASK": "Task"
             },
-            "LIST_PAGE": {
-                "TITLE": "Tutorials",
-                "ADD_TUTORIAL": "Add Tutorial",
-                "SEARCH_PLACEHOLDER": "Search Tutorial",
-                "VIEW_DETAILS": "View Details",
-                "NO_TUTORIALS": "No Tutorials found"
+            "CREATED_IN": "Started",
+            "STARTED_BY": "Started by",
+            "OPEN_TASKS": "Open tasks",
+            "WORK_FORM": "Work form",
+            "PEOPLE": "People",
+            "COMMENTS": "Comments",
+            "TASK": "Task",
+            "DOCUMENTS": "Documents",
+            "SUB_ITEMS": "Sub items",
+            "SUBTASKS": "Sub tasks",
+            "HISTORY": "History",
+            "AUDIT_TRAIL": "Audit trail"
+        },
+        "MENU": {
+            "WORK": "Work",
+            "TASK": "Tasks",
+            "FOR_ME": "For me",
+            "OPEN": "Open",
+            "COMPLETED": "Completed",
+            "ALL": "All",
+            "NEW": "Create new"
+        },
+        "TITLE": {
+            "WORK": "Work",
+            "TASK": "Tasks",
+            "FOR_ME": "For me",
+            "OPEN": "Open",
+            "COMPLETED": "Completed",
+            "ALL": "All",
+            "NEW": "Create new"
+        },
+        "COMPONENTS": {
+            "UPLOAD": {
+                "DRAG": "Drag and drop",
+                "BROWSE": "or browse",
+                "UPLOAD": "to upload",
+                "NO_FILES_SELECTED": "No files selected",
+                "CONTENT_TYPE": "content type"
             },
-            "DETAILS": {
-                "TITLE": "Title",
-                "TITLE_REQUIRED": "Title is required",
-                "DESCRIPTION": "Description",
-                "DESCRIPTION_REQUIRED": "Description is required",
-                "PUBLISHED": "Published",
-                "EDIT": "Edit"
-            },
-            "TITLES": {
-                "NEW_TUTORIAL": "New Tutorial",
-                "TUTORIAL_DETAILS": "Tutorial details",
-                "TUTORIALS": "Tutorials"
+            "DATA_GRID": {
+                "ADD": "Add another"
             }
         }
     }

@@ -1,0 +1,59 @@
+<div class="bg-card pt-4">
+    <ng-container *ngFor="let task of tasks">
+        <div class="grid grid-cols-12 border-gray-300 border-b p-2 hover:bg-gray-100" (click)="taskSelected(task)">
+            <div class="flex items-center justify-center">
+                <mat-icon svgIcon="heroicons_outline:clipboard" class="icon-size-7"></mat-icon>
+            </div>
+            <div class="flex flex-col col-span-4">
+                <div class="pl-1.5 font-medium text-md" [matTooltip]="task.description | transloco">
+                    {{task.name | transloco}}
+                </div>
+                <div class="pl-1 space-x-0.5 flex items-center justify-items-end text-sm" *ngIf="task.assignee">
+                    <mat-icon svgIcon="heroicons_outline:user" class="icon-size-3.5"></mat-icon>
+                    <div class="ml-1.5 leading-5 mr-auto pl-1">
+                        {{task.assignee.fullName}}
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col pl-2 col-span-3">
+                <div class="pl-2 mt-auto space-x-0.5 flex items-center justify-items-end text-sm">
+                    <mat-icon svgIcon="heroicons_outline:calendar-days" class="icon-size-4"></mat-icon>
+                    <div class="ml-1.5 leading-5 mr-auto">
+                        {{'FLOWABLE.TASK.STARTED_IN' | transloco}}
+                    </div>
+                    <div class="ml-1.5 leading-5 mr-auto pl-1.5">
+                        {{task.created | timeAgo}}
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col pl-2 col-span-3">
+                <div class="pl-2 mt-auto space-x-0.5 flex items-center justify-items-end text-sm" *ngIf="activeTasks">
+                    <mat-icon svgIcon="heroicons_outline:bell" class="icon-size-4"></mat-icon>
+                    <div class="ml-1.5 leading-5 mr-auto" *ngIf="!task.dueDate">
+                        {{'FLOWABLE.TASK.DUE_DATE' | transloco}}
+                    </div>
+                    <div class="ml-1.5 leading-5 mr-auto pl-1.5" *ngIf="task.dueDate">
+                        {{task?.dueDate | timeUntil}}
+                    </div>
+                    <div class="ml-1.5 leading-5 mr-auto pl-1.5" *ngIf="!task.dueDate">
+                        {{'FLOWABLE.TASK.NO_DUE_DATE' | transloco}}
+                    </div>
+                </div>
+                <div class="pl-2 mt-auto space-x-0.5 flex items-center justify-items-end text-sm" *ngIf="!activeTasks">
+                    <ng-container *ngIf="!task.endDate">
+                        <mat-icon svgIcon="mat_outline:autorenew" class="icon-size-4"></mat-icon>
+                        <div class="ml-1.5 leading-5 mr-auto pl-1.5">
+                            {{'FLOWABLE.TASK.IN_PROGRESS' | transloco}}
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="task.endDate">
+                        <mat-icon svgIcon="mat_outline:done_all" class="icon-size-4"></mat-icon>
+                        <div class="ml-1.5 leading-5 mr-auto pl-1.5">
+                            {{'FLOWABLE.TASK.COMPLETED' | transloco}}
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>

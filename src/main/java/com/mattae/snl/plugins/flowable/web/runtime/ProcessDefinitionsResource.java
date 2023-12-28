@@ -14,7 +14,6 @@ package com.mattae.snl.plugins.flowable.web.runtime;
 
 import com.mattae.snl.plugins.flowable.services.runtime.FlowableProcessDefinitionService;
 import org.flowable.ui.common.model.ResultListDataRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for managing the Engine process definitions.
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class ProcessDefinitionsResource {
 
     protected final FlowableProcessDefinitionService processDefinitionService;
@@ -35,7 +34,7 @@ public class ProcessDefinitionsResource {
 
     @GetMapping(value = "/rest/process-definitions")
     public ResultListDataRepresentation getProcessDefinitions(@RequestParam(value = "latest", required = false) Boolean latest,
-            @RequestParam(value = "appDefinitionKey", required = false) String appDefinitionKey) {
+                                                              @RequestParam(value = "appDefinitionKey", required = false) String appDefinitionKey) {
 
         return processDefinitionService.getProcessDefinitions(latest, appDefinitionKey);
     }

@@ -17,6 +17,7 @@ import org.flowable.form.api.FormRepositoryService;
 import org.flowable.form.rest.FormRestResponseFactory;
 import org.flowable.form.rest.service.api.repository.FormDeploymentResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/app/rest")
+@RequestMapping("/api/rest")
+@Transactional
 public class FormDeploymentCollectionResource {
 
     private static final Map<String, QueryProperty> allowedSortProperties = new HashMap<>();

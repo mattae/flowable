@@ -12,23 +12,18 @@
  */
 package com.mattae.snl.plugins.flowable.services.editor.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.flowable.bpmn.model.*;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.flowable.bpmn.model.Activity;
-import org.flowable.bpmn.model.FieldExtension;
-import org.flowable.bpmn.model.FlowElement;
-import org.flowable.bpmn.model.FlowableListener;
-import org.flowable.bpmn.model.MultiInstanceLoopCharacteristics;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public abstract class AbstractInfoMapper implements InfoMapper {
 

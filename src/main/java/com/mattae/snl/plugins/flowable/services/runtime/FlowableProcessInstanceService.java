@@ -12,13 +12,17 @@
  */
 package com.mattae.snl.plugins.flowable.services.runtime;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mattae.snl.plugins.flowable.content.api.RenditionService;
 import com.mattae.snl.plugins.flowable.model.runtime.CreateProcessInstanceRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.ProcessInstanceRepresentation;
+import com.mattae.snl.plugins.flowable.services.model.ExtendedUserRepresentation;
 import io.github.jbella.snl.core.api.services.errors.RecordNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.content.api.ContentService;
 import org.flowable.engine.HistoryService;
+import org.flowable.engine.IdentityService;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -28,6 +32,9 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.form.api.FormInfo;
 import org.flowable.form.api.FormRepositoryService;
 import org.flowable.form.api.FormService;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.identitylink.api.IdentityLinkType;
+import org.flowable.idm.api.Picture;
 import org.flowable.idm.api.User;
 import org.flowable.ui.common.security.SecurityScope;
 import org.flowable.ui.common.security.SecurityUtils;
@@ -39,6 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 
 /**
  * @author Tijs Rademakers
@@ -62,12 +73,19 @@ public class FlowableProcessInstanceService {
     protected final PermissionService permissionService;
 
     protected final ContentService contentService;
+    protected final RenditionService renditionService;
 
     protected final FlowableCommentService commentService;
 
     protected final UserCache userCache;
+    protected final IdentityService identityService;
 
-    public FlowableProcessInstanceService(RepositoryService repositoryService, HistoryService historyService, RuntimeService runtimeService, FormService formService, FormRepositoryService formRepositoryService, PermissionService permissionService, ContentService contentService, FlowableCommentService commentService, UserCache userCache) {
+    public FlowableProcessInstanceService(RepositoryService repositoryService, HistoryService historyService,
+                                          RuntimeService runtimeService, FormService formService,
+                                          FormRepositoryService formRepositoryService, PermissionService permissionService,
+                                          ContentService contentService, FlowableCommentService commentService,
+                                          IdentityService identityService, UserCache userCache,
+                                          RenditionService renditionService) {
         this.repositoryService = repositoryService;
         this.historyService = historyService;
         this.runtimeService = runtimeService;
@@ -77,6 +95,8 @@ public class FlowableProcessInstanceService {
         this.contentService = contentService;
         this.commentService = commentService;
         this.userCache = userCache;
+        this.identityService = identityService;
+        this.renditionService = renditionService;
     }
 
     public ProcessInstanceRepresentation getProcessInstance(String processInstanceId, HttpServletResponse response) {
@@ -132,7 +152,7 @@ public class FlowableProcessInstanceService {
         }
 
         ProcessInstance processInstance = runtimeService.startProcessInstanceWithForm(startRequest.getProcessDefinitionId(),
-                startRequest.getOutcome(), startRequest.getValues(), startRequest.getName());
+            startRequest.getOutcome(), startRequest.getValues(), startRequest.getName());
 
         User user = null;
         if (processInstance.getStartUserId() != null) {
@@ -142,7 +162,7 @@ public class FlowableProcessInstanceService {
             }
         }
         return new ProcessInstanceRepresentation(processInstance, processDefinition,
-                ((ProcessDefinitionEntity) processDefinition).isGraphicalNotationDefined(), user);
+            ((ProcessDefinitionEntity) processDefinition).isGraphicalNotationDefined(), user);
 
     }
 
@@ -151,9 +171,9 @@ public class FlowableProcessInstanceService {
         SecurityScope currentUser = SecurityUtils.getAuthenticatedSecurityScope();
 
         HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .startedBy(String.valueOf(currentUser.getUserId())) // Permission
-                .singleResult();
+            .processInstanceId(processInstanceId)
+            .startedBy(String.valueOf(currentUser.getUserId())) // Permission
+            .singleResult();
 
         if (processInstance == null) {
             throw new RecordNotFoundException("Process with id: " + processInstanceId + " does not exist or is not started by this user");
@@ -177,5 +197,97 @@ public class FlowableProcessInstanceService {
         } else {
             runtimeService.deleteProcessInstance(processInstanceId, "Cancelled by " + SecurityUtils.getCurrentUserId());
         }
+    }
+
+    public void involveUser(String processInstanceId, ObjectNode requestNode) {
+        SecurityScope currentUser = SecurityUtils.getAuthenticatedSecurityScope();
+
+        HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .startedBy(String.valueOf(currentUser.getUserId())) // Permission
+            .singleResult();
+
+        if (processInstance == null) {
+            throw new RecordNotFoundException("Process with id: " + processInstanceId + " does not exist or is not started by this user");
+        }
+
+        if (requestNode.get("userId") != null) {
+            String userId = requestNode.get("userId").asText();
+            CachedUser user = userCache.getUser(userId);
+            if (user == null) {
+                throw new BadRequestException("Invalid user id");
+            }
+            runtimeService.addUserIdentityLink(processInstanceId, userId, IdentityLinkType.PARTICIPANT);
+
+        } else {
+            throw new BadRequestException("User id is required");
+        }
+
+    }
+
+    public void removeInvolvedUser(String processInstanceId, ObjectNode requestNode) {
+        SecurityScope currentUser = SecurityUtils.getAuthenticatedSecurityScope();
+
+        HistoricProcessInstance processInstance = historyService.createHistoricProcessInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .startedBy(String.valueOf(currentUser.getUserId())) // Permission
+            .singleResult();
+
+        if (processInstance == null) {
+            throw new RecordNotFoundException("Process with id: " + processInstanceId + " does not exist or is not started by this user");
+        }
+
+        String assigneeString;
+        if (requestNode.get("userId") != null) {
+            String userId = requestNode.get("userId").asText();
+            if (userCache.getUser(userId) == null) {
+                throw new BadRequestException("Invalid user id");
+            }
+            assigneeString = String.valueOf(userId);
+
+        } else if (requestNode.get("email") != null) {
+
+            assigneeString = requestNode.get("email").asText();
+
+        } else {
+            throw new BadRequestException("User id or email is required");
+        }
+
+        runtimeService.deleteUserIdentityLink(processInstanceId, assigneeString, IdentityLinkType.PARTICIPANT);
+    }
+
+    public List<ExtendedUserRepresentation> getInvolvedUsers(String processInstanceId) {
+        List<IdentityLink> idLinks = runtimeService.getIdentityLinksForProcessInstance(processInstanceId);
+        List<ExtendedUserRepresentation> result = new ArrayList<>(idLinks.size());
+
+        for (IdentityLink link : idLinks) {
+            // Only include users and non-assignee links
+            if (link.getUserId() != null && !IdentityLinkType.ASSIGNEE.equals(link.getType())) {
+                CachedUser cachedUser = userCache.getUser(link.getUserId());
+                if (cachedUser != null && cachedUser.getUser() != null) {
+                    Picture picture = identityService.getUserPicture(cachedUser.getUser().getId());
+                    if (picture != null && StringUtils.isNotBlank(picture.getMimeType())) {
+                        byte[] bytes = picture.getBytes();
+                        String url = String.format("data:%s;base64,%s", picture.getMimeType(), Base64.getEncoder().encodeToString(bytes));
+                        result.add(new ExtendedUserRepresentation(cachedUser.getUser(), url));
+                    } else {
+                        result.add(new ExtendedUserRepresentation(cachedUser.getUser(), null));
+                    }
+                } else {
+                    var user = identityService.createUserQuery().userId(link.getUserId()).singleResult();
+                    if (user != null) {
+                        Picture picture = identityService.getUserPicture(user.getId());
+                        if (picture != null && StringUtils.isNotBlank(picture.getMimeType())) {
+                            byte[] bytes = picture.getBytes();
+                            String url = String.format("data:%s;base64,%s", picture.getMimeType(), Base64.getEncoder().encodeToString(bytes));
+                            result.add(new ExtendedUserRepresentation(user, url));
+                        } else {
+                            result.add(new ExtendedUserRepresentation(user, null));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 }

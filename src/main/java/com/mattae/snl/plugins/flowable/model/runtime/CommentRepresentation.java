@@ -12,10 +12,11 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
-import java.util.Date;
-
+import com.mattae.snl.plugins.flowable.services.model.ExtendedUserRepresentation;
 import org.flowable.engine.task.Comment;
 import org.flowable.ui.common.model.AbstractRepresentation;
+
+import java.util.Date;
 
 public class CommentRepresentation extends AbstractRepresentation {
 
@@ -23,15 +24,18 @@ public class CommentRepresentation extends AbstractRepresentation {
     private String message;
     private Date created;
     private String createdBy;
+    private ExtendedUserRepresentation user;
 
-    public CommentRepresentation(Comment comment) {
+    public CommentRepresentation() {
+
+    }
+
+    public CommentRepresentation(Comment comment, ExtendedUserRepresentation user) {
         this.id = comment.getId();
         this.message = comment.getFullMessage();
         this.created = comment.getTime();
         this.createdBy = comment.getUserId();
-    }
-
-    public CommentRepresentation() {
+        this.user = user;
     }
 
     public String getId() {
@@ -66,4 +70,11 @@ public class CommentRepresentation extends AbstractRepresentation {
         this.message = message;
     }
 
+    public ExtendedUserRepresentation getUser() {
+        return user;
+    }
+
+    public void setUser(ExtendedUserRepresentation user) {
+        this.user = user;
+    }
 }

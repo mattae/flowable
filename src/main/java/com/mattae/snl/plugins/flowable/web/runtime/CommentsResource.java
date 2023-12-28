@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Joram Barrez
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class CommentsResource {
 
     protected final FlowableCommentService commentService;
@@ -50,7 +50,7 @@ public class CommentsResource {
 
     @PostMapping(value = "/rest/process-instances/{processInstanceId}/comments", produces = "application/json")
     public CommentRepresentation addProcessInstanceComment(@RequestBody CommentRepresentation commentRequest,
-            @PathVariable("processInstanceId") String processInstanceId) {
+                                                           @PathVariable("processInstanceId") String processInstanceId) {
         return commentService.addProcessInstanceComment(commentRequest, processInstanceId);
     }
 

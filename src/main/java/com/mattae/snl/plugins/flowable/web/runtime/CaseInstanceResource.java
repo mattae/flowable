@@ -12,29 +12,25 @@
  */
 package com.mattae.snl.plugins.flowable.web.runtime;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mattae.snl.plugins.flowable.model.runtime.CaseInstanceRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.FormModelRepresentation;
+import com.mattae.snl.plugins.flowable.services.model.ExtendedUserRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.FlowableCaseInstanceService;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.flowable.form.api.FormInfo;
 import org.flowable.form.model.SimpleFormModel;
 import org.flowable.ui.common.model.ResultListDataRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * REST controller for managing a case instance.
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class CaseInstanceResource {
 
     protected final FlowableCaseInstanceService caseInstanceService;
@@ -109,4 +105,21 @@ public class CaseInstanceResource {
         caseInstanceService.deleteCaseInstance(caseInstanceId);
     }
 
+    @PutMapping(value = "/rest/case-instances/{caseInstanceId}/action/involve", produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void involveUser(@PathVariable("caseInstanceId") String caseInstanceId, @RequestBody ObjectNode requestNode) {
+        caseInstanceService.involveUser(caseInstanceId, requestNode);
+    }
+
+    @PutMapping(value = "/rest/case-instances/{caseInstanceId}/action/remove-involved", produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void removeInvolvedUser(@PathVariable("caseInstanceId") String caseInstanceId, @RequestBody ObjectNode requestNode) {
+        caseInstanceService.removeInvolvedUser(caseInstanceId, requestNode);
+    }
+
+    @GetMapping(value = "/rest/case-instances/{caseInstanceId}/involved-users", produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<ExtendedUserRepresentation> getInvolvedUsers(@PathVariable("caseInstanceId") String caseInstanceId) {
+        return caseInstanceService.getInvolvedUsers(caseInstanceId);
+    }
 }

@@ -14,37 +14,37 @@
     <ng-container *ngTemplateOutlet="labelTemplate || defaultLabel"></ng-container>
   </span>
 
-  <div class="mat-formio-component" *ngTemplateOutlet="componentTemplate; context: componentTemplateContext"></div>
+    <div class="mat-formio-component" *ngTemplateOutlet="componentTemplate; context: componentTemplateContext"></div>
 
-  <span *ngIf="hasLabel([
+    <span *ngIf="hasLabel([
                           labelPositions.BOTTOM,
                           labelPositions.RIGHT_RIGHT,
                           labelPositions.RIGHT_LEFT,
                           labelPositions.LEFT_LEFT,
                           labelPositions.LEFT_RIGHT
                         ])"
-        class="mat-formio-label"
-        [ngClass]="{
+          class="mat-formio-label"
+          [ngClass]="{
           'mat-formio-label-align-right': hasLabel([labelPositions.LEFT_RIGHT, labelPositions.RIGHT_RIGHT]),
           'mat-formio-label-align-left': hasLabel([labelPositions.LEFT_LEFT, labelPositions.RIGHT_LEFT])
         }"
-  >
+    >
     <ng-container *ngTemplateOutlet="labelTemplate || defaultLabel"></ng-container>
   </span>
 
-  <mat-hint *ngIf="showDescription && instance.component.description" class="mat-formio-component-description">
-    {{ instance.component.description }}
-  </mat-hint>
+    <mat-hint *ngIf="showDescription && instance.component.description" class="mat-formio-component-description">
+        {{ instance.component.description | transloco}}
+    </mat-hint>
 </div>
 
 <div class="mat-formio-component-wrapper" *ngIf="renderElementOnly">
-  <div class="mat-formio-component" *ngTemplateOutlet="componentTemplate; context: componentTemplateContext"></div>
+    <div class="mat-formio-component" *ngTemplateOutlet="componentTemplate; context: componentTemplateContext"></div>
 </div>
 
 <ng-template #defaultLabel>
-  <mat-label>
+    <mat-label>
     <span style="display: block;"
           [instance]="instance" matFormioLabel>
     </span>
-  </mat-label>
+    </mat-label>
 </ng-template>

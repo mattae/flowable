@@ -6,7 +6,7 @@ import { Group, User } from '../model/common.model';
     providedIn: 'root'
 })
 export class UserService {
-    private resourceUrl = '/app/rest/';
+    private resourceUrl = '/api/rest';
 
     constructor(private http: HttpClient) {
     }
@@ -15,11 +15,17 @@ export class UserService {
         return this.http.get<User>(`${this.resourceUrl}/users/${userId}`);
     }
 
-    getWorkflowUsers(filter: { filter?: string, excludeTaskId?: string, excludeProcessId?: string }) {
+    getWorkflowUsers(filter: {
+        filter?: string,
+        excludeTaskId?: string,
+        excludeProcessId?: string,
+        excludeCaseId?: string
+    }) {
         const params = new HttpParams()
             .set('filter', filter.filter ?? '')
             .set('excludeTaskId', filter.excludeTaskId || null)
-            .set('excludeProcessId', filter.excludeProcessId || null);
+            .set('excludeProcessId', filter.excludeProcessId || null)
+            .set('excludeCaseId', filter.excludeCaseId || null);
 
         return this.http.get<User[]>(`${this.resourceUrl}/workflow-users`, {params});
     }

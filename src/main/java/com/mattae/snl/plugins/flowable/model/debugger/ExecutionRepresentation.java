@@ -16,7 +16,7 @@ package com.mattae.snl.plugins.flowable.model.debugger;
  * @author martin.grofcik
  */
 public class ExecutionRepresentation {
-    
+
     protected String id;
     protected String parentId;
     protected String processInstanceId;
@@ -25,7 +25,7 @@ public class ExecutionRepresentation {
     protected Boolean suspended;
     protected String tenantId;
 
-    public ExecutionRepresentation(String id, String parentId, String processInstanceId, String superExecutionId, 
+    public ExecutionRepresentation(String id, String parentId, String processInstanceId, String superExecutionId,
                                    String activityId, boolean suspended, String tenantId) {
         this.id = id;
         this.parentId = parentId;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { FormModel, ListResult } from '../model/common.model';
+import { FormModel, ListResult, User } from '../model/common.model';
 import { map } from 'rxjs';
 import { DateTime } from 'luxon';
 import {
@@ -16,13 +16,21 @@ import {
     providedIn: 'root'
 })
 export class CaseService {
-    private readonly resourceUrl = '/app/rest';
+    private readonly resourceUrl = '/api/rest';
 
     constructor(private http: HttpClient) {
     }
 
     getCaseDefinitionStartForm(caseDefinitionId: string) {
-        return this.http.get<FormModel>(`${this.resourceUrl}/case-definitions/${caseDefinitionId}/start-form}`);
+        return this.http.get<FormModel>(`${this.resourceUrl}/case-definitions/${caseDefinitionId}/start-form}`).pipe(
+            map(res => {
+                    res.components = res.components.filter(cmp => {
+                        return cmp.key !== 'submit' || cmp.action !== 'submit'
+                    })
+                    return res;
+                }
+            )
+        );
     }
 
     listCaseDefinitions(request: { latest?: boolean; appDefinitionKey?: string }) {
@@ -110,6 +118,18 @@ export class CaseService {
                 res.data = res.data.map(p => this.convertMilestoneFromServer(p))
                 return res;
             }));
+    }
+
+    involveCase(caseInstanceId: string, userId: string) {
+        return this.http.put<void>(`${this.resourceUrl}/case-instances/${caseInstanceId}/action/involve`, {userId: userId});
+    }
+
+    removeInvolveCase(caseInstanceId: string, payload: { userId?: string; email?: string }) {
+        return this.http.put<void>(`${this.resourceUrl}/case-instances/${caseInstanceId}/action/remove-involve`, payload);
+    }
+
+    getInvolvedUsers(caseInstanceId: string) {
+        return this.http.get<User[]>(`${this.resourceUrl}/case-instances/${caseInstanceId}/involved-users`);
     }
 
     private convertCaseFromServer(caseInstance: CaseInstance) {

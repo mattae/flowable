@@ -1,0 +1,41 @@
+<div class="adf-comments-container">
+    <div class="adf-comments-input-container" *ngIf="!isReadOnly()">
+        <div class="flex flex-col comment">
+            <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+            <ngx-editor [editor]="editor" outputFormat="html" placeholder="hi"></ngx-editor>
+            <div class="pt-2 flex flex-row justify-end">
+                <button mat-raised-button color="primary" (click)="add()">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="comments.length > 0">
+        <div class="flex flex-col w-full max-h-96"  fuseScrollbar
+             [fuseScrollbarOptions]="{wheelPropagation: false, suppressScrollX: true}">
+            <div class="flex flex-row hover:bg-gray-100 border-b p-2 w-full" *ngFor="let comment of comments">
+                <div class="flex flex-col flex-1 p-2.5">
+                    <div class="flex-row flex">
+                        <div>
+                            <img class="w-10 h-10 rounded-full" [src]="comment.user?.picture"
+                                 *ngIf="comment.user?.picture"
+                                 alt="Rounded avatar">
+                            <div *ngIf="!comment.user?.picture"
+                                 class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-300 rounded-full dark:bg-gray-600">
+                                <span
+                                    class="font-medium text-gray-600 dark:text-gray-300">{{getInitials(comment.user)}}</span>
+                            </div>
+                        </div>
+                        <div class="pl-2 my-auto font-semibold text-primary">
+                            {{comment.user?.fullName}}
+                        </div>
+                    </div>
+                    <div class="text-md" [innerHTML]="comment.message">
+                    </div>
+                    <div [attr.id]="'comment-time-' + comment.id" class="text-sm text-secondary">
+                        {{ comment.created | timeAgo }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

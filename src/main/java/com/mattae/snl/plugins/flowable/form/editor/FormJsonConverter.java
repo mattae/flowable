@@ -18,10 +18,10 @@ public class FormJsonConverter extends org.flowable.editor.form.converter.FormJs
         SimpleModule module = new SimpleModule();
         module.addDeserializer(FormIOFormModel.Component.class, new ComponentDeserializer());
         objectMapper.registerModule(module)
-                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
-                .addMixIn(FormField.class, NoTypes.class);
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
+            .addMixIn(FormField.class, NoTypes.class);
     }
 
     public FormIOFormModel convertToFormModel(String modelJson) {

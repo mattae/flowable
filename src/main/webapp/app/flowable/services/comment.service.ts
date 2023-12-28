@@ -9,7 +9,7 @@ import { map } from 'rxjs';
     providedIn: 'root'
 })
 export class CommentService {
-    private resourceUrl = '/app/rest';
+    private resourceUrl = '/api/rest';
 
     constructor(private http: HttpClient) {
     }

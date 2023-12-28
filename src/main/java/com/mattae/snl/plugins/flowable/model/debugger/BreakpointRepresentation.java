@@ -21,7 +21,7 @@ import org.flowable.ui.common.model.AbstractRepresentation;
  * @author martin.grofcik
  */
 public final class BreakpointRepresentation extends AbstractRepresentation {
-    
+
     protected String activityId;
     protected String processDefinitionId;
 
@@ -63,11 +63,11 @@ public final class BreakpointRepresentation extends AbstractRepresentation {
         if (!getActivityId().equals(that.getActivityId())) {
             return false;
         }
-        
+
         if (processDefinitionId == null && that.getProcessDefinitionId() == null) {
             return true;
         }
-        
+
         return getProcessDefinitionId().equals(that.getProcessDefinitionId());
     }
 

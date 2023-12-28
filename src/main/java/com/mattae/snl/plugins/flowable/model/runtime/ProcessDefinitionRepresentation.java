@@ -12,14 +12,13 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.ui.common.model.AbstractRepresentation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * REST representation of a process definition.
- * 
+ *
  * @author Tijs Rademakers
  */
 public class ProcessDefinitionRepresentation extends AbstractRepresentation {
@@ -113,13 +112,13 @@ public class ProcessDefinitionRepresentation extends AbstractRepresentation {
         this.tenantId = tenantId;
     }
 
-    public void setHasStartForm(boolean hasStartForm) {
-        this.hasStartForm = hasStartForm;
-    }
-
     @JsonProperty("hasStartForm")
     public boolean getHasStartForm() {
         return hasStartForm;
+    }
+
+    public void setHasStartForm(boolean hasStartForm) {
+        this.hasStartForm = hasStartForm;
     }
 
 }

@@ -15,13 +15,12 @@ package com.mattae.snl.plugins.flowable.web.runtime;
 import com.mattae.snl.plugins.flowable.model.runtime.CreateTaskRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.TaskRepresentation;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.TaskService;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.flowable.ui.common.security.SecurityUtils;
 import org.flowable.ui.common.service.exception.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for managing the current user's account.
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
+@Transactional
 public class TasksResource {
 
     protected final TaskService taskService;

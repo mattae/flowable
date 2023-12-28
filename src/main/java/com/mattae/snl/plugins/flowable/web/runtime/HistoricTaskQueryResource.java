@@ -29,6 +29,7 @@ import org.flowable.ui.common.service.exception.BadRequestException;
 import org.flowable.ui.common.service.exception.NotPermittedException;
 import org.flowable.ui.common.service.idm.cache.UserCache;
 import org.flowable.ui.common.service.idm.cache.UserCache.CachedUser;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
+@Transactional
 public class HistoricTaskQueryResource {
 
     protected final HistoryService historyService;

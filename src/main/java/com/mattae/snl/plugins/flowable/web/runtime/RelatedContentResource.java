@@ -13,6 +13,8 @@
 package com.mattae.snl.plugins.flowable.web.runtime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mattae.snl.plugins.flowable.content.api.ContentRenditionManager;
+import com.mattae.snl.plugins.flowable.content.api.RenditionService;
 import com.mattae.snl.plugins.flowable.model.component.SimpleContentTypeMapper;
 import com.mattae.snl.plugins.flowable.model.runtime.ContentItemRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.PermissionService;
@@ -33,7 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Frederik Heremans
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class RelatedContentResource extends AbstractRelatedContentResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RelatedContentResource.class);
@@ -46,8 +48,18 @@ public class RelatedContentResource extends AbstractRelatedContentResource {
                                   SimpleContentTypeMapper simpleTypeMapper,
                                   HistoryService historyService,
                                   RepositoryService repositoryService,
-                                  UserCache userCache) {
-        super(permissionService, contentService, taskService, simpleTypeMapper, historyService, repositoryService, userCache);
+                                  UserCache userCache,
+                                  RenditionService renditionService,
+                                  ContentRenditionManager contentRenditionManager) {
+        super(permissionService,
+            contentService,
+            taskService,
+            simpleTypeMapper,
+            historyService,
+            repositoryService,
+            userCache,
+            renditionService,
+            contentRenditionManager);
     }
 
     @Override

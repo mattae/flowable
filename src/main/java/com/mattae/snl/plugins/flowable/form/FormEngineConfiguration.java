@@ -12,7 +12,7 @@
  */
 package com.mattae.snl.plugins.flowable.form;
 
-import com.mattae.snl.plugins.flowable.form.parser.FormDefinitionParseFactory;
+import com.mattae.snl.plugins.flowable.form.impl.parser.FormDefinitionParseFactory;
 import org.flowable.editor.form.converter.FormJsonConverter;
 import org.flowable.form.api.FormManagementService;
 import org.flowable.form.api.FormRepositoryService;

@@ -12,27 +12,22 @@
  */
 package com.mattae.snl.plugins.flowable.web.runtime;
 
+import com.mattae.snl.plugins.flowable.form.model.FormIOFormModel;
 import com.mattae.snl.plugins.flowable.model.runtime.CompleteFormRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.FormModelRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.SaveFormRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.FlowableTaskFormService;
+import lombok.extern.slf4j.Slf4j;
 import org.flowable.form.api.FormInfo;
-import org.flowable.form.model.SimpleFormModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Joram Barrez
  */
 @RestController
-@RequestMapping("/app/rest/task-forms")
+@RequestMapping("/api/rest/task-forms")
+@Slf4j
 public class TaskFormResource {
 
     protected final FlowableTaskFormService taskFormService;
@@ -44,7 +39,7 @@ public class TaskFormResource {
     @GetMapping(value = "/{taskId}", produces = "application/json")
     public FormModelRepresentation getTaskForm(@PathVariable String taskId) {
         FormInfo formInfo = taskFormService.getTaskForm(taskId);
-        SimpleFormModel formModel = (SimpleFormModel) formInfo.getFormModel();
+        FormIOFormModel formModel = (FormIOFormModel) formInfo.getFormModel();
         return new FormModelRepresentation(formInfo, formModel);
     }
 

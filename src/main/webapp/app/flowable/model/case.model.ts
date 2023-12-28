@@ -32,7 +32,7 @@ export interface CaseDefinition {
     resourceName: string;
     deploymentId: string;
     diagramResourceName: string
-    hasStartFormKey: boolean;
+    hasStartForm: boolean;
     hasGraphicalNotation: boolean;
     tenantId: string;
     type: DefinitionType;

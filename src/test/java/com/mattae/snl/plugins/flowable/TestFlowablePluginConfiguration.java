@@ -1,8 +1,8 @@
 package com.mattae.snl.plugins.flowable;
 
+import io.github.jbella.snl.test.core.ConfigSchemaValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import io.github.jbella.snl.test.core.ConfigSchemaValidator;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;

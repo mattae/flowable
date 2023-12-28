@@ -12,16 +12,16 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.flowable.cmmn.api.history.HistoricCaseInstance;
 import org.flowable.cmmn.api.repository.CaseDefinition;
 import org.flowable.cmmn.api.runtime.CaseInstance;
 import org.flowable.idm.api.User;
 import org.flowable.ui.common.model.AbstractRepresentation;
 import org.flowable.ui.common.model.UserRepresentation;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * REST representation of a case instance.
@@ -89,6 +89,9 @@ public class CaseInstanceRepresentation extends AbstractRepresentation {
         }
     }
 
+    public CaseInstanceRepresentation() {
+    }
+
     protected void mapCaseDefinition(CaseDefinition caseDefinition) {
         if (caseDefinition != null) {
             this.caseDefinitionName = caseDefinition.getName();
@@ -101,9 +104,6 @@ public class CaseInstanceRepresentation extends AbstractRepresentation {
         }
     }
 
-    public CaseInstanceRepresentation() {
-    }
-
     public String getId() {
         return id;
     }
@@ -114,6 +114,10 @@ public class CaseInstanceRepresentation extends AbstractRepresentation {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public UserRepresentation getStartedBy() {
@@ -162,10 +166,6 @@ public class CaseInstanceRepresentation extends AbstractRepresentation {
 
     public void setEnded(Date ended) {
         this.ended = ended;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getCaseDefinitionName() {

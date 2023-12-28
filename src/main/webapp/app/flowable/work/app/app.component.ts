@@ -10,6 +10,7 @@ import {
 import { Definition, WorkForm } from '../../model/work.model';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
+import { TranslocoModule } from '@ngneat/transloco';
 
 export type DefinitionEvent = {
     definition: Definition;
@@ -25,7 +26,8 @@ export type DefinitionEvent = {
         MatIconModule,
         NgForOf,
         NgIf,
-        NgClass
+        NgClass,
+        TranslocoModule
     ]
 })
 export class AppDefComponent implements OnInit {

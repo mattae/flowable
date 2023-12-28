@@ -1,27 +1,31 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
 import { TaskInstance } from '../model/task.model';
 import { NgIf } from '@angular/common';
-import { CaseService } from '../services/case.service';
-import { ProcessService } from '../services/process.service';
-import { CaseInstance } from '../model/case.model';
-import { ProcessInstance } from '../model/process.model';
 import { CovalentCommonModule } from '@covalent/core/common';
 import { DateTime } from 'luxon';
-import { TasksService } from '../services/tasks.service';
+import { TaskService } from '../services/task.service';
 import { FormModel, FormOutcome, User } from '../model/common.model';
-import { MatFormioModule } from '../../formio/angular-material-formio.module';
-import { FuseConfirmationService } from '../../../../../../@fuse/services/confirmation';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { AdhocTaskComponent } from './adhoc-task.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { map, Observable, startWith } from 'rxjs';
+import { Observable, startWith, switchMap } from 'rxjs';
 import { UserService } from '../services/user.service';
+import { PeopleComponent } from '../people/people.component';
+import { DocumentsComponent } from '../documents/documents.component';
+import { CommentsComponent } from '../comments/comments.component';
+import { SubItemsComponent } from '../sub-items/sub-items.component';
+import { AccountService, FuseConfirmationService } from '@mattae/angular-shared';
+import { FormService } from '../services/form.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormioComponent } from '../../formio/mat-formio.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
     selector: 'flowable-task',
@@ -35,47 +39,73 @@ import { UserService } from '../services/user.service';
         MatTabsModule,
         NgIf,
         CovalentCommonModule,
-        MatFormioModule,
         ReactiveFormsModule,
         MatMenuModule,
         AdhocTaskComponent,
-        MatAutocompleteModule
+        MatAutocompleteModule,
+        PeopleComponent,
+        DocumentsComponent,
+        CommentsComponent,
+        SubItemsComponent,
+        MatFormFieldModule,
+        MatInputModule,
+        MatFormioComponent,
+        MatDatepickerModule
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskComponent implements OnInit {
+    @ViewChild('subTasks') subTaskGroup: MatTabGroup
     instance: TaskInstance;
-    formValid: boolean = false;
+    formValid: boolean = true;
     subTasks: TaskInstance[];
-    definition: CaseInstance | ProcessInstance;
     form: FormModel;
     formData: any;
+    comments: number;
     submission: any;
+    savedSubmission: any;
     today = DateTime.now();
     showAdhocTask: boolean = false;
     users: User[];
+    currentUserId: string;
     userInput = new FormControl<User | null>(null);
     userFilteredOptions: Observable<User[]>;
     showAssigneeInput = false;
     showDueDateInput = false;
+    selectedTab = 0;
 
-    constructor(private _router: Router, private _activatedRoute: ActivatedRoute,
-                private _caseService: CaseService, private _processService: ProcessService,
-                private _taskService: TasksService,
+    constructor(private _router: Router,
+                private _activatedRoute: ActivatedRoute,
+                private _taskService: TaskService,
                 private _formBuilder: FormBuilder,
                 private _changeDetectorRef: ChangeDetectorRef,
                 private _confirmationService: FuseConfirmationService,
-                private _userService: UserService) {
+                private _userService: UserService,
+                private _accountService: AccountService,
+                private _formService: FormService) {
     }
 
     ngOnInit(): void {
+        this._accountService.getAuthenticationState().subscribe(res => {
+            if (res) {
+                this.currentUserId = res.username;
+            }
+            this._changeDetectorRef.markForCheck();
+        });
         this._activatedRoute.data.subscribe(({instance}) => {
             this.instance = instance;
             if (this.instance.formKey) {
                 this._taskService.getTaskForm(this.instance.id).subscribe(form => {
                     this.form = form;
-
-                    this._changeDetectorRef.markForCheck();
+                    this._formService.getFormData({
+                        formDefinitionKey: form.key,
+                        taskId: instance.id
+                    }).subscribe(data => {
+                        this.savedSubmission = {
+                            data: data
+                        };
+                        this._changeDetectorRef.markForCheck();
+                    });
                 });
             }
             this._taskService.getSubTasks(this.instance.id).subscribe(res => {
@@ -85,17 +115,6 @@ export class TaskComponent implements OnInit {
 
             this._changeDetectorRef.markForCheck();
         })
-        if (this.instance.caseInstanceId) {
-            this._caseService.getCaseInstance(this.instance.caseInstanceId).subscribe(res => {
-                this.definition = res;
-                this._changeDetectorRef.markForCheck();
-            });
-        } else if (this.instance.processInstanceId) {
-            this._processService.getProcessInstance(this.instance.processInstanceId).subscribe(res => {
-                this.definition = res;
-                this._changeDetectorRef.markForCheck();
-            });
-        }
 
         this._userService.getWorkflowUsers({}).subscribe(res => {
             this.users = res;
@@ -104,13 +123,18 @@ export class TaskComponent implements OnInit {
 
         this.userFilteredOptions = this.userInput.valueChanges.pipe(
             startWith(''),
-            map(value => {
-                const name = typeof value === 'string' ? value : value?.fullName;
-                return name ? this._userFilter(name as string) : [];
-            }),
+            switchMap(value => {
+                    const name = typeof value === 'string' ? value : value?.fullName;
+                    return name ? this._userService.getWorkflowUsers({filter: name, excludeTaskId: this.instance.id}) : [];
+                }
+            ),
         );
 
         this._changeDetectorRef.markForCheck();
+    }
+
+    commentCount(count) {
+        this.comments = count;
     }
 
     executeOutcome(outcome: FormOutcome) {
@@ -127,15 +151,24 @@ export class TaskComponent implements OnInit {
     }
 
     completeTask() {
-        this._taskService.completeTaskForm(this.instance.id, {
-            values: this.submission,
-            formId: this.form.id
-        }).subscribe(res => {
-            this._taskService.getTask(this.instance.id).subscribe(res => {
-                this.instance = res;
-                this._changeDetectorRef.markForCheck();
+        if (this.instance.formKey) {
+            this._taskService.completeTaskForm(this.instance.id, {
+                values: this.submission,
+                formId: this.form.id
+            }).subscribe(res => {
+                this._taskService.getTask(this.instance.id).subscribe(res => {
+                    this.instance = res;
+                    this._changeDetectorRef.markForCheck();
+                });
             });
-        })
+        } else {
+            this._taskService.completeTask(this.instance.id).subscribe(res => {
+                this._taskService.getTask(this.instance.id).subscribe(res => {
+                    this.instance = res;
+                    this._changeDetectorRef.markForCheck();
+                });
+            });
+        }
     }
 
     saveTask() {
@@ -152,12 +185,15 @@ export class TaskComponent implements OnInit {
 
     createTask() {
         this.showAdhocTask = true;
+        this._changeDetectorRef.markForCheck();
     }
 
     taskCreated() {
         this.showAdhocTask = false;
         this._taskService.getSubTasks(this.instance.id).subscribe(res => {
             this.subTasks = res;
+
+            this.subTaskGroup.selectedIndex = 0;
             this._changeDetectorRef.markForCheck();
         });
     }
@@ -187,6 +223,37 @@ export class TaskComponent implements OnInit {
                 })
             }
         });
+    }
+
+    unClaimTask() {
+        this._confirmationService.open({
+            title: 'Un-claim Task',
+            message: 'Are you sure you want to un-claim this task?',
+            actions: {
+                confirm: {
+                    show: true,
+                    label: 'Claim',
+                    color: 'accent'
+                },
+                cancel: {
+                    show: true,
+                    label: 'No'
+                }
+            }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this._taskService.unClaimTask(this.instance.id).subscribe(res => {
+                    this._taskService.getTask(this.instance.id).subscribe(res => {
+                        this.instance = res;
+                        this._changeDetectorRef.markForCheck();
+                    });
+                })
+            }
+        });
+    }
+
+    tabChanged(index: number) {
+        this.selectedTab = index;
     }
 
     dateSelected(event: any): void {
@@ -245,25 +312,80 @@ export class TaskComponent implements OnInit {
         this._changeDetectorRef.markForCheck();
     }
 
+    /**
+     * Does the task have an assignee
+     */
+    public hasAssignee(): boolean {
+        return !!this.instance.assignee;
+    }
+
+    /**
+     * Returns true if the task is assigned to logged in user
+     */
+    public isAssignedTo(userId: string): boolean {
+        return this.hasAssignee() ? this.instance.assignee.id === userId : false;
+    }
+
+    /**
+     * Return true if the task assigned
+     */
+    public isAssignedToCurrentUser(): boolean {
+        return this.hasAssignee() && this.isAssignedTo(this.currentUserId);
+    }
+
+    /**
+     * Return true if the user is a candidate member
+     */
+    isCandidateMember(): boolean {
+        return this.instance.memberOfCandidateGroup || this.instance.memberOfCandidateUsers;
+    }
+
+    /**
+     * Return true if the task claimable
+     */
+    public isTaskClaimable(): boolean {
+        return !this.hasAssignee() && this.isCandidateMember();
+    }
+
+    /**
+     * Return true if the task claimed by candidate member.
+     */
+    public isTaskClaimedByCandidateMember(): boolean {
+        return this.isCandidateMember() && this.isAssignedToCurrentUser() && !this.isCompleted();
+    }
+
+    /**
+     * Returns task's status
+     */
+    getTaskStatus(): string {
+        return (this.instance && this.instance.endDate) ? 'Completed' : 'Running';
+    }
+
+    /**
+     * Returns true if the task is completed
+     */
+    isCompleted(): boolean {
+        return this.instance && !!this.instance.endDate;
+    }
+
     trackValid(event: any) {
-        this.formValid = event.isValid;
+        if (event.data) {
+            this.formValid = event.isValid;
+            this.submission = event.data;
+        }
     }
 
     userDisplayFn(user: User): string {
         return user && user.fullName ? user.fullName : '';
     }
 
-    private _userFilter(name: string): User[] {
-        const filterValue = name.toLowerCase();
-
-        return this.users.filter(option => option.fullName.toLowerCase().includes(filterValue));
-    }
-
     getParentPath(): string[] {
         if (this.instance.caseInstanceId) {
-            return [`../../cases/${this.instance.caseInstanceId}`];
+            return [`/work/cases/${this.instance.caseInstanceId}`];
+        } else if (this.instance.processInstanceId) {
+            return [`/work/processes/${this.instance.processInstanceId}`];
         } else {
-            return [`../../processes/${this.instance.caseInstanceId}`];
+            return [`/tasks/${this.instance.parentTaskId}`];
         }
     }
 }

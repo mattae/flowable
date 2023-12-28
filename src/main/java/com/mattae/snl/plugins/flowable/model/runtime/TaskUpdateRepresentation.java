@@ -12,9 +12,9 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
-import java.util.Date;
-
 import org.flowable.ui.common.model.AbstractRepresentation;
+
+import java.util.Date;
 
 public class TaskUpdateRepresentation extends AbstractRepresentation {
 

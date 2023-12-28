@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <property name="datetime.type" value="DATETIME"/>
+
+    <property name="varchar.type" value="varchar"/>
+
+    <include file="org/flowable/content/db/liquibase/flowable-content-db-changelog.xml"/>
+
+    <changeSet id="3" author="mattae">
+        <createTable tableName="ACT_CO_RENDITION_ITEM">
+            <column name="ID_" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="CONTENT_ITEM_ID_" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="NAME_" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="MIME_TYPE_" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="TASK_ID_" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PROC_INST_ID_" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="CONTENT_STORE_ID_" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="CONTENT_STORE_NAME_" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="CONTENT_AVAILABLE_" type="boolean" defaultValueBoolean="false" />
+            <column name="CREATED_" type="timestamp(6)" />
+            <column name="LAST_MODIFIED_" type="timestamp(6)" />
+            <column name="CONTENT_SIZE_" type="bigint" defaultValueNumeric="0" />
+            <column name="TENANT_ID_" type="varchar(255)" />
+            <column name="SCOPE_ID_" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="SCOPE_TYPE_" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="ACT_CO_RENDITION_ITEM" indexName="idx_rendition_taskid">
+            <column name="TASK_ID_" />
+        </createIndex>
+        <createIndex tableName="ACT_CO_RENDITION_ITEM" indexName="idx_rendition_procid">
+            <column name="PROC_INST_ID_" />
+        </createIndex>
+        <createIndex tableName="ACT_CO_RENDITION_ITEM" indexName="idx_rendition_scope">
+            <column name="SCOPE_ID_"/>
+            <column name="SCOPE_TYPE_"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4" author="mattae">
+
+        <dropColumn tableName="ACT_CO_CONTENT_ITEM" columnName="FIELD_" />
+
+    </changeSet>
+
+    <changeSet id="5" author="mattae">
+
+        <createTable tableName="ACT_CO_CONTENT_OBJECT">
+            <column name="ID_" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="CREATED_" type="timestamp(6)" />
+            <column name="CONTENT_" type="longblob" />
+        </createTable>
+
+        <addColumn tableName="ACT_CO_CONTENT_ITEM">
+            <column name="LOCK_INFO_" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="6" author="mattae">
+        <addColumn tableName="ACT_CO_RENDITION_ITEM">
+            <column name="RENDITION_TYPE_" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="7" author="flowable">
+        <createTable tableName="ACT_CO_DEPLOYMENT">
+            <column name="ID_" type="${varchar.type}(255)">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="NAME_" type="${varchar.type}(255)" />
+            <column name="KEY_" type="${varchar.type}(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="CATEGORY_" type="${varchar.type}(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="DEPLOY_TIME_" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="TENANT_ID_" type="${varchar.type}(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="PARENT_DEPLOYMENT_ID_" type="${varchar.type}(255)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+
+        <createTable tableName="ACT_CO_DEPLOYMENT_RESOURCE">
+            <column name="ID_" type="${varchar.type}(255)">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="NAME_" type="${varchar.type}(255)" />
+            <column name="DEPLOYMENT_ID_" type="${varchar.type}(255)" />
+            <column name="RESOURCE_BYTES_" type="longblob">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+
+        <createTable tableName="ACT_CO_DEFINITION">
+            <column name="ID_" type="${varchar.type}(255)">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="PK_CO_DEFINITIONS"/>
+            </column>
+            <column name="REV_" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="KEY_" type="${varchar.type}(128)"/>
+            <column name="DEPLOYMENT_ID_" type="${varchar.type}(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TENANT_ID_" type="${varchar.type}(64)" defaultValue=""/>
+
+            <column name="NAME_" type="${varchar.type}(128)" />
+            <column name="VERSION_" type="integer" />
+            <column name="RESOURCE_NAME_" type="${varchar.type}(4000)" />
+            <column name="CATEGORY_" type="${varchar.type}(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="CREATION_TIME_" type="${datetime.type}(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATE_TIME_" type="${datetime.type}(6)"/>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="8" author="mattae">
+
+        <createTable tableName="ACT_CO_METADATA">
+            <column name="ID_" type="${varchar.type}(255)">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="REV_" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE_" type="${varchar.type}(255)" />
+            <column name="NAME_" type="${varchar.type}(255)" />
+            <column name="CONTENT_ITEM_ID_" type="${varchar.type}(255)" />
+
+            <column name="BYTEARRAY_ID_" type="${varchar.type}(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="DOUBLE_" type="double">
+                <constraints nullable="true" />
+            </column>
+            <column name="LONG_" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="TEXT_" type="${varchar.type}(4000)">
+                <constraints nullable="true" />
+            </column>
+            <column name="TEXT2_" type="${varchar.type}(4000)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+
+    </changeSet>
+
+
+    <changeSet id="14" author="mattae">
+        <createIndex tableName="ACT_CO_RENDITION_ITEM" indexName="idx_rendition_contentid">
+            <column name="CONTENT_ITEM_ID_"/>
+        </createIndex>
+
+        <createIndex tableName="ACT_CO_METADATA" indexName="idx_metadata_contentid">
+            <column name="CONTENT_ITEM_ID_"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="15" author="mattae">
+
+        <createIndex tableName="ACT_CO_DEFINITION" indexName="ACT_IDX_CO_DEF_UNIQ" unique="true">
+            <column name="KEY_" />
+            <column name="VERSION_" />
+            <column name="TENANT_ID_" />
+        </createIndex>
+
+    </changeSet>
+
+    <changeSet id="16" author="mattae">
+
+        <addColumn tableName="ACT_CO_CONTENT_ITEM">
+            <column name="DEFINITION_ID_" type="${varchar.type}(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="DEFINITION_NAME_" type="${varchar.type}(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="TYPE_" type="${varchar.type}(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+</databaseChangeLog>

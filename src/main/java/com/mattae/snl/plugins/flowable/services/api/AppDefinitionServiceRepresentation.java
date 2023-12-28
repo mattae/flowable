@@ -12,9 +12,9 @@
  */
 package com.mattae.snl.plugins.flowable.services.api;
 
-import java.util.List;
-
 import org.flowable.ui.common.model.AbstractRepresentation;
+
+import java.util.List;
 
 public class AppDefinitionServiceRepresentation extends AbstractRepresentation {
 

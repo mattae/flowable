@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { MaterialNestedComponent } from '../MaterialNestedComponent';
 import TableComponent from 'formiojs/components/table/Table.js';
+import { NgClass, NgForOf } from '@angular/common';
+import { TranslocoModule } from '@ngneat/transloco';
 
 Object.defineProperty(TableComponent.prototype, 'visible', {
     set(visible) {
@@ -26,7 +28,7 @@ Object.defineProperty(TableComponent.prototype, 'visible', {
                 <th *ngFor="let header of instance.component.header"
                     class="mat-header-cell"
                 >
-                    {{ header.label }}
+                    {{ header.label | transloco}}
                 </th>
             </tr>
             </thead>
@@ -50,7 +52,13 @@ Object.defineProperty(TableComponent.prototype, 'visible', {
             </tr>
             </tbody>
         </table>
-    `
+    `,
+    imports: [
+        NgClass,
+        NgForOf,
+        TranslocoModule
+    ],
+    standalone: true
 })
 export class MaterialTableComponent extends MaterialNestedComponent {
 
@@ -65,7 +73,7 @@ export class MaterialTableComponent extends MaterialNestedComponent {
 
     getTableColClasses() {
         if (!this.instance) {
-            return;
+            return '';
         }
         const {condensed, cellAlignment} = this.instance.component;
         return {

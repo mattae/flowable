@@ -34,8 +34,6 @@ import org.flowable.form.api.FormRepositoryService;
 import org.flowable.ui.common.model.ResultListDataRepresentation;
 import org.flowable.ui.common.security.SecurityScope;
 import org.flowable.ui.common.security.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +46,6 @@ import java.util.List;
 @Service
 @Transactional
 public class FlowableProcessDefinitionService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FlowableProcessDefinitionService.class);
 
     protected final RepositoryService repositoryService;
 
@@ -134,7 +130,7 @@ public class FlowableProcessDefinitionService {
             if (StringUtils.isNotEmpty(startEvent.getFormKey())) {
                 Deployment deployment = repositoryService.createDeploymentQuery().deploymentId(processDefinition.getDeploymentId()).singleResult();
                 formInfo = formRepositoryService.getFormModelByKeyAndParentDeploymentId(startEvent.getFormKey(), deployment.getParentDeploymentId(),
-                        processDefinition.getTenantId(), processEngineConfiguration.isFallbackToDefaultTenant());
+                    processDefinition.getTenantId(), processEngineConfiguration.isFallbackToDefaultTenant());
             }
         }
 

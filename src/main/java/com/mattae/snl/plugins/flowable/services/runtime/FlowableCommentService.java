@@ -13,13 +13,16 @@
 package com.mattae.snl.plugins.flowable.services.runtime;
 
 import com.mattae.snl.plugins.flowable.model.runtime.CommentRepresentation;
+import com.mattae.snl.plugins.flowable.services.model.ExtendedUserRepresentation;
 import io.github.jbella.snl.core.api.services.errors.RecordNotFoundException;
 import org.apache.commons.lang3.StringUtils;
-import org.flowable.common.engine.impl.runtime.Clock;
 import org.flowable.engine.HistoryService;
+import org.flowable.engine.IdentityService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.task.Comment;
+import org.flowable.idm.api.Picture;
+import org.flowable.idm.api.User;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.ui.common.model.ResultListDataRepresentation;
 import org.flowable.ui.common.security.SecurityScope;
@@ -30,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -44,14 +48,15 @@ public class FlowableCommentService {
     protected final TaskService taskService;
 
     protected final HistoryService historyService;
+    protected final IdentityService identityService;
 
-    protected final Clock clock;
 
-    public FlowableCommentService(PermissionService permissionService, TaskService taskService, HistoryService historyService, Clock clock) {
+    public FlowableCommentService(PermissionService permissionService, TaskService taskService,
+                                  HistoryService historyService, IdentityService identityService) {
         this.permissionService = permissionService;
         this.taskService = taskService;
         this.historyService = historyService;
-        this.clock = clock;
+        this.identityService = identityService;
     }
 
     public ResultListDataRepresentation getTaskComments(String taskId) {
@@ -63,7 +68,8 @@ public class FlowableCommentService {
         // Create representation for all comments
         List<CommentRepresentation> commentList = new ArrayList<>();
         for (Comment comment : comments) {
-            commentList.add(new CommentRepresentation(comment));
+            CommentRepresentation commentRepresentation = getCommentRepresentation(comment);
+            commentList.add(commentRepresentation);
         }
 
         return new ResultListDataRepresentation(commentList);
@@ -83,10 +89,11 @@ public class FlowableCommentService {
         // Check read permission and message
         SecurityScope currentUser = SecurityUtils.getAuthenticatedSecurityScope();
         checkReadPermissionOnTask(currentUser, taskId);
-
         // Create comment
+
         Comment comment = createComment(commentRequest.getMessage(), currentUser, task.getId(), task.getProcessInstanceId());
-        return new CommentRepresentation(comment);
+
+        return getCommentRepresentation(comment);
     }
 
     public ResultListDataRepresentation getProcessInstanceComments(String processInstanceId) {
@@ -98,7 +105,8 @@ public class FlowableCommentService {
         // Create representation for all comments
         List<CommentRepresentation> commentList = new ArrayList<>();
         for (Comment comment : comments) {
-            commentList.add(new CommentRepresentation(comment));
+            CommentRepresentation commentRepresentation = getCommentRepresentation(comment);
+            commentList.add(commentRepresentation);
         }
 
         return new ResultListDataRepresentation(commentList);
@@ -118,10 +126,23 @@ public class FlowableCommentService {
         // Check read permission and message
         SecurityScope currentUser = SecurityUtils.getAuthenticatedSecurityScope();
         checkReadPermissionOnProcessInstance(currentUser, processInstanceId);
-
         // Create comment
         Comment comment = createComment(commentRequest.getMessage(), currentUser, processInstanceId);
-        return new CommentRepresentation(comment);
+        return getCommentRepresentation(comment);
+    }
+
+    private CommentRepresentation getCommentRepresentation(Comment comment) {
+        User user = identityService.createUserQuery().userId(comment.getUserId()).singleResult();
+        ExtendedUserRepresentation extendedUser = new ExtendedUserRepresentation(user, null);
+        if (user != null) {
+            Picture picture = identityService.getUserPicture(user.getId());
+            if (picture != null && StringUtils.isNotBlank(picture.getMimeType())) {
+                byte[] bytes = picture.getBytes();
+                String url = String.format("data:%s;base64,%s", picture.getMimeType(), Base64.getEncoder().encodeToString(bytes));
+                extendedUser = new ExtendedUserRepresentation(user, url);
+            }
+        }
+        return new CommentRepresentation(comment, extendedUser);
     }
 
     public Long countCommentsForTask(String taskId) {
@@ -145,7 +166,10 @@ public class FlowableCommentService {
     }
 
     public Comment createComment(String message, SecurityScope createdBy, String taskId, String processInstanceId) {
-        return taskService.addComment(taskId, processInstanceId, message);
+        Comment comment = taskService.addComment(taskId, processInstanceId, message);
+        comment.setUserId(createdBy.getUserId());
+        taskService.saveComment(comment);
+        return comment;
     }
 
     public void deleteComment(Comment comment) {

@@ -8,8 +8,11 @@ export const APP_ROUTES: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'tutorials',
-        loadChildren: () => import('./tutorial/tutorial.module')
-            .then(m => m.TutorialModule)
+        path: 'work',
+        loadChildren: () => import('./flowable/work.routes')
+    },
+    {
+        path: 'tasks',
+        loadChildren: () => import('./flowable/tasks.routes')
     }
 ];

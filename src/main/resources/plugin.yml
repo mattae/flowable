@@ -1,4 +1,75 @@
 # This just a sample configuration file showing all parts of a typical configuration
-
 name: Flowable BPM
 description: An implementation of the Flowable BPM
+translations:
+  - lang: en
+    path: installers/flowable/i18n/en.json
+  - lang: es
+    path: installers/flowable/i18n/es.json
+  - lang: fr
+    path: installers/flowable/i18n/fr.json
+  - lang: ha
+    path: installers/flowable/i18n/ha.json
+  - lang: ig
+    path: installers/flowable/i18n/ig.json
+  - lang: pt
+    path: installers/flowable/i18n/pt.json
+  - lang: sw
+    path: installers/flowable/i18n/sw.json
+  - lang: yo
+    path: installers/flowable/i18n/yo.json
+menus:
+  - name: FLOWABLE.MENU.WORK
+    type: dropDown
+    icon: 'heroicons_outline:academic-cap'
+    position: 2
+    subs:
+      - name: FLOWABLE.MENU.FOR_ME
+        type: link
+        route: work/for-me
+      - name: FLOWABLE.MENU.OPEN
+        type: link
+        route: work/open
+      - name: FLOWABLE.MENU.COMPLETED
+        type: link
+        route: work/completed
+      - name: FLOWABLE.MENU.ALL
+        type: link
+        route: work/all
+      - name: FLOWABLE.MENU.NEW
+        type: link
+        route: work/new
+        icon: add
+        position: 10
+  - name: FLOWABLE.MENU.TASK
+    type: dropDown
+    icon: 'heroicons_outline:clipboard-document-check'
+    position: 3
+    subs:
+      - name: FLOWABLE.MENU.FOR_ME
+        type: link
+        route: tasks/for-me
+      - name: FLOWABLE.MENU.OPEN
+        type: link
+        route: tasks/open
+      - name: FLOWABLE.MENU.COMPLETED
+        type: link
+        route: tasks/completed
+      - name: FLOWABLE.MENU.ALL
+        type: link
+        route: tasks/all
+      - name: FLOWABLE.MENU.NEW
+        type: link
+        route: tasks/new
+        icon: add
+        position: 10
+webRemotes:
+  - remoteEntry: "/js/flowable/remoteEntry.js"
+    remoteName: _259652ea_0e4e_4494_abaa_7883f2d16211
+    modules:
+      - name: WorkRoute
+        routePath: work
+        title: FLOWABLE.TITLE.WORK
+      - name: TaskRoute
+        routePath: tasks
+        title: FLOWABLE.TITLE.TASK

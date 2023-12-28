@@ -65,7 +65,7 @@ public class FlowableTaskActionService extends FlowableAbstractTaskService {
             } else {
                 cmmnTaskService.complete(task.getId());
             }
-            
+
         } catch (FlowableException e) {
             LOGGER.error("Error completing task {}", taskId, e);
             throw new BadRequestException("Task " + taskId + " can't be completed", e);
@@ -174,6 +174,24 @@ public class FlowableTaskActionService extends FlowableAbstractTaskService {
             taskService.claim(task.getId(), currentUser.getUserId());
         } catch (FlowableException e) {
             throw new BadRequestException("Task " + taskId + " can't be claimed", e);
+        }
+    }
+
+    public void unClaimTask(String taskId) {
+
+        SecurityScope currentUser = SecurityUtils.getAuthenticatedSecurityScope();
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+
+        if (task == null) {
+            throw new RecordNotFoundException("Task with id: " + taskId + " does not exist");
+        }
+
+        permissionService.validateReadPermissionOnTask(currentUser, task.getId());
+
+        try {
+            taskService.unclaim(task.getId());
+        } catch (FlowableException e) {
+            throw new BadRequestException("Task " + taskId + " can't be un-claimed", e);
         }
     }
 

@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class CaseInstanceDisplayJsonClientResource {
 
     protected final CmmnRepositoryService cmmnRepositoryService;
@@ -207,7 +207,7 @@ public class CaseInstanceDisplayJsonClientResource {
             processCriteria(caseObject.getPlanModel().getExitCriteria(), "ExitCriterion", pojoModel, elementArray);
 
             processElements(caseObject.getPlanModel().getPlanItems(), pojoModel, elementArray, associationArray,
-                            completedElements, activeElements, availableElements, diagramInfo);
+                completedElements, activeElements, availableElements, diagramInfo);
         }
 
         for (Association association : pojoModel.getAssociations()) {
@@ -242,7 +242,7 @@ public class CaseInstanceDisplayJsonClientResource {
     }
 
     protected void processElements(List<PlanItem> planItemList, CmmnModel model, ArrayNode elementArray, ArrayNode flowArray,
-                    Set<String> completedElements, Set<String> activeElements, Set<String> availableElements, GraphicInfo diagramInfo) {
+                                   Set<String> completedElements, Set<String> activeElements, Set<String> availableElements, GraphicInfo diagramInfo) {
 
         for (PlanItem planItem : planItemList) {
             ObjectNode elementNode = objectMapper.createObjectNode();
@@ -290,7 +290,7 @@ public class CaseInstanceDisplayJsonClientResource {
                 Stage stage = (Stage) planItemDefinition;
 
                 processElements(stage.getPlanItems(), model, elementArray, flowArray, completedElements,
-                                activeElements, availableElements, diagramInfo);
+                    activeElements, availableElements, diagramInfo);
             }
         }
     }

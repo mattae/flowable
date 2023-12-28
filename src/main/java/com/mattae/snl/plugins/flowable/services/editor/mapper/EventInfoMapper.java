@@ -14,12 +14,7 @@ package com.mattae.snl.plugins.flowable.services.editor.mapper;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.flowable.bpmn.model.ErrorEventDefinition;
-import org.flowable.bpmn.model.Event;
-import org.flowable.bpmn.model.EventDefinition;
-import org.flowable.bpmn.model.MessageEventDefinition;
-import org.flowable.bpmn.model.SignalEventDefinition;
-import org.flowable.bpmn.model.TimerEventDefinition;
+import org.flowable.bpmn.model.*;
 
 public class EventInfoMapper extends AbstractInfoMapper {
 

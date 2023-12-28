@@ -31,12 +31,9 @@
                             "src/main/webapp/assets"
                         ],
                         "styles": [
-                            "src/main/webapp/@fuse/styles/tailwind.scss",
-                            "src/main/webapp/@fuse/styles/themes.scss",
-                            "src/main/webapp/styles/vendors.scss",
-                            "src/main/webapp/@fuse/styles/main.scss",
-                            "src/main/webapp/styles/styles.scss",
-                            "src/main/webapp/styles/tailwind.scss"
+                            "src/main/webapp/styles.scss",
+                            "node_modules/bpmn-js/dist/assets/diagram-js.css",
+                            "node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css"
                         ],
                         "scripts": [
                         ],

@@ -4,7 +4,7 @@ import { NgClass, NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@ngneat/transloco';
-import { MatFormioModule } from '../../../../formio/angular-material-formio.module';
+import { MatFormioComponent } from '../../../../formio/mat-formio.component';
 
 @Component({
     selector: 'create-dialog',
@@ -23,7 +23,7 @@ import { MatFormioModule } from '../../../../formio/angular-material-formio.modu
     ],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
-    imports: [NgIf, MatButtonModule, MatDialogModule, MatIconModule, NgClass, TranslocoModule, MatFormioModule],
+    imports: [NgIf, MatButtonModule, MatDialogModule, MatIconModule, NgClass, TranslocoModule, MatFormioComponent],
 })
 export class CreateDialogComponent {
     private submission: any;

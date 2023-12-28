@@ -70,7 +70,7 @@ public class FlowableTaskQueryService {
     private static final int DEFAULT_PAGE_SIZE = 25;
 
     protected final RepositoryService repositoryService;
-    
+
     protected final AppRepositoryService appRepositoryService;
 
     protected final CmmnRepositoryService cmmnRepositoryService;
@@ -114,6 +114,8 @@ public class FlowableTaskQueryService {
             HistoricTaskInstanceQuery historicTaskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
             historicTaskInstanceQuery.finished();
             taskInfoQueryWrapper = new TaskInfoQueryWrapper(historicTaskInstanceQuery);
+        } else if (stateNode != null && "active".equals(stateNode.asText())) {
+            taskInfoQueryWrapper = new TaskInfoQueryWrapper(taskService.createTaskQuery().active());
         } else {
             taskInfoQueryWrapper = new TaskInfoQueryWrapper(taskService.createTaskQuery());
         }
@@ -125,7 +127,7 @@ public class FlowableTaskQueryService {
             for (AppDefinition appDefinition : appDefinitions) {
                 parentDeploymentIds.add(appDefinition.getDeploymentId());
             }
-            
+
             List<Deployment> deployments = repositoryService.createDeploymentQuery().parentDeploymentIds(parentDeploymentIds).list();
             List<String> deploymentIds = new ArrayList<>();
             for (Deployment deployment : deployments) {
@@ -206,16 +208,14 @@ public class FlowableTaskQueryService {
             handleIncludeProcessInstance(taskInfoQueryWrapper, includeProcessInstanceNode, tasks, processInstancesNames);
             handleIncludeCaseInstance(taskInfoQueryWrapper, includeProcessInstanceNode, tasks, caseInstancesNames);
         }
-
         ResultListDataRepresentation result = new ResultListDataRepresentation(convertTaskInfoList(tasks, processInstancesNames, caseInstancesNames));
 
         // In case we're not on the first page and the size exceeds the page size, we need to do an additional count for the total
         if (page != 0 || tasks.size() == size) {
             Long totalCount = taskInfoQueryWrapper.getTaskInfoQuery().count();
-            result.setTotal(Long.valueOf(totalCount.intValue()));
+            result.setTotal((long) totalCount.intValue());
             result.setStart(page * size);
         }
-
         return result;
     }
 

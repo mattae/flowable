@@ -1,30 +1,32 @@
-<div class="bg-card border-2 border-gray-400 w-2/3 mx-auto p-4 rounded-md">
-    <div class="border-b pb-4">
-        <div class="flex flex-row p-5">
-            <div class="w-3/5 flex flex-col">
-                <div class="text-3xl">
-                    Create
-                </div>
-                <div>
-                    Select an item below to create {{time | timeUntil}}
-                </div>
+<div mat-dialog-title class="border-b pb-4 w-full -ml-6 -mr-6 -mt-6">
+    <div class="flex flex-row p-1">
+        <div class="w-3/5 flex flex-col">
+            <div class="text-3xl">
+                {{'FLOWABLE.APPS.CREATE.TITLE' | transloco}}
             </div>
-            <div class="flex flex-row w-2/5">
-                <mat-form-field class="w-full">
-                    <input matInput placeholder="Search" (input)="filterApps(query.value)" #query>
-                    <span matIconSuffix>
-                        <mat-icon svgIcon="mat_outline:search"></mat-icon>
-                    </span>
-                </mat-form-field>
-                <button mat-icon-button (click)="query.value = '';filterApps('')">
-                    <mat-icon svgIcon="mat_outline:close"></mat-icon>
-                </button>
+            <div>
+                {{'FLOWABLE.APPS.CREATE.DESCRIPTION' | transloco}}
             </div>
         </div>
-    </div>
-    <div class="pt-2" *ngIf="filteredWorkForms">
-        <ng-container *ngFor="let form of filteredWorkForms">
-            <app-def [workForm]="form" (definition)="definitionSelected($event)"></app-def>
-        </ng-container>
+        <div class="flex flex-row w-2/5">
+            <mat-form-field class="w-full">
+                <input matInput placeholder="Search" (input)="filterApps(query.value)" #query>
+                <span matIconSuffix>
+                        <mat-icon svgIcon="mat_outline:search"></mat-icon>
+                    </span>
+            </mat-form-field>
+            <button mat-icon-button (click)="query.value = '';filterApps('')">
+                <mat-icon svgIcon="mat_outline:close"></mat-icon>
+            </button>
+        </div>
     </div>
 </div>
+<mat-dialog-content class="-ml-6 -mr-6">
+    <div class="pt-2 overflow-y-scroll">
+        <ng-container *ngIf="filteredWorkForms">
+            <ng-container *ngFor="let form of filteredWorkForms">
+                <app-def [workForm]="form" (definition)="definitionSelected($event)"></app-def>
+            </ng-container>
+        </ng-container>
+    </div>
+</mat-dialog-content>

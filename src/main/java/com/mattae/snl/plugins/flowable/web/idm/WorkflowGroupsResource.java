@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class WorkflowGroupsResource {
 
     private final IdentityService identityService;

@@ -59,16 +59,12 @@ public class QueryVariable {
 
     public enum QueryVariableOperation {
         EQUALS("equals"), NOT_EQUALS("notEquals"), EQUALS_IGNORE_CASE("equalsIgnoreCase"), NOT_EQUALS_IGNORE_CASE("notEqualsIgnoreCase"), LIKE("like"), GREATER_THAN("greaterThan"), GREATER_THAN_OR_EQUALS("greaterThanOrEquals"), LESS_THAN(
-                "lessThan"), LESS_THAN_OR_EQUALS("lessThanOrEquals");
+            "lessThan"), LESS_THAN_OR_EQUALS("lessThanOrEquals");
 
         private String friendlyName;
 
         private QueryVariableOperation(String friendlyName) {
             this.friendlyName = friendlyName;
-        }
-
-        public String getFriendlyName() {
-            return friendlyName;
         }
 
         public static QueryVariableOperation forFriendlyName(String friendlyName) {
@@ -78,6 +74,10 @@ public class QueryVariable {
                 }
             }
             return null;
+        }
+
+        public String getFriendlyName() {
+            return friendlyName;
         }
     }
 

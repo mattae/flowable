@@ -12,6 +12,9 @@
  */
 package com.mattae.snl.plugins.flowable.web.runtime;
 
+import com.mattae.snl.plugins.flowable.content.api.ContentRenditionManager;
+import com.mattae.snl.plugins.flowable.content.api.RenditionItem;
+import com.mattae.snl.plugins.flowable.content.api.RenditionService;
 import com.mattae.snl.plugins.flowable.model.component.SimpleContentTypeMapper;
 import com.mattae.snl.plugins.flowable.model.runtime.ContentItemRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.PermissionService;
@@ -32,13 +35,16 @@ import org.flowable.ui.common.service.exception.BadRequestException;
 import org.flowable.ui.common.service.exception.InternalServerErrorException;
 import org.flowable.ui.common.service.exception.NotPermittedException;
 import org.flowable.ui.common.service.idm.cache.UserCache;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 public abstract class AbstractRelatedContentResource {
 
     protected final PermissionService permissionService;
@@ -54,14 +60,10 @@ public abstract class AbstractRelatedContentResource {
     protected final RepositoryService repositoryService;
 
     protected final UserCache userCache;
+    protected final RenditionService renditionService;
+    protected final ContentRenditionManager contentRenditionManager;
 
-    public AbstractRelatedContentResource(PermissionService permissionService,
-                                          ContentService contentService,
-                                          TaskService taskService,
-                                          SimpleContentTypeMapper simpleTypeMapper,
-                                          HistoryService historyService,
-                                          RepositoryService repositoryService,
-                                          UserCache userCache) {
+    public AbstractRelatedContentResource(PermissionService permissionService, ContentService contentService, TaskService taskService, SimpleContentTypeMapper simpleTypeMapper, HistoryService historyService, RepositoryService repositoryService, UserCache userCache, RenditionService renditionService, ContentRenditionManager contentRenditionManager) {
         this.permissionService = permissionService;
         this.contentService = contentService;
         this.taskService = taskService;
@@ -69,6 +71,8 @@ public abstract class AbstractRelatedContentResource {
         this.historyService = historyService;
         this.repositoryService = repositoryService;
         this.userCache = userCache;
+        this.renditionService = renditionService;
+        this.contentRenditionManager = contentRenditionManager;
     }
 
     public ResultListDataRepresentation getContentItemsForTask(String taskId) {
@@ -172,6 +176,11 @@ public abstract class AbstractRelatedContentResource {
         }
 
         contentService.deleteContentItem(contentItem.getId());
+
+        var renditionItem = renditionService.createRenditionItemQuery()
+            .contentItemId(contentId)
+            .singleResult();
+        renditionService.deleteRenditionItem(renditionItem.getId());
     }
 
     public ContentItemRepresentation getContent(String contentId) {
@@ -238,6 +247,18 @@ public abstract class AbstractRelatedContentResource {
                 contentItem.setCreatedBy(user.getUserId());
                 contentItem.setLastModifiedBy(user.getUserId());
                 contentService.saveContentItem(contentItem, file.getInputStream());
+
+                RenditionItem renditionItem = renditionService.newRenditionItem();
+                renditionItem.setTaskId(taskId);
+                renditionItem.setProcessInstanceId(processInstanceId);
+                if (StringUtils.isNotEmpty(caseId)) {
+                    renditionItem.setScopeId(caseId);
+                    renditionItem.setScopeType("cmmn");
+                }
+                var rendition = contentRenditionManager
+                    .createThumbnailRendition(getFileName(file), file.getInputStream());
+                renditionItem.setMimeType(rendition.getContentRenditionMimeType());
+                renditionService.saveRenditionItem(renditionItem, new FileInputStream(rendition.getContentRendition()));
 
                 return createContentItemResponse(contentItem);
 

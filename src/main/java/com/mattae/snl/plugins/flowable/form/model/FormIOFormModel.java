@@ -2,6 +2,7 @@ package com.mattae.snl.plugins.flowable.form.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,15 +10,21 @@ import org.flowable.form.model.FormField;
 import org.flowable.form.model.SimpleFormModel;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.*;
 
 @Getter
 @Setter
 public class FormIOFormModel extends SimpleFormModel implements Serializable {
+    private final static ObjectMapper objectMapper = new ObjectMapper();
     private String type;
     private String display;
     private String title;
     private List<Component> components = new ArrayList<>();
+
+    public List<Component> getComponents() {
+        return components;
+    }
 
     @JsonIgnore
     public List<FormField> listAllFields() {
@@ -25,8 +32,7 @@ public class FormIOFormModel extends SimpleFormModel implements Serializable {
             return Collections.emptyList();
         }
         return components.stream()
-            .flatMap(component -> listComponent(component).stream()).
-            filter(Component::isInput)
+            .flatMap(component -> listComponent(component).stream())
             .map(component -> (FormField) component)
             .toList();
     }
@@ -37,8 +43,8 @@ public class FormIOFormModel extends SimpleFormModel implements Serializable {
             return Collections.emptyList();
         }
         return components.stream()
-            .flatMap(component -> listComponent(component).stream()).
-            filter(Component::isInput)
+            .flatMap(component -> listComponent(component).stream())
+            .filter(Component::isInput)
             .map(component -> (FormField) component)
             .toList();
     }
@@ -73,16 +79,20 @@ public class FormIOFormModel extends SimpleFormModel implements Serializable {
         }
     }
 
+    public enum ValidateOption {
+        blur, change
+    }
+
     @Getter
     @Setter
-    @ToString
     public static class Component extends FormField implements Serializable {
+        protected Object value;
         @JsonIgnore
         private boolean input = false;
         private boolean valueJson = false;
         private String type;
-        protected Object value;
         private boolean hidden;
+        private boolean disabled;
         private boolean clearOnHide;
         private boolean hideLabel;
         private Object defaultValue;
@@ -90,10 +100,13 @@ public class FormIOFormModel extends SimpleFormModel implements Serializable {
         private String key;
         private int tabindex;
         private boolean tableView;
+        private List<Map<String, Object>> logic;
+        private Map<String, Object> errors;
         private String placeholder;
         private String calculatedValue;
-        private Map<String, Object> conditional;
-        private Map<String, Object> validate;
+        private ValidateOption validateOn;
+        private ConditionalOptions conditional;
+        private ValidateOptions validate;
 
         public String getId() {
             return key;
@@ -332,7 +345,7 @@ public class FormIOFormModel extends SimpleFormModel implements Serializable {
 
         public Datagrid() {
             setType("datagrid");
-            setInput(false);
+            setInput(true);
             setValueJson(true);
         }
     }
@@ -432,7 +445,7 @@ public class FormIOFormModel extends SimpleFormModel implements Serializable {
 
         public EditGrid() {
             setType("editgrid");
-            setInput(false);
+            setInput(true);
             setValueJson(true);
         }
     }
@@ -455,7 +468,16 @@ public class FormIOFormModel extends SimpleFormModel implements Serializable {
         }
     }
 
+    @Getter
+    @Setter
     public static class Upload extends File {
+        private boolean typeRequired;
+        private boolean showType;
+        private String filePattern;
+        private String fileMaxSize;
+        private boolean image;
+        private boolean webcam;
+        private String webcamSize;
         public Upload() {
             setType("upload");
             setInput(true);
@@ -580,5 +602,38 @@ public class FormIOFormModel extends SimpleFormModel implements Serializable {
         private List<Option> values;
         private String json;
         private String url;
+    }
+
+    @Getter
+    @Setter
+    public static class ConditionalOptions {
+        private Boolean show;
+        private String when;
+        private String eq;
+        private Object json;
+    }
+
+    @Getter
+    @Setter
+    public static class ValidateOptions {
+        public Boolean required;
+        private Integer minLength;
+        private Integer maxLength;
+        private String pattern;
+        private Object custom;
+        private Integer min;
+        private Integer max;
+        private Integer minSelectedCount;
+        private Integer maxSelectedCount;
+        private Integer minWords;
+        private Integer maxWords;
+        private Boolean email;
+        private Boolean url;
+        private Boolean date;
+        private Boolean day;
+        private String json;
+        private Boolean mask;
+        private LocalDate minDate;
+        private LocalDate maxDate;
     }
 }

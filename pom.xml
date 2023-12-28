@@ -5,19 +5,27 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.5</version>
+        <version>3.1.4</version>
         <relativePath/>
     </parent>
     <groupId>com.mattae.snl.plugins</groupId>
     <artifactId>flowable</artifactId>
-    <version>1</version>
+    <version>1.0.1</version>
     <name>Flowable BPM Plugin</name>
     <properties>
         <node.version>v16.17.0</node.version>
         <yarn.version>v1.22.0</yarn.version>
         <java.version>17</java.version>
-        <flowable.version>7.0.0-SNAPSHOT</flowable.version>
+        <aspose.version>23.6</aspose.version>
+        <flowable.version>7.0.0</flowable.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>AsposeJavaAPI</id>
+            <name>Aspose Java API</name>
+            <url>https://repository.aspose.com/repo/</url>
+        </repository>
+    </repositories>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -30,9 +38,8 @@
             <dependency>
                 <groupId>org.flowable</groupId>
                 <artifactId>flowable-bom</artifactId>
-                <version>${flowable.version}</version>
+                <version>7.0.0</version>
                 <type>pom</type>
-                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -54,18 +61,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>io.zonky.test.postgres</groupId>
             <artifactId>embedded-postgres-binaries-linux-amd64</artifactId>
             <scope>test</scope>
@@ -75,6 +70,7 @@
             <artifactId>spring-boot-test-autoconfigure</artifactId>
             <scope>test</scope>
         </dependency>
+
         <!--
        <dependency>
            <groupId>io.zonky.test.postgres</groupId>
@@ -129,7 +125,7 @@
         <dependency>
             <groupId>io.github.jbella.snl</groupId>
             <artifactId>core-api</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -147,43 +143,63 @@
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
+            <artifactId>flowable-common-rest</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-boot-autoconfigure</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-boot-starter-process</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-boot-starter-cmmn</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-boot-starter-dmn</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-boot-starter-app</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-dmn-engine-configurator</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-dmn-spring-configurator</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-cmmn-engine-configurator</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-cmmn-spring-configurator</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-configurator</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-job-service</artifactId>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
@@ -193,14 +209,13 @@
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-form-model</artifactId>
-            <version>6.8.0</version>
+            <version>${flowable.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-form-api</artifactId>
-            <version>6.8.0</version>
+            <version>${flowable.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-form-engine</artifactId>
@@ -229,6 +244,51 @@
             <groupId>org.flowable</groupId>
             <artifactId>flowable-form-rest</artifactId>
             <version>6.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-pdf</artifactId>
+            <version>${aspose.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-cells</artifactId>
+            <version>${aspose.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>co.elastic.thumbnails4j</groupId>
+            <artifactId>thumbnails4j-all</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>io.github.makbn</groupId>
+            <artifactId>jthumbnail</artifactId>
+            <version>v1.1</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.camunda.bpm.dmn</groupId>
+            <artifactId>camunda-engine-feel-juel</artifactId>
+            <version>7.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.camunda.bpm.dmn</groupId>
+            <artifactId>camunda-engine-feel-scala</artifactId>
+            <version>7.20.0</version>
         </dependency>
 
     </dependencies>
@@ -324,7 +384,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.flowable:*</include>
-                                    <include>com.flowable:*</include>
+                                    <include>com.mattae.snl.plugins.flowable:*</include>
                                     <inclued>joda-time:*</inclued>
                                     <inclued>org.mybatis:*</inclued>
                                     <include>org.apache.httpcomponents:*</include>
@@ -333,6 +393,7 @@
                                     <include>commons-logging:commons-logging</include>
                                     <include>com.fasterxml.uuid:java-uuid-generator</include>
                                     <include>io.github.jamsesso:json-logic-java</include>
+                                    <include>org.apache.tika:tika-core</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

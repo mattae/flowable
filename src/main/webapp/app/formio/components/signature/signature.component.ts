@@ -5,36 +5,45 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
+import { FormioFormFieldComponent } from '../formio-form-field/formio-form-field.component';
+import { LabelComponent } from '../label/label.component';
 
 @Component({
     selector: 'mat-formio-signature',
     template: `
         <div *ngIf="visible">
-            <mat-label *ngIf="instance.component.label && !instance.component.hideLabel">
-                <span>{{instance.component.label}}</span>
-            </mat-label>
+            <mat-formio-form-field [instance]="instance"
+                                   [componentTemplate]="componentTemplate"></mat-formio-form-field>
+            <ng-template #componentTemplate let-hasLabel>
+                <mat-label *ngIf="hasLabel">
+                    <span [instance]="instance" matFormioLabel></span>
+                </mat-label>
 
-            <div class="w-full p-1 bg-amber-100">
-                <ng-container *ngIf="!disabled">
-                    <button mat-icon-button [ngStyle]="{position: 'absolute'}" (click)="signature.clear()">
-                        <mat-icon>refresh</mat-icon>
-                    </button>
-                    <ngx-signature-pad class="w-full"
-                                       #signature
-                                       (beginSign)="onBeginSign()"
-                                       (endSign)="onEndSign()">
-                    </ngx-signature-pad>
-                </ng-container>
-                <ng-container *ngIf="disabled">
-                    <img #img [src]="value" class="w-full p-2" alt="signature"/>
-                </ng-container>
-            </div>
+                <span *ngIf="instance.component.prefix" matPrefix>
+                        {{ instance.component.prefix }}&nbsp;
+                    </span>
+                <div class="w-full p-1 bg-amber-100">
+                    <ng-container *ngIf="!disabled">
+                        <button mat-icon-button [ngStyle]="{position: 'absolute'}" (click)="signature.clear()">
+                            <mat-icon>refresh</mat-icon>
+                        </button>
+                        <ngx-signature-pad class="w-full"
+                                           #signature
+                                           (beginSign)="onBeginSign()"
+                                           (endSign)="onEndSign()">
+                        </ngx-signature-pad>
+                    </ng-container>
+                    <ng-container *ngIf="disabled">
+                        <img #img [src]="value" class="w-full p-2" alt="signature"/>
+                    </ng-container>
+                </div>
 
-            <div *ngIf="instance.component.footer"
-                 class="signature-pad-footer self-center flex-row flex"
-            >
-                <mat-hint>{{ instance.t(instance.component.footer) }}</mat-hint>
-            </div>
+                <div *ngIf="instance.component.footer"
+                     class="signature-pad-footer self-center flex-row flex"
+                >
+                    <mat-hint>{{ instance.t(instance.component.footer) }}</mat-hint>
+                </div>
+            </ng-template>
         </div>
     `,
     standalone: true,
@@ -43,11 +52,13 @@ import { DomSanitizer } from '@angular/platform-browser';
         MatFormFieldModule,
         MatButtonModule,
         MatIconModule,
-        NgxSignaturePadModule
+        NgxSignaturePadModule,
+        FormioFormFieldComponent,
+        LabelComponent
     ]
 })
 export class MaterialSignatureComponent implements AfterViewInit, OnDestroy {
-    @ViewChild('signature') signature: NgxSignaturePadComponent;
+    @ViewChild('signature') signature!: NgxSignaturePadComponent;
     public options: NgxSignatureOptions = {
         backgroundColor: '#e1e1c7',
         width: 854,

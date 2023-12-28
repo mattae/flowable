@@ -5,13 +5,18 @@
 
 package com.mattae.snl.plugins.flowable.config;
 
+import com.mattae.snl.plugins.flowable.content.api.DocumentRepositoryService;
+import com.mattae.snl.plugins.flowable.content.api.MetadataService;
+import com.mattae.snl.plugins.flowable.content.api.RenditionService;
+import com.mattae.snl.plugins.flowable.content.config.ContentEngineConfiguration;
+import com.mattae.snl.plugins.flowable.content.spring.SpringContentEngineConfiguration;
+import com.mattae.snl.plugins.spring.boot.ContentEngineAutoConfiguration;
 import org.flowable.app.engine.AppEngine;
 import org.flowable.content.api.ContentManagementService;
 import org.flowable.content.api.ContentService;
 import org.flowable.content.engine.ContentEngine;
 import org.flowable.content.engine.ContentEngines;
 import org.flowable.content.spring.ContentEngineFactoryBean;
-import org.flowable.content.spring.SpringContentEngineConfiguration;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.spring.boot.BaseEngineConfigurationWithConfigurers;
 import org.flowable.spring.boot.FlowableProperties;
@@ -59,6 +64,26 @@ public class ContentEngineServicesAutoConfiguration {
             factory.setContentEngineConfiguration(contentEngineConfiguration);
             this.invokeConfigurers(contentEngineConfiguration);
             return factory;
+        }
+
+        @Bean
+        public MetadataService getMetadataService(ContentEngineConfiguration engineConfiguration) {
+            return engineConfiguration.getMetadataService();
+        }
+
+        @Bean
+        public ContentService getContentService(ContentEngineConfiguration engineConfiguration) {
+            return engineConfiguration.getContentService();
+        }
+
+        @Bean
+        public DocumentRepositoryService getDocumentRepositoryService(ContentEngineConfiguration engineConfiguration) {
+            return engineConfiguration.getDocumentRepositoryService();
+        }
+
+        @Bean
+        public RenditionService getRenditionService(ContentEngineConfiguration contentEngineConfiguration) {
+            return contentEngineConfiguration.getRenditionService();
         }
     }
 

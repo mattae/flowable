@@ -12,13 +12,14 @@
  */
 package com.mattae.snl.plugins.flowable.model.runtime;
 
-import java.util.List;
-
+import com.mattae.snl.plugins.flowable.form.model.FormIOFormModel;
 import org.flowable.form.api.FormInfo;
 import org.flowable.form.model.FormField;
 import org.flowable.form.model.FormOutcome;
 import org.flowable.form.model.SimpleFormModel;
 import org.flowable.ui.common.model.AbstractRepresentation;
+
+import java.util.List;
 
 /**
  * REST representation of a case instance.
@@ -33,6 +34,7 @@ public class FormModelRepresentation extends AbstractRepresentation {
     protected String key;
     protected int version;
     protected List<FormField> fields;
+    protected List<FormIOFormModel.Component> components;
     protected List<FormOutcome> outcomes;
     protected String outcomeVariableName;
 
@@ -43,11 +45,19 @@ public class FormModelRepresentation extends AbstractRepresentation {
         this.key = formInfo.getKey();
         this.version = formInfo.getVersion();
     }
-    
+
     public FormModelRepresentation(FormInfo formInfo, SimpleFormModel formModel) {
         this(formInfo);
-        
+
         this.fields = formModel.getFields();
+        this.outcomes = formModel.getOutcomes();
+        this.outcomeVariableName = formModel.getOutcomeVariableName();
+    }
+
+    public FormModelRepresentation(FormInfo formInfo, FormIOFormModel formModel) {
+        this(formInfo);
+        this.fields = formModel.getFields();
+        this.components = formModel.getComponents();
         this.outcomes = formModel.getOutcomes();
         this.outcomeVariableName = formModel.getOutcomeVariableName();
     }
@@ -98,6 +108,14 @@ public class FormModelRepresentation extends AbstractRepresentation {
 
     public void setFields(List<FormField> fields) {
         this.fields = fields;
+    }
+
+    public List<FormIOFormModel.Component> getComponents() {
+        return components;
+    }
+
+    public void setComponents(List<FormIOFormModel.Component> components) {
+        this.components = components;
     }
 
     public List<FormOutcome> getOutcomes() {

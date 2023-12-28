@@ -17,20 +17,20 @@ public class CreateCaseInstanceRepresentation extends CompleteFormRepresentation
     private String caseDefinitionId;
     private String name;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setCaseDefinitionId(String caseDefinitionId) {
-        this.caseDefinitionId = caseDefinitionId;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getCaseDefinitionId() {
         return caseDefinitionId;
+    }
+
+    public void setCaseDefinitionId(String caseDefinitionId) {
+        this.caseDefinitionId = caseDefinitionId;
     }
 
 }

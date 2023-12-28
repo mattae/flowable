@@ -1,11 +1,12 @@
-// 
+//
 // Decompiled by Procyon v0.5.36
-// 
+//
 
 package com.mattae.snl.plugins.flowable.config;
 
-import com.mattae.snl.plugins.flowable.config.deployer.FormDeployer;
+import com.mattae.snl.plugins.flowable.common.SpringExpressionManager;
 import com.mattae.snl.plugins.flowable.form.FormEngineConfiguration;
+import com.mattae.snl.plugins.flowable.form.impl.deployer.FormDeployer;
 import com.mattae.snl.plugins.flowable.form.spring.SpringFormEngineConfiguration;
 import org.flowable.common.engine.api.FlowableException;
 import org.flowable.common.engine.impl.AbstractEngineConfiguration;
@@ -39,16 +40,15 @@ public class FormEngineConfigurator extends AbstractEngineConfigurator {
     public void configure(final AbstractEngineConfiguration engineConfiguration) {
         if (this.formEngineConfiguration == null) {
             this.formEngineConfiguration = new SpringFormEngineConfiguration();
-        }
-        else if (!(this.formEngineConfiguration instanceof SpringFormEngineConfiguration)) {
+        } else if (!(this.formEngineConfiguration instanceof SpringFormEngineConfiguration)) {
             throw new IllegalArgumentException("Expected formEngine configuration to be of type " + SpringFormEngineConfiguration.class + " but was " + this.formEngineConfiguration.getClass());
         }
         this.initialiseCommonProperties(engineConfiguration, this.formEngineConfiguration);
-        final SpringEngineConfiguration springEngineConfiguration = (SpringEngineConfiguration)engineConfiguration;
-        ((SpringFormEngineConfiguration)this.formEngineConfiguration).setTransactionManager(springEngineConfiguration.getTransactionManager());
-        /*if (this.formEngineConfiguration.getExpressionManager() == null) {
-            this.formEngineConfiguration.setExpressionManager((ExpressionManager)new SpringFormExpressionManager(springEngineConfiguration.getApplicationContext(), springEngineConfiguration.getBeans()));
-        }*/
+        final SpringEngineConfiguration springEngineConfiguration = (SpringEngineConfiguration) engineConfiguration;
+        ((SpringFormEngineConfiguration) this.formEngineConfiguration).setTransactionManager(springEngineConfiguration.getTransactionManager());
+        if (this.formEngineConfiguration.getExpressionManager() == null) {
+            this.formEngineConfiguration.setExpressionManager(new SpringExpressionManager(springEngineConfiguration.getApplicationContext(), springEngineConfiguration.getBeans()));
+        }
         this.initFormEngine();
         this.initServiceConfigurations(engineConfiguration, this.formEngineConfiguration);
     }
@@ -66,10 +66,6 @@ public class FormEngineConfigurator extends AbstractEngineConfigurator {
             throw new FlowableException("FormEngineConfiguration is required");
         }
         return this.formEngineConfiguration.buildFormEngine();
-    }
-
-    public FormEngineConfiguration getFormEngineConfiguration() {
-        return this.formEngineConfiguration;
     }
 
     public FormEngineConfigurator setFormEngineConfiguration(final FormEngineConfiguration formEngineConfiguration) {

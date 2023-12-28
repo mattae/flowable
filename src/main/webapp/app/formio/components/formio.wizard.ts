@@ -1,8 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
-import { MatStepper } from '@angular/material/stepper';
+import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import Wizard from 'formiojs/Wizard';
 import Displays from 'formiojs/displays/Displays';
 import { MaterialNestedComponent } from './MaterialNestedComponent';
+import { NgForOf, NgIf } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
     selector: 'mat-formio-wizard',
@@ -12,26 +14,29 @@ import { MaterialNestedComponent } from './MaterialNestedComponent';
     ],
     template: `
         <mat-horizontal-stepper [linear]="isLinear" #stepper>
-            <mat-step *ngFor="let page of instance.pages" [label]="page.component.title">
+            <mat-step *ngFor="let page of instance.components" [label]="page.component.title">
                 <ng-template #components></ng-template>
                 <div class="navigation-button-row">
-                    <button *ngIf="instance.hasButton('cancel')" mat-raised-button (click)="resetWizard()">Cancel
-                    </button>
-                    <button *ngIf="instance.hasButton('previous')" mat-raised-button color="primary"
+                    <button *ngIf="stepper.selectedIndex > 0 " mat-raised-button color="primary"
                             (click)="prevPage()">Previous
                     </button>
-                    <button *ngIf="instance.hasButton('next')" mat-raised-button color="primary" (click)="nextPage()">
+                    <button *ngIf="stepper.selectedIndex < instance.components.length - 1" mat-raised-button
+                            color="primary" (click)="nextPage()">
                         Next
-                    </button>
-                    <button *ngIf="instance.hasButton('submit')" mat-raised-button color="primary" (click)="submit()">
-                        Submit
                     </button>
                 </div>
             </mat-step>
-        </mat-horizontal-stepper>`
+        </mat-horizontal-stepper>`,
+    imports: [
+        MatStepperModule,
+        NgForOf,
+        NgIf,
+        MatButtonModule
+    ],
+    standalone: true
 })
 export class MaterialWizardComponent extends MaterialNestedComponent {
-    @ViewChild('stepper', {static: true}) stepper: MatStepper;
+    @ViewChild('stepper', {static: true}) stepper!: MatStepper;
     public isLinear = true;
     private prevNumOfPages = 0;
 
@@ -77,8 +82,8 @@ export class MaterialWizardComponent extends MaterialNestedComponent {
     }
 
     renderComponents() {
-        if (this.instance.renderComponents && this.instance.pages) {
-            this.instance.renderComponents(this.instance.pages.reduce((comps, page) => {
+        if (this.instance.renderComponents && this.instance.components) {
+            this.instance.renderComponents(this.instance.components.reduce((comps, page) => {
                 return comps.concat(page.components);
             }, []));
         }

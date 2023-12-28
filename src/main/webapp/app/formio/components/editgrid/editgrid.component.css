@@ -2,3 +2,8 @@
   margin-left: auto;
   order: 2;
 }
+
+.mat-expansion-panel-header {
+    height: unset;
+    min-height: 48px !important;
+}

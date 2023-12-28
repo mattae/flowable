@@ -12,21 +12,14 @@
  */
 package com.mattae.snl.plugins.flowable.web.runtime;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mattae.snl.plugins.flowable.model.runtime.TaskRepresentation;
 import com.mattae.snl.plugins.flowable.services.runtime.FlowableTaskActionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/api")
 public class TaskActionResource {
 
     protected final FlowableTaskActionService taskActionService;
@@ -62,6 +55,12 @@ public class TaskActionResource {
     @ResponseStatus(value = HttpStatus.OK)
     public void claimTask(@PathVariable String taskId) {
         taskActionService.claimTask(taskId);
+    }
+
+    @PutMapping(value = "/rest/tasks/{taskId}/action/un-claim")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void unClaimTask(@PathVariable String taskId) {
+        taskActionService.unClaimTask(taskId);
     }
 
 }

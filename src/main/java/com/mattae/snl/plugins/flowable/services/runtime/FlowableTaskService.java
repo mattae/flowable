@@ -12,18 +12,18 @@
  */
 package com.mattae.snl.plugins.flowable.services.runtime;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mattae.snl.plugins.flowable.model.runtime.TaskRepresentation;
 import com.mattae.snl.plugins.flowable.model.runtime.TaskUpdateRepresentation;
+import com.mattae.snl.plugins.flowable.services.model.ExtendedUserRepresentation;
 import io.github.jbella.snl.core.api.services.errors.RecordNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.cmmn.api.repository.CaseDefinition;
 import org.flowable.common.engine.api.FlowableException;
+import org.flowable.engine.IdentityService;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.identitylink.api.IdentityLinkType;
 import org.flowable.identitylink.api.history.HistoricIdentityLink;
+import org.flowable.idm.api.Picture;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskInfo;
 import org.flowable.task.api.history.HistoricTaskInstance;
@@ -36,6 +36,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
 /**
  * @author Tijs Rademakers
  */
@@ -44,43 +48,53 @@ import org.springframework.transaction.annotation.Transactional;
 public class FlowableTaskService extends FlowableAbstractTaskService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowableTaskService.class);
+    private final IdentityService identityService;
+
+    public FlowableTaskService(IdentityService identityService) {
+        this.identityService = identityService;
+    }
 
     public TaskRepresentation getTask(String taskId) {
         SecurityScope currentUser = SecurityUtils.getAuthenticatedSecurityScope();
         HistoricTaskInstance task = permissionService.validateReadPermissionOnTask(currentUser, taskId);
 
         TaskRepresentation rep = null;
-        if (StringUtils.isNotEmpty(task.getProcessDefinitionId())) {
-            try {
-                ProcessDefinition processDefinition = repositoryService.getProcessDefinition(task.getProcessDefinitionId());
-                rep = new TaskRepresentation(task, processDefinition);
+        try {
+            if (StringUtils.isNotEmpty(task.getProcessDefinitionId())) {
+                try {
+                    ProcessDefinition processDefinition = repositoryService.getProcessDefinition(task.getProcessDefinitionId());
+                    rep = new TaskRepresentation(task, processDefinition);
 
-            } catch (FlowableException e) {
-                LOGGER.error("Error getting process definition {}", task.getProcessDefinitionId(), e);
+                } catch (FlowableException e) {
+                    LOGGER.error("Error getting process definition {}", task.getProcessDefinitionId(), e);
+                }
+
+            } else if (StringUtils.isNotEmpty(task.getScopeDefinitionId())) {
+                try {
+                    CaseDefinition caseDefinition = cmmnRepositoryService.getCaseDefinition(task.getScopeDefinitionId());
+                    rep = new TaskRepresentation(task, caseDefinition);
+
+                } catch (FlowableException e) {
+                    LOGGER.error("Error getting case definition {}", task.getScopeDefinitionId(), e);
+                }
+
+            } else if (StringUtils.isNotEmpty(task.getParentTaskId())) {
+                HistoricTaskInstance parentTask = permissionService.validateReadPermissionOnTask(currentUser, task.getParentTaskId());
+                rep = new TaskRepresentation(task, parentTask);
+            } else {
+                rep = new TaskRepresentation(task);
             }
 
-        } else if (StringUtils.isNotEmpty(task.getScopeDefinitionId())) {
-            try {
-                CaseDefinition caseDefinition = cmmnRepositoryService.getCaseDefinition(task.getScopeDefinitionId());
-                rep = new TaskRepresentation(task, caseDefinition);
+            fillPermissionInformation(rep, task, currentUser);
 
-            } catch (FlowableException e) {
-                LOGGER.error("Error getting case definition {}", task.getScopeDefinitionId(), e);
-            }
-
-        } else if (StringUtils.isNotEmpty(task.getParentTaskId())) {
-            HistoricTaskInstance parentTask = permissionService.validateReadPermissionOnTask(currentUser, task.getParentTaskId());
-            rep = new TaskRepresentation(task, parentTask);
-        } else {
-            rep = new TaskRepresentation(task);
+            // Populate the people
+            populateAssignee(task, rep);
+            var users = getInvolvedUsers(taskId).stream()
+                .map(t -> (UserRepresentation) t).toList();
+            rep.setInvolvedPeople(users);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        fillPermissionInformation(rep, task, currentUser);
-
-        // Populate the people
-        populateAssignee(task, rep);
-        rep.setInvolvedPeople(getInvolvedUsers(taskId));
-
         return rep;
     }
 
@@ -95,7 +109,9 @@ public class FlowableTaskService extends FlowableAbstractTaskService {
 
             fillPermissionInformation(representation, subTask, currentUser);
             populateAssignee(subTask, representation);
-            representation.setInvolvedPeople(getInvolvedUsers(subTask.getId()));
+            var users = getInvolvedUsers(subTask.getId()).stream()
+                .map(t -> (UserRepresentation) t).toList();
+            representation.setInvolvedPeople(users);
 
             subTasksRepresentations.add(representation);
         }
@@ -112,24 +128,6 @@ public class FlowableTaskService extends FlowableAbstractTaskService {
                 rep.setAssignee(new UserRepresentation(task.getAssignee()));
             }
         }
-    }
-
-    protected List<UserRepresentation> getInvolvedUsers(String taskId) {
-        List<HistoricIdentityLink> idLinks = historyService.getHistoricIdentityLinksForTask(taskId);
-        List<UserRepresentation> result = new ArrayList<>(idLinks.size());
-
-        for (HistoricIdentityLink link : idLinks) {
-            // Only include users and non-assignee links
-            if (link.getUserId() != null && !IdentityLinkType.ASSIGNEE.equals(link.getType())) {
-                CachedUser cachedUser = userCache.getUser(link.getUserId());
-                if (cachedUser != null && cachedUser.getUser() != null) {
-                    result.add(new UserRepresentation(cachedUser.getUser()));
-                } else {
-                    result.add(new UserRepresentation(link.getUserId()));
-                }
-            }
-        }
-        return result;
     }
 
     public TaskRepresentation updateTask(String taskId, TaskUpdateRepresentation updated) {
@@ -160,5 +158,39 @@ public class FlowableTaskService extends FlowableAbstractTaskService {
         taskService.saveTask(task);
 
         return new TaskRepresentation(task);
+    }
+
+    public List<ExtendedUserRepresentation> getInvolvedUsers(String taskId) {
+        List<HistoricIdentityLink> idLinks = historyService.getHistoricIdentityLinksForTask(taskId);
+        List<ExtendedUserRepresentation> result = new ArrayList<>(idLinks.size());
+        for (HistoricIdentityLink link : idLinks) {
+            // Only include users and non-assignee links
+            if (link.getUserId() != null && !IdentityLinkType.ASSIGNEE.equals(link.getType())) {
+                CachedUser cachedUser = userCache.getUser(link.getUserId());
+                if (cachedUser != null && cachedUser.getUser() != null) {
+                    Picture picture = identityService.getUserPicture(cachedUser.getUser().getId());
+                    if (picture != null && StringUtils.isNotBlank(picture.getMimeType())) {
+                        byte[] bytes = picture.getBytes();
+                        String url = String.format("data:%s;base64,%s", picture.getMimeType(), Base64.getEncoder().encodeToString(bytes));
+                        result.add(new ExtendedUserRepresentation(cachedUser.getUser(), url));
+                    } else {
+                        result.add(new ExtendedUserRepresentation(cachedUser.getUser(), null));
+                    }
+                } else {
+                    var user = identityService.createUserQuery().userId(link.getUserId()).singleResult();
+                    if (user != null) {
+                        Picture picture = identityService.getUserPicture(user.getId());
+                        if (picture != null && StringUtils.isNotBlank(picture.getMimeType())) {
+                            byte[] bytes = picture.getBytes();
+                            String url = String.format("data:%s;base64,%s", picture.getMimeType(), Base64.getEncoder().encodeToString(bytes));
+                            result.add(new ExtendedUserRepresentation(user, url));
+                        } else {
+                            result.add(new ExtendedUserRepresentation(user, null));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 }

@@ -3,11 +3,12 @@ import { MaterialComponent } from './MaterialComponent';
 
 @Component({
     selector: 'mat-formio-nested',
-    template: '<ng-template #components></ng-template>'
+    template: '<ng-template #components></ng-template>',
+    standalone: true
 })
 export class MaterialNestedComponent extends MaterialComponent implements AfterViewInit {
     public viewContainers;
-    @ViewChildren('components', {read: ViewContainerRef}) components: QueryList<ViewContainerRef>;
+    @ViewChildren('components', {read: ViewContainerRef}) components!: QueryList<ViewContainerRef>;
 
     setInstance(instance: any) {
         instance.viewContainer = () => {

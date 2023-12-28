@@ -17,20 +17,20 @@ public class CreateProcessInstanceRepresentation extends CompleteFormRepresentat
     private String processDefinitionId;
     private String name;
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setProcessDefinitionId(String processDefinitionId) {
-        this.processDefinitionId = processDefinitionId;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getProcessDefinitionId() {
         return processDefinitionId;
+    }
+
+    public void setProcessDefinitionId(String processDefinitionId) {
+        this.processDefinitionId = processDefinitionId;
     }
 
 }
